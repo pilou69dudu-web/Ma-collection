@@ -160,7 +160,6 @@ for index, row in df.iterrows():
     if genre_vinyl in ['nan', '']: genre_vinyl = "N/C"
     else: liste_genres_uniques.add(genre_vinyl.upper())
 
-    # CORRECTION DE SYNTAXE ICI (Ligne 207 sécurisée)
     viny_data = {
         "id": str(row.get('N°', index)),
         "type": valeur_type,
@@ -198,7 +197,7 @@ json_genres = json.dumps(sorted(list(liste_genres_uniques)), ensure_ascii=False)
 json_types = json.dumps(sorted(list(liste_types_uniques)), ensure_ascii=False)
 
 # =====================================================================
-# TRAITEMENT DU FICHIER WANTED (PLUS SOUPLE)
+# TRAITEMENT DU FICHIER WANTED
 # =====================================================================
 wanted_collection = []
 print(f"Analyse du fichier Wanted ({nom_fichier_wanted})...")
@@ -247,69 +246,69 @@ print(f"🎯 Nombre de vinyles Wanted récupérés : {len(wanted_collection)}")
 json_wanted_data = json.dumps(wanted_collection, ensure_ascii=False)
 
 # =====================================================================
-# SQUELETTE HTML : PAGE PRINCIPALE (INDEX.HTML)
+# ÉCRITURE DE LA PAGE PRINCIPALE (INDEX.HTML)
 # =====================================================================
-html_debut = f"""<!DOCTYPE html>
+html_debut = """<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <title>Ma Collection de Vinyles - Discogs Style</title>
     <style>
-        :root {{ --discogs-black: #111111; --discogs-yellow: #f5c518; --light-bg: #f8f9fa; --border-color: #e5e7eb; --text-muted: #6b7280; }}
-        * {{ box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }}
-        body {{ background-color: var(--light-bg); color: var(--discogs-black); padding-bottom: 50px; }}
-        header {{ background-color: var(--discogs-black); color: white; padding: 20px; border-bottom: 4px solid var(--discogs-yellow); position: relative; display: flex; align-items: center; justify-content: center; }}
-        header h1 {{ font-size: 24px; }}
-        .global-counter {{ position: absolute; left: 20px; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); padding: 6px 14px; border-radius: 6px; font-size: 14px; font-weight: bold; color: #ffffff; }}
-        .global-counter span {{ color: var(--discogs-yellow); font-size: 16px; margin-left: 5px; }}
-        .sticky-wrapper {{ position: -webkit-sticky; position: sticky; top: 0; z-index: 100; background-color: var(--light-bg); padding-top: 15px; padding-bottom: 10px; border-bottom: 1px solid var(--border-color); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }}
-        .container {{ max-width: 1350px; margin: 0 auto; padding: 0 15px; }}
-        .search-container {{ background: white; padding: 20px; border-radius: 8px; border: 1px solid var(--border-color); box-shadow: 0 2px 4px rgba(0,0,0,0.02); }}
-        .search-row-wrapper {{ display: flex; gap: 15px; align-items: center; width: 100%; }}
-        .search-box-container {{ position: relative; flex-grow: 1; }}
-        .search-box {{ width: 100%; padding: 12px 40px 12px 12px; font-size: 16px; border: 2px solid var(--border-color); border-radius: 6px; outline: none; }}
-        .clear-search-btn {{ position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; font-size: 16px; color: #aaa; cursor: pointer; display: none; }}
-        .clear-search-btn:hover {{ color: #555; }}
-        .wanted-btn {{ background-color: var(--discogs-black); color: var(--discogs-yellow); border: 2px solid var(--discogs-black); padding: 11px 24px; font-size: 15px; font-weight: bold; border-radius: 6px; cursor: pointer; text-decoration: none; text-align: center; white-space: nowrap; transition: all 0.2s ease; }}
-        .wanted-btn:hover {{ background-color: var(--discogs-yellow); color: var(--discogs-black); }}
-        .navigation-filters {{ display: flex; flex-direction: column; gap: 12px; padding-top: 10px; border-top: 1px dashed var(--border-color); margin-top: 15px; }}
-        .filter-row {{ display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }}
-        .filter-label {{ font-size: 13px; font-weight: bold; color: var(--text-muted); text-transform: uppercase; min-width: 90px; }}
-        .nav-btn {{ background: white; border: 1px solid var(--border-color); padding: 6px 12px; font-size: 14px; font-weight: 600; border-radius: 4px; cursor: pointer; }}
-        .nav-btn.active {{ background: var(--discogs-yellow); color: var(--discogs-black); border-color: var(--discogs-yellow); }}
-        .custom-dropdown {{ position: relative; display: inline-block; }}
-        .dropdown-trigger {{ background: white; border: 1px solid var(--border-color); padding: 6px 16px; font-size: 14px; font-weight: 600; border-radius: 4px; cursor: pointer; min-width: 220px; text-align: left; display: flex; justify-content: space-between; align-items: center; }}
-        .dropdown-trigger.active {{ background: var(--discogs-yellow); color: var(--discogs-black); border-color: var(--discogs-yellow); }}
-        .dropdown-menu {{ position: absolute; top: 100%; left: 0; background: white; border: 1px solid var(--border-color); border-radius: 4px; width: 280px; max-height: 350px; overflow-y: auto; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); display: none; z-index: 999; margin-top: 4px; padding: 8px; }}
-        .dropdown-menu.show {{ display: block; }}
-        .genre-search-inside {{ width: 100%; padding: 8px; font-size: 13px; border: 1px solid var(--border-color); border-radius: 4px; outline: none; margin-bottom: 8px; }}
-        .genre-option {{ padding: 6px 10px; font-size: 13px; font-weight: 600; cursor: pointer; border-radius: 3px; display: flex; justify-content: space-between; }}
-        .genre-option:hover {{ background-color: #f3f4f6; color: var(--discogs-black); }}
-        .genre-option.all-option {{ color: #dc2626; border-bottom: 1px solid var(--border-color); margin-bottom: 5px; padding-bottom: 8px; }}
-        .vinyl-grid {{ display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 15px; margin-top: 20px; }}
-        .vinyl-card {{ background: white; border: 1px solid var(--border-color); border-radius: 6px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 3px 5px rgba(0,0,0,0.02); position: relative; }}
-        .badge-qte {{ position: absolute; top: 8px; left: 8px; background: linear-gradient(135deg, #ffe600, #ffb300); color: #111111; font-size: 13px; font-weight: 800; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid #ffffff; box-shadow: 0 4px 8px rgba(0,0,0,0.3); z-index: 10; }}
-        .badge-prix {{ position: absolute; top: 8px; right: 8px; background: #e11d48; color: #ffffff; font-size: 11px; font-weight: 800; padding: 4px 8px; border-radius: 12px; border: 2px solid #ffffff; box-shadow: 0 4px 8px rgba(0,0,0,0.3); z-index: 10; }}
-        .cover-wrapper {{ aspect-ratio: 1; background: #222; display: flex; align-items: center; justify-content: center; position: relative; border-bottom: 1px solid var(--border-color); overflow: hidden; }}
-        .cover-image {{ width: 100%; height: 100%; object-fit: cover; }}
-        .cover-placeholder {{ color: #777; font-size: 11px; font-weight: bold; padding: 10px; text-align: center; text-transform: uppercase; }}
-        .vinyl-details {{ padding: 10px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }}
-        .tag-type {{ align-self: flex-start; font-size: 9px; font-weight: 700; text-transform: uppercase; padding: 1px 4px; border-radius: 2px; background: #e2d9f3; color: #432874; margin-bottom: 6px; }}
-        .vinyl-artist {{ font-size: 13px; font-weight: 700; text-transform: uppercase; line-height: 1.2; margin-bottom: 4px; }}
-        .meta-info {{ font-size: 11px; color: var(--text-muted); margin-bottom: 3px; line-height: 1.3; }}
-        .tracks-block {{ border-top: 1px solid var(--border-color); margin-top: 6px; padding-top: 6px; }}
-        .track-a {{ font-size: 11px; color: #111111; margin-bottom: 3px; line-height: 1.2; }}
-        .track-b {{ font-size: 11px; color: #111111; line-height: 1.2; }}
-        .discogs-link {{ display: inline-block; margin-top: 10px; width: 100%; text-align: center; background-color: var(--discogs-black); color: white; text-decoration: none; padding: 6px; font-size: 11px; font-weight: 600; border-radius: 4px; }}
-        .discogs-link:hover {{ background-color: var(--discogs-yellow); color: var(--discogs-black); }}
-        .scroll-to-top {{ position: fixed; bottom: 25px; right: 25px; background-color: var(--discogs-black); color: white; border: 2px solid var(--discogs-yellow); width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; cursor: pointer; opacity: 0; visibility: hidden; transition: all 0.3s ease; z-index: 1000; }}
-        .scroll-to-top.visible {{ opacity: 1; visibility: visible; }}
-        @media (max-width: 768px) {{ header {{ flex-direction: column; gap: 10px; }} .global-counter {{ position: static; }} .search-row-wrapper {{ flex-direction: column; }} .wanted-btn {{ width: 100%; }} }}
+        :root { --discogs-black: #111111; --discogs-yellow: #f5c518; --light-bg: #f8f9fa; --border-color: #e5e7eb; --text-muted: #6b7280; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
+        body { background-color: var(--light-bg); color: var(--discogs-black); padding-bottom: 50px; }
+        header { background-color: var(--discogs-black); color: white; padding: 20px; border-bottom: 4px solid var(--discogs-yellow); position: relative; display: flex; align-items: center; justify-content: center; }
+        header h1 { font-size: 24px; }
+        .global-counter { position: absolute; left: 20px; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); padding: 6px 14px; border-radius: 6px; font-size: 14px; font-weight: bold; color: #ffffff; }
+        .global-counter span { color: var(--discogs-yellow); font-size: 16px; margin-left: 5px; }
+        .sticky-wrapper { position: -webkit-sticky; position: sticky; top: 0; z-index: 100; background-color: var(--light-bg); padding-top: 15px; padding-bottom: 10px; border-bottom: 1px solid var(--border-color); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+        .container { max-width: 1350px; margin: 0 auto; padding: 0 15px; }
+        .search-container { background: white; padding: 20px; border-radius: 8px; border: 1px solid var(--border-color); box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        .search-row-wrapper { display: flex; gap: 15px; align-items: center; width: 100%; }
+        .search-box-container { position: relative; flex-grow: 1; }
+        .search-box { width: 100%; padding: 12px 40px 12px 12px; font-size: 16px; border: 2px solid var(--border-color); border-radius: 6px; outline: none; }
+        .clear-search-btn { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; font-size: 16px; color: #aaa; cursor: pointer; display: none; }
+        .clear-search-btn:hover { color: #555; }
+        .wanted-btn { background-color: var(--discogs-black); color: var(--discogs-yellow); border: 2px solid var(--discogs-black); padding: 11px 24px; font-size: 15px; font-weight: bold; border-radius: 6px; cursor: pointer; text-decoration: none; text-align: center; white-space: nowrap; transition: all 0.2s ease; }
+        .wanted-btn:hover { background-color: var(--discogs-yellow); color: var(--discogs-black); }
+        .navigation-filters { display: flex; flex-direction: column; gap: 12px; padding-top: 10px; border-top: 1px dashed var(--border-color); margin-top: 15px; }
+        .filter-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+        .filter-label { font-size: 13px; font-weight: bold; color: var(--text-muted); text-transform: uppercase; min-width: 90px; }
+        .nav-btn { background: white; border: 1px solid var(--border-color); padding: 6px 12px; font-size: 14px; font-weight: 600; border-radius: 4px; cursor: pointer; }
+        .nav-btn.active { background: var(--discogs-yellow); color: var(--discogs-black); border-color: var(--discogs-yellow); }
+        .custom-dropdown { position: relative; display: inline-block; }
+        .dropdown-trigger { background: white; border: 1px solid var(--border-color); padding: 6px 16px; font-size: 14px; font-weight: 600; border-radius: 4px; cursor: pointer; min-width: 220px; text-align: left; display: flex; justify-content: space-between; align-items: center; }
+        .dropdown-trigger.active { background: var(--discogs-yellow); color: var(--discogs-black); border-color: var(--discogs-yellow); }
+        .dropdown-menu { position: absolute; top: 100%; left: 0; background: white; border: 1px solid var(--border-color); border-radius: 4px; width: 280px; max-height: 350px; overflow-y: auto; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); display: none; z-index: 999; margin-top: 4px; padding: 8px; }
+        .dropdown-menu.show { display: block; }
+        .genre-search-inside { width: 100%; padding: 8px; font-size: 13px; border: 1px solid var(--border-color); border-radius: 4px; outline: none; margin-bottom: 8px; }
+        .genre-option { padding: 6px 10px; font-size: 13px; font-weight: 600; cursor: pointer; border-radius: 3px; display: flex; justify-content: space-between; }
+        .genre-option:hover { background-color: #f3f4f6; color: var(--discogs-black); }
+        .genre-option.all-option { color: #dc2626; border-bottom: 1px solid var(--border-color); margin-bottom: 5px; padding-bottom: 8px; }
+        .vinyl-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 15px; margin-top: 20px; }
+        .vinyl-card { background: white; border: 1px solid var(--border-color); border-radius: 6px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 3px 5px rgba(0,0,0,0.02); position: relative; }
+        .badge-qte { position: absolute; top: 8px; left: 8px; background: linear-gradient(135deg, #ffe600, #ffb300); color: #111111; font-size: 13px; font-weight: 800; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid #ffffff; box-shadow: 0 4px 8px rgba(0,0,0,0.3); z-index: 10; }
+        .badge-prix { position: absolute; top: 8px; right: 8px; background: #e11d48; color: #ffffff; font-size: 11px; font-weight: 800; padding: 4px 8px; border-radius: 12px; border: 2px solid #ffffff; box-shadow: 0 4px 8px rgba(0,0,0,0.3); z-index: 10; }
+        .cover-wrapper { aspect-ratio: 1; background: #222; display: flex; align-items: center; justify-content: center; position: relative; border-bottom: 1px solid var(--border-color); overflow: hidden; }
+        .cover-image { width: 100%; height: 100%; object-fit: cover; }
+        .cover-placeholder { color: #777; font-size: 11px; font-weight: bold; padding: 10px; text-align: center; text-transform: uppercase; }
+        .vinyl-details { padding: 10px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
+        .tag-type { align-self: flex-start; font-size: 9px; font-weight: 700; text-transform: uppercase; padding: 1px 4px; border-radius: 2px; background: #e2d9f3; color: #432874; margin-bottom: 6px; }
+        .vinyl-artist { font-size: 13px; font-weight: 700; text-transform: uppercase; line-height: 1.2; margin-bottom: 4px; }
+        .meta-info { font-size: 11px; color: var(--text-muted); margin-bottom: 3px; line-height: 1.3; }
+        .tracks-block { border-top: 1px solid var(--border-color); margin-top: 6px; padding-top: 6px; }
+        .track-a { font-size: 11px; color: #111111; margin-bottom: 3px; line-height: 1.2; }
+        .track-b { font-size: 11px; color: #111111; line-height: 1.2; }
+        .discogs-link { display: inline-block; margin-top: 10px; width: 100%; text-align: center; background-color: var(--discogs-black); color: white; text-decoration: none; padding: 6px; font-size: 11px; font-weight: 600; border-radius: 4px; }
+        .discogs-link:hover { background-color: var(--discogs-yellow); color: var(--discogs-black); }
+        .scroll-to-top { position: fixed; bottom: 25px; right: 25px; background-color: var(--discogs-black); color: white; border: 2px solid var(--discogs-yellow); width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; cursor: pointer; opacity: 0; visibility: hidden; transition: all 0.3s ease; z-index: 1000; }
+        .scroll-to-top.visible { opacity: 1; visibility: visible; }
+        @media (max-width: 768px) { header { flex-direction: column; gap: 10px; } .global-counter { position: static; } .search-row-wrapper { flex-direction: column; } .wanted-btn { width: 100%; } }
     </style>
 </head>
 <body>
     <header>
-        <div class="global-counter">Total collection : <span id="totalCounter">{total_reel_visibles}</span></div>
+        <div class="global-counter">Total collection : <span id="totalCounter">_REEL_TOTAL_</span></div>
         <h1>Ma Collection de Vinyles</h1>
     </header>
     <div class="sticky-wrapper">
@@ -450,3 +449,158 @@ html_fin = """
         const scrollTopBtn = document.getElementById('scrollTopBtn');
         window.addEventListener('scroll', () => { if (window.scrollY > 300) scrollTopBtn.classList.add('visible'); else scrollTopBtn.classList.remove('visible'); });
         scrollTopBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+        
+        const searchBox = document.getElementById('searchBox');
+        const clearSearch = document.getElementById('clearSearch');
+
+        searchBox.addEventListener('input', e => { 
+            currentSearch = e.target.value.toLowerCase(); 
+            clearSearch.style.display = currentSearch.length > 0 ? "block" : "none";
+            renderGrid(); 
+        });
+
+        clearSearch.addEventListener('click', () => {
+            searchBox.value = ""; currentSearch = ""; clearSearch.style.display = "none";
+            searchBox.focus(); renderGrid();
+        });
+        
+        document.getElementById('typeButtonsContainer').addEventListener('click', e => {
+            const btn = e.target.closest('.type-filter');
+            if (btn) {
+                document.querySelectorAll('.type-filter').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentType = btn.getAttribute('data-type');
+                renderGrid();
+            }
+        });
+        
+        const dropdownBtn = document.getElementById('dropdownBtn');
+        const dropdownContent = document.getElementById('dropdownContent');
+        const searchInside = document.getElementById('genreSearchInside');
+        const dropdownLabel = document.getElementById('dropdownLabel');
+
+        dropdownBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            dropdownContent.classList.toggle('show');
+            if(dropdownContent.classList.contains('show')) searchInside.focus();
+        });
+
+        searchInside.addEventListener('input', (e) => populateGenreOptions(e.target.value));
+        searchInside.addEventListener('click', (e) => e.stopPropagation());
+
+        document.addEventListener('click', (e) => {
+            const option = e.target.closest('.genre-option');
+            if (option) {
+                const selectedGenre = option.getAttribute('data-genre');
+                currentGenre = selectedGenre;
+                if (selectedGenre === "ALL") {
+                    dropdownLabel.textContent = "Tous les genres";
+                    dropdownBtn.classList.remove('active');
+                } else {
+                    dropdownLabel.textContent = selectedGenre;
+                    dropdownBtn.classList.add('active');
+                }
+                dropdownContent.classList.remove('show');
+                searchInside.value = "";
+                populateGenreOptions();
+                renderGrid();
+            } else {
+                dropdownContent.classList.remove('show');
+            }
+        });
+
+        document.getElementById('alphabetContainer').addEventListener('click', e => {
+            const btn = e.target.closest('.alpha-filter');
+            if (btn) {
+                document.querySelectorAll('.alpha-filter').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentAlpha = btn.getAttribute('data-alpha');
+                renderGrid();
+            }
+        });
+
+        renderGrid();
+    </script>
+</body>
+</html>
+"""
+
+# Injection propre sans interférence de f-string
+html_debut_modifie = html_debut.replace("_REEL_TOTAL_", str(total_reel_visibles))
+html_complet = f"{html_debut_modifie}\nconst vinylData = {json_data};\nconst genresAuto = {json_genres};\nconst typesAuto = {json_types};\n{html_fin}"
+
+with open("index.html", "w", encoding="utf-8") as f:
+    f.write(html_complet)
+
+# =====================================================================
+# ÉCRITURE DE LA PAGE WANTED.HTML
+# =====================================================================
+html_wanted_page = f"""<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Ma Liste de Recherche (Wanted) - Discogs Style</title>
+    <style>
+        :root {{ --discogs-black: #111111; --discogs-yellow: #f5c518; --light-bg: #f8f9fa; --border-color: #e5e7eb; --text-muted: #6b7280; }}
+        * {{ box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }}
+        body {{ background-color: var(--light-bg); color: var(--discogs-black); padding-bottom: 50px; }}
+        header {{ background-color: var(--discogs-black); color: white; padding: 20px; border-bottom: 4px solid var(--discogs-yellow); text-align: center; position: relative; }}
+        header h1 {{ font-size: 24px; }}
+        .back-btn {{ position: absolute; left: 20px; top: 50%; transform: translateY(-50%); background-color: #ffffff; color: #111111; padding: 8px 16px; font-size: 14px; font-weight: bold; border-radius: 6px; text-decoration: none; border: 1px solid var(--border-color); }}
+        .back-btn:hover {{ background-color: var(--discogs-yellow); }}
+        .container {{ max-width: 1350px; margin: 20px auto; padding: 0 15px; }}
+        .wanted-grid {{ display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 15px; }}
+        .wanted-card {{ background: white; border: 1px solid var(--border-color); border-radius: 6px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 3px 5px rgba(0,0,0,0.02); }}
+        .cover-wrapper {{ aspect-ratio: 1; background: #222; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid var(--border-color); overflow: hidden; }}
+        .cover-image {{ width: 100%; height: 100%; object-fit: cover; }}
+        .cover-placeholder {{ color: #777; font-size: 11px; font-weight: bold; text-transform: uppercase; }}
+        .wanted-details {{ padding: 12px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }}
+        .wanted-artist {{ font-size: 14px; font-weight: 700; text-transform: uppercase; margin-bottom: 4px; }}
+        .wanted-title {{ font-size: 13px; color: #333; font-style: italic; margin-bottom: 8px; }}
+        .wanted-comment {{ font-size: 11px; color: var(--text-muted); background: #f3f4f6; padding: 6px; border-radius: 4px; margin-bottom: 10px; border-left: 3px solid var(--discogs-yellow); }}
+        .discogs-link {{ display: inline-block; width: 100%; text-align: center; background-color: var(--discogs-black); color: white; text-decoration: none; padding: 8px; font-size: 11px; font-weight: 600; border-radius: 4px; }}
+        .discogs-link:hover {{ background-color: var(--discogs-yellow); color: var(--discogs-black); }}
+        @media (max-width: 768px) {{ .back-btn {{ position: static; display: block; margin: 0 auto 10px auto; width: fit-content; transform: none; }} }}
+    </style>
+</head>
+<body>
+    <header>
+        <a href="index.html" target="_self" class="back-btn">🧱 Collection</a>
+        <h1>Ma Liste de Recherche (Wanted)</h1>
+    </header>
+    <div class="container">
+        <div style="margin-bottom:15px; font-size:14px; color:var(--text-muted);">Disques recherchés : <span id="wantedCount">0</span></div>
+        <div class="wanted-grid" id="wantedGrid"></div>
+    </div>
+    <script>
+        const wantedData = {json_wanted_data};
+        document.getElementById('wantedCount').textContent = wantedData.length;
+        if (wantedData.length === 0) {{
+            document.getElementById('wantedGrid').innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--text-muted);">Aucun vinyle dans la liste de recherche pour le moment. Vérifiez votre fichier 01_Liste achat.xlsx.</div>';
+        }} else {{
+            document.getElementById('wantedGrid').innerHTML = wantedData.map(item => {{
+                const imgTag = (item.pochette && item.pochette !== "pochettes/placeholder.png")
+                    ? '<img class="cover-image" src="' + item.pochette + '" alt="Pochette">'
+                    : '<div class="cover-placeholder">💿 Pas d\'image</div>';
+                const commentBlock = (item.comment && item.comment !== "") ? '<div class="wanted-comment">' + item.comment + '</div>' : '';
+                return '<div class="wanted-card">' +
+                        '<div class="cover-wrapper">' + imgTag + '</div>' +
+                        '<div class="wanted-details">' +
+                            '<div>' +
+                                '<div class="wanted-artist">' + (item.artist || 'Artiste Inconnu') + '</div>' +
+                                '<div class="wanted-title">' + (item.title || 'Titre Inconnu') + '</div>' +
+                                commentBlock +
+                            '</div>' +
+                            '<a href="' + (item.url || '#') + '" target="_blank" class="discogs-link">Rechercher sur Discogs</a>' +
+                        '</div>' +
+                    '</div>';
+            }}).join('');
+        }}
+    </script>
+</body>
+</html>"""
+
+with open("Wanted.html", "w", encoding="utf-8") as f:
+    f.write(html_wanted_page)
+
+print("🎉 Les pages index.html et Wanted.html ont été générées sans erreur !")
