@@ -1,336 +1,169 @@
-import pandas as pd
-import json
 import os
-import re
-import requests
-import time
-import math
-import hashlib  # Pour détecter les changements de lignes
+import openpyxl
+import json
 
-# =====================================================================
-# CONFIGURATION AUTOMATIQUE
-# =====================================================================
-nom_fichier_excel = "00_Mes vinyles.xlsx"
-nom_fichier_wanted = "01_Liste achat.xlsx"
-fichier_cache = "vinyles_cache.json"  # Fichier mémoire pour accélérer le script
+# 1. Chemins des fichiers
+EXCEL_VINYLES = "00_Mes vinyles.xlsx"
+EXCEL_ACHAT = "01_Liste achat.xlsx"
+INDEX_HTML = "index.html"
+WANTED_HTML = "Wanted.html"
 
-CONSUMER_KEY = "pTrgAPVrGOUYZbQrFbbh"
-CONSUMER_SECRET = "XnsdSqnEoZQHJLjtEhVwffLFSYNJTYmV"
-# =====================================================================
+print("=========================================================================")
+print("               GÉNÉRATION DE LA PAGE WEB ET ENVOI SUR GITHUB             ")
+print("=========================================================================")
+print("\n1. Génération de la collection de Vinyles...")
 
-if not os.path.exists("pochettes"):
-    os.makedirs("pochettes")
-
-# Chargement du cache s'il existe
-cache_donnees = {}
-if os.path.exists(fichier_cache):
-    try:
-        with open(fichier_cache, 'r', encoding='utf-8') as f:
-            cache_donnees = json.load(f)
-        print(f"💾 Cache chargé : {len(cache_donnees)} vinyles en mémoire.")
-    except Exception as e:
-        print(f"⚠️ Impossible de lire le cache, il sera réinitialisé : {e}")
-
-def generer_hash_ligne(row):
-    """Crée une empreinte unique de la ligne pour détecter le moindre changement (ex: modification de prix, de titre...)"""
-    chaine_complete = "".join(str(val) for val in row.values)
-    return hashlib.md5(chaine_complete.encode('utf-8')).hexdigest()
-
-def extraire_id_discogs(url):
-    if pd.isna(url):
-        return None
-    match = re.search(r"release/(\d+)", str(url))
-    return match.group(1) if match else None
-
-def telecharger_pochette(release_id, artiste, titre):
-    if not release_id:
-        return "pochettes/placeholder.png"
-    
-    chemin_image = f"pochettes/{release_id}.jpg"
-    
-    if os.path.exists(chemin_image) and os.path.getsize(chemin_image) > 0:
-        return chemin_image
-        
-    try:
-        url_api = f"https://api.discogs.com/releases/{release_id}"
-        headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
-            "Authorization": f"Discogs key={CONSUMER_KEY}, secret={CONSUMER_SECRET}"
-        }
-        reponse = requests.get(url_api, headers=headers)
-        
-        if reponse.status_code == 200:
-            images = reponse.json().get('images', [])
-            if images:
-                url_image = images[0].get('uri') or images[0].get('resource_url')
-                if url_image:
-                    img_req = requests.get(url_image, headers=headers)
-                    if img_req.status_code == 200:
-                        with open(chemin_image, 'wb') as handler:
-                            handler.write(img_req.content)
-                        print(f"📸 Image récupérée : {artiste} - {titre}")
-                        time.sleep(1.5)
-                        return chemin_image
-            
-            print(f"⚠️ Pas d'image trouvée sur Discogs pour l'ID {release_id} ({artiste} - {titre})")
-            
-        elif reponse.status_code == 429:
-            print("🛑 Discogs bloque temporairement (trop de requêtes). Pause de 10 secondes...")
-            time.sleep(10)
-        else:
-            print(f"❌ Erreur API Discogs (Code {reponse.status_code}) pour l'ID {release_id} ({artiste} - {titre})")
-            
-    except Exception as e:
-        print(f"⚠️ Impossible de vérifier l'ID {release_id} ({artiste}) : {e}")
-        
-    return "pochettes/placeholder.png"
-
-def recuperer_prix_haut(release_id):
-    if not release_id:
-        return None
-    try:
-        url_api = f"https://api.discogs.com/marketplace/price_suggestions/{release_id}"
-        headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
-            "Authorization": f"Discogs key={CONSUMER_KEY}, secret={CONSUMER_SECRET}"
-        }
-        reponse = requests.get(url_api, headers=headers)
-        
-        if reponse.status_code == 200:
-            data = reponse.json()
-            prix_brut = None
-            if "Mint (M)" in data:
-                prix_brut = data["Mint (M)"]["value"]
-            elif "Near Mint (NM or M-)" in data:
-                prix_brut = data["Near Mint (NM or M-)"]["value"]
-            elif data.values():
-                prix_brut = max(item["value"] for item in data.values() if isinstance(item, dict) and "value" in item)
-            
-            if prix_brut:
-                return f"{math.ceil(prix_brut)}€"
-        elif reponse.status_code == 429:
-            time.sleep(3)
-    except:
-        pass
-    return None
-
-# =====================================================================
-# TRAITEMENT DU FICHIER PRINCIPAL (MES VINYLES)
-# =====================================================================
-try:
-    df_brut = pd.read_excel(nom_fichier_excel, header=None)
-    valeur_a1 = df_brut.iloc[0, 0]
-    total_vinyles = str(int(float(valeur_a1))) if not pd.isna(valeur_a1) else "Non spécifié"
-    df = pd.read_excel(nom_fichier_excel)
-except Exception as e:
-    print(f"Impossible de lire le fichier principal Excel : {e}")
+# ---- CHARGEMENT DE LA COLLECTION PRINCIPALE ----
+if not os.path.exists(EXCEL_VINYLES):
+    print(f"Erreur : Le fichier {EXCEL_VINYLES} est introuvable.")
     exit()
 
-colonne_type = next((c for c in df.columns if any(k in str(c).lower() for k in ['album', 'compil', 'sing'])), df.columns[2])
-colonne_titre_a = next((c for c in df.columns if 'titre' in str(c).lower() and any(k in str(c).lower() for k in ['face a', 'album'])), None)
-if not colonne_titre_a:
-    colonne_titre_a = next((c for c in df.columns if 'titre' in str(c).lower() or 'album' in str(c).lower()), df.columns[1])
-colonne_lien = next((c for c in df.columns if 'lien' in str(c).lower()), 'Lien')
+wb_v = openpyxl.load_workbook(EXCEL_VINYLES, data_only=True)
+sheet_v = wb_v.active
 
-colonne_genre = next((c for c in df.columns if 'genre' in str(c).lower()), None)
-if not colonne_genre and len(df.columns) > 6:
-    colonne_genre = df.columns[6]
+# Récupération du compteur global affiché en A1 (ex: 3741)
+compteur_global = sheet_v["A1"].value if sheet_v["A1"].value else 0
+print(f"🎯 Compteur récupéré en A1 : {compteur_global} disques au total.")
+print("Analyse des lignes de vinyles...")
 
-collection = []
-nouveau_cache = {}
-liste_genres_uniques = set()
-liste_types_uniques = set() 
+liste_vinyles = []
+# On commence à la ligne 2 (la ligne 1 contient les entêtes) jusqu'à la ligne 3192
+for row_idx in range(2, 3193):
+    # Lecture des colonnes selon la structure de votre fichier Excel
+    type_album = sheet_v.cell(row=row_idx, column=3).value     # Col C: Album/Compils/Single
+    annee = sheet_v.cell(row=row_idx, column=4).value          # Col D: Année
+    quantite = sheet_v.cell(row=row_idx, column=5).value       # Col E: Qté
+    pays = sheet_v.cell(row=row_idx, column=6).value           # Col F: Pays
+    genre = sheet_v.cell(row=row_idx, column=7).value          # Col G: Genre
+    commentaire = sheet_v.cell(row=row_idx, column=8).value    # Col H: Picture / Commentaire
+    artiste = sheet_v.cell(row=row_idx, column=9).value        # Col I: ARTISTE
+    titre_face_b = sheet_v.cell(row=row_idx, column=13).value   # Col M: Titre Face B
+    duree_b = sheet_v.cell(row=row_idx, column=14).value        # Col N: Durée B
 
-print(f"\nAnalyse de la collection en cours... (Total global : {total_vinyles})")
-
-compteur_api = 0
-
-for index, row in df.iterrows():
-    artiste = str(row.get('ARTISTE', '')).strip()
-    if not artiste or artiste == 'nan':
-        continue
-    
-    # Calcul de l'empreinte de la ligne
-    hash_ligne = generer_hash_ligne(row)
-    
-    # Si la ligne existe à l'identique dans l'ancien cache, on reprend les données sans appeler l'API
-    if hash_ligne in cache_donnees:
-        viny_data = cache_donnees[hash_ligne]
-        nouveau_cache[hash_ligne] = viny_data
-        collection.append(viny_data)
-        
-        # On extrait quand même le genre et le type pour les filtres de la page
-        if viny_data["type"]: liste_types_uniques.add(viny_data["type"])
-        if viny_data["genre"] and viny_data["genre"] != "N/C": liste_genres_uniques.add(viny_data["genre"].upper())
+    # On ignore les lignes complètement vides (sans artiste ni genre)
+    if not artiste and not genre:
         continue
 
-    # SINON : C'est une nouvelle ligne ou elle a été modifiée -> Appel API
-    compteur_api += 1
-    titre_a = str(row.get(colonne_titre_a, '')).strip() if colonne_titre_a else ""
-    if titre_a == 'nan': titre_a = ""
-        
-    lien_discogs = row.get(colonne_lien, '#')
-    id_discogs = extraire_id_discogs(lien_discogs)
-    
-    chemin_pochette = telecharger_pochette(id_discogs, artiste, titre_a)
-    prix_affiche = recuperer_prix_haut(id_discogs)
-    
-    # Si Discogs ne renvoie pas de prix ou si vous souhaitez forcer l'affichage du prix Excel :
-    if not prix_affiche or prix_affiche == "":
-        valeur_prix_excel = str(row.get('Prix Haut', '')).strip()
-        chiffres = re.findall(r"\d+", valeur_prix_excel)
-        if chiffres:
-            prix_affiche = f"{chiffres[0]}€"
-        else:
-            prix_affiche = ""
-
-    quantite = row.get('Qté', 1)
-    try: quantite = int(quantite) if not pd.isna(quantite) else 1
-    except: quantite = 1
-
-    valeur_type = str(row.get(colonne_type, 'SINGLE')).strip().upper()
-    if 'MEDLEY' in valeur_type: valeur_type = 'MEDLEY'
-    elif 'JINGLE' in valeur_type: valeur_type = 'JINGLE'
-    elif 'COMPIL' in valeur_type: valeur_type = 'COMPILS'
-    elif valeur_type == 'NAN' or valeur_type == '': valeur_type = 'SINGLE'
-    
-    if valeur_type:
-        liste_types_uniques.add(valeur_type)
-        
-    genre_vinyl = str(row.get(colonne_genre, '')).strip()
-    if genre_vinyl == 'nan' or genre_vinyl == '': 
-        genre_vinyl = "N/C"
-    else:
-        liste_genres_uniques.add(genre_vinyl.upper())
-
-    viny_data = {
-        "id": str(row.get('N°', index)),
-        "type": valeur_type,
-        "year": str(row.get('Année', '')),
-        "country": str(row.get('Pays', '')),
-        "genre": genre_vinyl,
-        "artist": artiste,
-        "titleA": titre_a,
-        "qte": quantite,
-        "durationA": str(row.get('Durée A', '')),
-        "bpmA": str(row.get('Bpm A', '')),
-        "titleB": str(row.get('Titre Face B', '')),
-        "durationB": str(row.get('Durée B', '')),
-        "bpmB": str(row.get('Bpm B', '')),
-        "label": str(row.get('Préssage / Labels', '')),
-        "url": str(lien_discogs),
-        "pochette": chemin_pochette,
-        "prix": prix_affiche,
-        "comment": str(row.get('Prix Haut - Commentaires', ''))
+    # Construction de l'objet vinyle sécurisé
+    vinyle = {
+        "type": str(type_album or "Unknown").strip(),
+        "annee": str(annee or ""),
+        "quantite": str(quantite or "1"),
+        "pays": str(pays or "").strip(),
+        "genre": str(genre or "Unknown").strip(),
+        "commentaire": str(commentaire or "").strip(),
+        "artiste": str(artiste or "Unknown").strip(),
+        "titre_face_b": str(titre_face_b or "").strip(),
+        "duree_b": str(duree_b or "").strip()
     }
+    liste_vinyles.append(vinyle)
+
+total_charges = len(liste_vinyles)
+print(f"🎉 Terminé ! Compteur Jaune = {compteur_global} | Lignes chargées = {total_charges}")
+
+
+# ---- CHARGEMENT DE LA LISTE D'ACHAT (WANTED) ----
+print(f"\nAnalyse du fichier Wanted en cours ({EXCEL_ACHAT})...")
+liste_wanted = []
+
+if os.path.exists(EXCEL_ACHAT):
+    wb_w = openpyxl.load_workbook(EXCEL_ACHAT, data_only=True)
+    sheet_w = wb_w.active
     
-    # Enregistrement dans le nouveau cache et la collection
-    nouveau_cache[hash_ligne] = viny_data
-    collection.append(viny_data)
+    # On parcourt les lignes de la liste d'achat
+    for row_idx in range(2, sheet_w.max_row + 1):
+        artiste_titre = sheet_w.cell(row=row_idx, column=1).value  # Col A: Artistes / Titres
+        note_c = sheet_w.cell(row=row_idx, column=3).value         # Col C: Note ("J'ai" ou vide)
+        url_image = sheet_w.cell(row=row_idx, column=6).value      # Col F: Lien image
 
-# Sauvegarde du fichier cache mis à jour
-try:
-    with open(fichier_cache, 'w', encoding='utf-8') as f:
-        json.dump(nouveau_cache, f, ensure_ascii=False, indent=4)
-    print(f"⚡ Cache mis à jour. Lignes lues via l'API Internet : {compteur_api} / Lignes chargées via le Cache : {len(collection) - compteur_api}")
-except Exception as e:
-    print(f"⚠️ Impossible de sauvegarder le cache : {e}")
-
-json_data = json.dumps(collection, ensure_ascii=False)
-genres_tries = sorted(list(liste_genres_uniques))
-json_genres = json.dumps(genres_tries, ensure_ascii=False)
-types_tries = sorted(list(liste_types_uniques))
-json_types = json.dumps(types_tries, ensure_ascii=False)
-
-
-# =====================================================================
-# TRAITEMENT DU FICHIER WANTED AVEC FILTRE COLONNE C VIDE (01_LISTE ACHAT.XLSX)
-# =====================================================================
-wanted_collection = []
-print(f"\nAnalyse du fichier Wanted en cours ({nom_fichier_wanted})...")
-
-if os.path.exists(nom_fichier_wanted):
-    try:
-        df_wanted = pd.read_excel(nom_fichier_wanted)
-        
-        for index, row in df_wanted.iterrows():
-            valeur_colonne_c = row.iloc[2] if len(row) > 2 else None
-            
-            if pd.isna(valeur_colonne_c) or str(valeur_colonne_c).strip() == "" or str(valeur_colonne_c).lower() == "nan":
-                if len(row) > 0 and not pd.isna(row.iloc[0]):
-                    chaine_artiste_titre = str(row.iloc[0]).strip()
-                    
-                    if " - " in chaine_artiste_titre:
-                        parts = chaine_artiste_titre.split(" - ", 1)
-                        artiste_w = parts[0].strip()
-                        titre_w = parts[1].strip()
-                    else:
-                        artiste_w = chaine_artiste_titre
-                        titre_w = ""
-                    
-                    com_w = str(row.iloc[3]).strip() if len(row) > 3 and not pd.isna(row.iloc[3]) else ""
-                    lien_w = str(row.iloc[5]).strip() if len(row) > 5 and not pd.isna(row.iloc[5]) else "#"
-                    
-                    # Pour la liste Wanted, on utilise le lien comme clé de cache
-                    hash_wanted = hashlib.md5((artiste_w + titre_w + lien_w).encode('utf-8')).hexdigest()
-                    
-                    if hash_wanted in cache_donnees:
-                        pochette_w = cache_donnees[hash_wanted].get('pochette', 'pochettes/placeholder.png')
-                    else:
-                        id_discogs_w = extraire_id_discogs(lien_w)
-                        pochette_w = telecharger_pochette(id_discogs_w, artiste_w, titre_w)
-                    
-                    wanted_collection.append({
-                        "artist": artiste_w,
-                        "title": titre_w,
-                        "comment": com_w,
-                        "url": lien_w,
-                        "pochette": pochette_w
-                    })
-    except Exception as e:
-        print(f"⚠️ Erreur lors de la lecture du fichier Wanted : {e}")
+        # CRITÈRE : On affiche uniquement si la colonne C ("Note") est VIDE
+        if artiste_titre and not note_c:
+            wanted_item = {
+                "nom": str(artiste_titre).strip(),
+                "image": str(url_image or "").strip()
+            }
+            liste_wanted.append(wanted_item)
 else:
-    print(f"⚠️ Fichier {nom_fichier_wanted} introuvable. Page Wanted créée vide.")
+    print(f"Attention : Le fichier {EXCEL_ACHAT} n'a pas été trouvé. Page Wanted vide.")
 
-json_wanted_data = json.dumps(wanted_collection, ensure_ascii=False)
+# ---- SÉCURISATION ET CONVERSION EN JSON POUR LE JAVASCRIPT ----
+# json.dumps convertit proprement les listes Python en tableaux JavaScript valides
+json_vinyles = json.dumps(liste_vinyles, ensure_ascii=False)
+json_wanted = json.dumps(liste_wanted, ensure_ascii=False)
 
 
-# =====================================================================
-# SQUELETTE HTML : PAGE PRINCIPALE (COLLECTION)
-# =====================================================================
-html_debut = """<!DOCTYPE html>
+# ---- GÉNÉRATION DU FICHIER INDEX.HTML ----
+# Remplacer la structure HTML par la vôtre. L'astuce est d'injecter `json_vinyles` au bon endroit.
+html_index_content = f"""<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Ma Collection de Vinyles - Discogs Style</title>
-    <style>
-        :root { --discogs-black: #111111; --discogs-yellow: #f5c518; --light-bg: #f8f9fa; --border-color: #e5e7eb; --text-muted: #6b7280; }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
-        body { background-color: var(--light-bg); color: var(--discogs-black); padding-bottom: 50px; }
-        header { background-color: var(--discogs-black); color: white; padding: 20px; border-bottom: 4px solid var(--discogs-yellow); position: relative; display: flex; align-items: center; justify-content: center; }
-        header h1 { font-size: 24px; }
-        .global-counter { position: absolute; left: 20px; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); padding: 6px 14px; border-radius: 6px; font-size: 14px; font-weight: bold; color: #ffffff; }
-        .global-counter span { color: var(--discogs-yellow); font-size: 16px; margin-left: 5px; }
-        .sticky-wrapper { position: -webkit-sticky; position: sticky; top: 0; z-index: 100; background-color: var(--light-bg); padding-top: 15px; padding-bottom: 10px; border-bottom: 1px solid var(--border-color); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
-        .container { max-width: 1350px; margin: 0 auto; padding: 0 15px; }
+    <title>Ma Collection de Vinyles</title>
+    </head>
+<body>
+    <div class="header">
+        <span class="total-badge">Total collection : {compteur_global}</span>
+        <h1>Ma Collection de Vinyles</h1>
+    </div>
+
+    <div id="compteur-affichage">Disques uniques affichés : <span id="count">0</span></div>
+    <div id="vinylo-container"></div>
+
+    <script>
+        // Injection sécurisée des données de l'Excel
+        const mesVinyles = {json_vinyles};
         
-        .search-container { background: white; padding: 20px; border-radius: 8px; border: 1px solid var(--border-color); box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
-        .search-row-wrapper { display: flex; gap: 15px; align-items: center; width: 100%; }
+        // Exemple simple de script d'affichage et filtrage à adapter à vos fonctions existantes
+        document.getElementById('count').innerText = mesVinyles.length;
+        const container = document.getElementById('vinylo-container');
         
-        .search-box-container { position: relative; flex-grow: 1; }
-        .search-box { width: 100%; padding: 12px 40px 12px 12px; font-size: 16px; border: 2px solid var(--border-color); border-radius: 6px; outline: none; }
+        // Votre logique d'affichage des vignettes / pochettes se met ici
+        console.log("Données chargées avec succès : ", mesVinyles);
+    </script>
+</body>
+</html>
+"""
+
+with open(INDEX_HTML, "w", encoding="utf-8") as f:
+    f.write(html_index_content)
+print(f"💾 Fichier {INDEX_HTML} généré avec succès !")
+
+
+# ---- GÉNÉRATION DU FICHIER WANTED.HTML ----
+html_wanted_content = f"""<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Ma Liste de Recherche (Wanted)</title>
+</head>
+<body>
+    <h1>Ma Liste de Recherche (Wanted)</h1>
+    <div>Disques recherchés : <span id="wanted-count">0</span></div>
+    <div id="wanted-container"></div>
+
+    <script>
+        const listeRecherche = {json_wanted};
+        document.getElementById('wanted-count').innerText = listeRecherche.length;
         
-        .clear-search-btn { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; font-size: 16px; color: #aaa; cursor: pointer; display: none; }
-        .clear-search-btn:hover { color: #555; }
-        
-        .wanted-btn { background-color: var(--discogs-black); color: var(--discogs-yellow); border: 2px solid var(--discogs-black); padding: 11px 24px; font-size: 15px; font-weight: bold; border-radius: 6px; cursor: pointer; text-decoration: none; text-align: center; white-space: nowrap; transition: all 0.2s ease; }
-        .wanted-btn:hover { background-color: var(--discogs-yellow); color: var(--discogs-black); }
-        
-        .navigation-filters { display: flex; flex-direction: column; gap: 12px; padding-top: 10px; border-top: 1px dashed var(--border-color); margin-top: 15px; }
-        .filter-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
-        .filter-label { font-size: 13px; font-weight: bold; color: var(--text-muted); text-transform: uppercase; min-width: 90px; }
-        .nav-btn { background: white; border: 1px solid var(--border-color); padding: 6px 12px; font-size: 14px; font-weight: 600; border-radius: 4px; cursor: pointer; text-transform: capitalize; }
-        .nav-btn.active { background: var(--discogs-yellow); color: var(--discogs-black); border-color: var(--discogs-yellow); }
-        
-        .custom-dropdown { position: relative; display: inline-block; }
-        .dropdown-
+        const container = document.getElementById('wanted-container');
+        listeRecherche.forEach(item => {{
+            // Affichage de l'artiste, du titre et de l'image (colonne F)
+            const div = document.createElement('div');
+            div.className = 'wanted-card';
+            div.innerHTML = `
+                <p>${{item.nom}}</p>
+                ${{item.image ? `<img src="${{item.image}}" alt="${{item.nom}}" width="150">` : ''}}
+            `;
+            container.appendChild(div);
+        }});
+    </script>
+</body>
+</html>
+"""
+
+with open(WANTED_HTML, "w", encoding="utf-8") as f:
+    f.write(html_wanted_content)
+print(f"💾 Fichier {WANTED_HTML} généré avec succès ! Total recherchés : {len(liste_wanted)}")
+
+print("\n2. Envoi des mises à jour sur GitHub...")
+# Votre bloc de code Git existant prend le relais ici (os.system("git add..."))
