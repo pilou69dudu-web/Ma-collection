@@ -156,7 +156,6 @@ for index, row in df.iterrows():
     # Si la ligne existe à l'identique dans l'ancien cache, on reprend les données sans appeler l'API
     if hash_ligne in cache_donnees:
         viny_data = cache_donnees[hash_ligne]
-        viny_data["isNew"] = False  # Chargé depuis le cache, ce n'est pas un nouveau disque ajouté aujourd'hui
         nouveau_cache[hash_ligne] = viny_data
         collection.append(viny_data)
         
@@ -222,8 +221,7 @@ for index, row in df.iterrows():
         "url": str(lien_discogs),
         "pochette": chemin_pochette,
         "prix": prix_affiche,
-        "comment": str(row.get('Prix Haut - Commentaires', '')),
-        "isNew": True  # Ligne absente du cache -> C'est un nouvel ajout de la session !
+        "comment": str(row.get('Prix Haut - Commentaires', ''))
     }
     
     # Enregistrement dans le nouveau cache et la collection
@@ -349,35 +347,6 @@ html_debut = """<!DOCTYPE html>
         
         .badge-qte { position: absolute; top: 8px; left: 8px; background: linear-gradient(135deg, #ffe600, #ffb300); color: #111111; font-size: 13px; font-weight: 800; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid #ffffff; box-shadow: 0 4px 8px rgba(0,0,0,0.3); z-index: 10; }
         .badge-prix { position: absolute; top: 8px; right: 8px; background: #e11d48; color: #ffffff; font-size: 11px; font-weight: 800; padding: 4px 8px; border-radius: 12px; border: 2px solid #ffffff; box-shadow: 0 4px 8px rgba(0,0,0,0.3); z-index: 10; }
-        
-        /* === STYLE DU BADGE EN FORME DE VINYLE "NEW" === */
-        .badge-new { 
-            position: absolute; 
-            bottom: 8px; 
-            right: 8px; 
-            background: #111111; 
-            color: #f5c518; 
-            font-size: 9px; 
-            font-weight: 900; 
-            width: 32px; 
-            height: 32px; 
-            border-radius: 50%; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            border: 2px dashed #f5c518; 
-            box-shadow: 0 4px 8px rgba(0,0,0,0.4); 
-            z-index: 10; 
-            letter-spacing: 0.5px;
-        }
-        .badge-new::after {
-            content: "";
-            position: absolute;
-            width: 4px;
-            height: 4px;
-            background: #f5c518;
-            border-radius: 50%;
-        }
 
         .cover-wrapper { aspect-ratio: 1; background: #222; display: flex; align-items: center; justify-content: center; position: relative; border-bottom: 1px solid var(--border-color); overflow: hidden; }
         .cover-image { width: 100%; height: 100%; object-fit: cover; }
@@ -515,14 +484,11 @@ html_fin = """
                 const badgeQte = item.qte > 1 ? '<div class="badge-qte">' + item.qte + '</div>' : '';
                 const badgePrix = (item.prix && item.prix !== "") ? '<div class="badge-prix">' + item.prix + '</div>' : '';
                 
-                // AJOUT CONDITIONNEL DE LA BULLE NEW
-                const badgeNew = item.isNew ? '<div class="badge-new">NEW</div>' : '';
-                
                 const imgTag = (item.pochette && item.pochette !== "pochettes/placeholder.png")
                     ? '<img class="cover-image" src="' + item.pochette + '" alt="Pochette">'
                     : '<div class="cover-placeholder">💿 Image indisponible</div>';
                 
-                return '<div class="vinyl-card">' + badgeQte + badgePrix + badgeNew +
+                return '<div class="vinyl-card">' + badgeQte + badgePrix +
                         '<div class="cover-wrapper">' + imgTag + '</div>' +
                         '<div class="vinyl-details">' +
                             '<div>' +
@@ -609,9 +575,12 @@ html_fin = """
                     dropdownLabel.textContent = selectedGenre;
                     dropdownBtn.classList.add('active');
                 }
+                
                 dropdownContent.classList.remove('show');
+                searchInside.value = "";
+                populateGenreOptions();
                 renderGrid();
-            } else {
+            } else if (!e.target.closest('.custom-dropdown')) {
                 dropdownContent.classList.remove('show');
             }
         });
@@ -626,13 +595,108 @@ html_fin = """
             }
         });
 
-        // Lancement initial de la grille
         renderGrid();
     </script>
 </body>
 </html>
 """
 
-# Note : Pour que le script s'exécute jusqu'au bout sans erreur, assurez-vous 
-# que la suite de votre code génère bien le fichier final en assemblant html_debut, 
-# les variables JSON et html_fin comme vous le faisiez initialement.
+# =====================================================================
+# ÉCRITURE PHYSIQUE DU FICHIER INDEX.HTML
+# =====================================================================
+print("\n📝 Fabrication du fichier de la collection (index.html)...")
+with open("index.html", "w", encoding="utf-8") as file_html:
+    file_html.write(html_debut)
+    file_html.write(f"\nconst totalCollectionStr = '{total_vinyles}';")
+    file_html.write(f"\nconst typesAuto = {json_types};")
+    file_html.write(f"\nconst genresAuto = {json_genres};")
+    file_html.write(f"\nconst vinylData = {json_data};")
+    file_html.write(html_fin)
+print("✨ Fichier index.html créé avec succès !")
+
+
+# =====================================================================
+# SQUELETTE HTML ENTIER ET ÉCRITURE DE LA PAGE WANTED (WANTED.HTML)
+# =====================================================================
+print("\n📝 Fabrication du fichier de recherche (Wanted.html)...")
+html_wanted_complet = f"""<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Ma Liste de Recherche (Wanted) - Discogs Style</title>
+    <style>
+        :root {{ --discogs-black: #111111; --discogs-yellow: #f5c518; --light-bg: #f8f9fa; --border-color: #e5e7eb; }}
+        * {{ box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }}
+        body {{ background-color: var(--light-bg); color: var(--discogs-black); padding-bottom: 50px; }}
+        header {{ background-color: var(--discogs-black); color: white; padding: 20px; border-bottom: 4px solid var(--discogs-yellow); display: flex; align-items: center; justify-content: space-between; }}
+        header h1 {{ font-size: 22px; }}
+        .back-btn {{ background-color: white; color: var(--discogs-black); border: 2px solid white; padding: 8px 16px; font-size: 14px; font-weight: bold; border-radius: 6px; cursor: pointer; text-decoration: none; }}
+        .back-btn:hover {{ background-color: var(--discogs-yellow); border-color: var(--discogs-yellow); }}
+        .container {{ max-width: 1350px; margin: 20px auto; padding: 0 15px; }}
+        .wanted-grid {{ display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }}
+        .wanted-card {{ background: white; border: 1px solid var(--border-color); border-radius: 6px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 3px 5px rgba(0,0,0,0.02); }}
+        .cover-wrapper {{ aspect-ratio: 1; background: #222; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid var(--border-color); overflow: hidden; }}
+        .cover-image {{ width: 100%; height: 100%; object-fit: cover; }}
+        .cover-placeholder {{ color: #777; font-size: 12px; font-weight: bold; padding: 10px; text-align: center; }}
+        .wanted-details {{ padding: 12px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }}
+        .wanted-artist {{ font-size: 14px; font-weight: 700; text-transform: uppercase; margin-bottom: 4px; }}
+        .wanted-title {{ font-size: 13px; color: #333; font-style: italic; margin-bottom: 8px; }}
+        .wanted-comment {{ font-size: 11px; color: #e11d48; font-weight: 600; background: #fff1f2; padding: 4px 8px; border-radius: 4px; margin-bottom: 10px; }}
+        .discogs-link {{ display: block; text-align: center; background-color: var(--discogs-black); color: white; text-decoration: none; padding: 8px; font-size: 11px; font-weight: 600; border-radius: 4px; }}
+        .discogs-link:hover {{ background-color: var(--discogs-yellow); color: var(--discogs-black); }}
+    </style>
+</head>
+<body>
+    <header>
+        <h1>📋 Ma Liste de Recherche (Wanted)</h1>
+        <a href="index.html" class="back-btn">📁 Voir la Collection</a>
+    </header>
+    <div class="container">
+        <div style="margin-bottom:15px; font-size:14px; color:#6b7280;">Nombre d'albums recherchés : <span id="wantedCount">0</span></div>
+        <div class="wanted-grid" id="wantedGrid"></div>
+    </div>
+
+    <script>
+        const wantedData = {json_wanted_data};
+        document.getElementById('wantedCount').textContent = wantedData.length;
+
+        document.getElementById('wantedGrid').innerHTML = wantedData.map(item => {{
+            const imgTag = (item.pochette && item.pochette !== "pochettes/placeholder.png")
+                ? '<img class="cover-image" src="' + item.pochette + '" alt="Pochette">'
+                : '<div class="cover-placeholder">💿 Image indisponible</div>';
+
+            const commentTag = item.comment ? '<div class="wanted-comment">' + item.comment + '</div>' : '';
+
+            return '<div class="wanted-card">' +
+                    '<div class="cover-wrapper">' + imgTag + '</div>' +
+                    '<div class="wanted-details">' +
+                        '<div>' +
+                            '<div class="wanted-artist">' + item.artist + '</div>' +
+                            '<div class="wanted-title">' + (item.title || 'Album / Titre Inconnu') + '</div>' +
+                            commentTag +
+                        '</div>' +
+                        '<a href="' + item.url + '" target="_blank" class="discogs-link">Rechercher sur Discogs</a>' +
+                    '</div>' +
+                '</div>';
+        }}).join('');
+    </script>
+</body>
+</html>
+"""
+
+with open("Wanted.html", "w", encoding="utf-8") as file_wanted:
+    file_wanted.write(html_wanted_complet)
+print("✨ Fichier Wanted.html créé avec succès !")
+
+
+# =====================================================================
+# TRANSFERT AUTOMATIQUE VERS GITHUB
+# =====================================================================
+print("\n🚀 Transfert automatique vers GitHub en cours...")
+try:
+    os.system("git add index.html Wanted.html vinyles_cache.json pochettes/*")
+    os.system('git commit -m "Mise a jour automatique de la collection et de la liste Wanted via generateur.py"')
+    os.system("git push origin main")
+    print("\n🟢 [SUCCÈS] Tout a été traité et synchronisé sur votre GitHub ! Vous pouvez rafraîchir votre site.")
+except Exception as github_err:
+    print(f"⚠️ Échec de la synchronisation automatique Git : {github_err}")
