@@ -321,7 +321,7 @@ html_debut = """<!DOCTYPE html>
         .search-box { width: 100%; padding: 12px 40px 12px 12px; font-size: 16px; border: 2px solid var(--border-color); border-radius: 6px; outline: none; }
         
         .clear-search-btn { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; font-size: 16px; color: #aaa; cursor: pointer; display: none; }
-        .clear-search-btn:hover {{ color: #555; }}
+        .clear-search-btn:hover { color: #555; }
         
         .wanted-btn { background-color: var(--discogs-black); color: var(--discogs-yellow); border: 2px solid var(--discogs-black); padding: 11px 24px; font-size: 15px; font-weight: bold; border-radius: 6px; cursor: pointer; text-decoration: none; text-align: center; white-space: nowrap; transition: all 0.2s ease; }
         .wanted-btn:hover { background-color: var(--discogs-yellow); color: var(--discogs-black); }
@@ -417,6 +417,190 @@ html_debut = """<!DOCTYPE html>
     <script>
 """
 
+# VARIABLE CORRIGÉE REPLACÉE ICI (Le morceau manquant que Python ne trouvait pas)
+html_fin = """
+        let currentType = "ALL";
+        let currentGenre = "ALL";
+        let currentAlpha = "ALL";
+        let currentSearch = "";
+        let insideGenreSearch = "";
+
+        document.getElementById('totalCounter').textContent = totalCollectionStr;
+
+        const typeButtonsContainer = document.getElementById('typeButtonsContainer');
+        typesAuto.forEach(t => {
+            const btn = document.createElement('button');
+            btn.className = 'nav-btn type-filter';
+            btn.dataset.type = t;
+            btn.textContent = t.toLowerCase();
+            typeButtonsContainer.appendChild(btn);
+        });
+
+        const alphabetContainer = document.getElementById('alphabetContainer');
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZ#".split("").forEach(lettre => {
+            const btn = document.createElement('button');
+            btn.className = 'nav-btn alpha-filter';
+            btn.dataset.alpha = lettre;
+            btn.textContent = lettre;
+            alphabetContainer.appendChild(btn);
+        });
+
+        function buildGenreMenu() {
+            const container = document.getElementById('optionsContainer');
+            container.innerHTML = "";
+            genresAuto.forEach(g => {
+                if (insideGenreSearch && !g.toLowerCase().includes(insideGenreSearch)) return;
+                const div = document.createElement('div');
+                div.className = `genre-option ${currentGenre === g ? 'active' : ''}`;
+                div.dataset.genre = g;
+                div.textContent = g.toLowerCase();
+                container.appendChild(div);
+            });
+        }
+
+        function renderGrid() {
+            let filtered = vinylData.filter(item => {
+                const matchesType = (currentType === "ALL" || item.type === currentType);
+                const matchesGenre = (currentGenre === "ALL" || (item.genre && item.genre.toUpperCase() === currentGenre));
+                
+                let matchesAlpha = true;
+                if (currentAlpha !== "ALL") {
+                    const firstChar = item.artist ? item.artist.trim().charAt(0).toUpperCase() : "";
+                    if (currentAlpha === "#") {
+                        matchesAlpha = !/[A-Z]/.test(firstChar);
+                    } else {
+                        matchesAlpha = (firstChar === currentAlpha);
+                    }
+                }
+
+                const matchesSearch = !currentSearch || 
+                    (item.artist && item.artist.toLowerCase().includes(currentSearch)) ||
+                    (item.titleA && item.titleA.toLowerCase().includes(currentSearch)) ||
+                    (item.titleB && item.titleB.toLowerCase().includes(currentSearch)) ||
+                    (item.country && item.country.toLowerCase().includes(currentSearch)) ||
+                    (item.label && item.label.toLowerCase().includes(currentSearch)) ||
+                    (item.year && item.year.toString().includes(currentSearch));
+
+                return matchesType && matchesGenre && matchesAlpha && matchesSearch;
+            });
+
+            document.getElementById('recordCount').textContent = filtered.length;
+            
+            const grid = document.getElementById('vinylGrid');
+            grid.innerHTML = filtered.map(item => {
+                const badgePrix = item.prix ? `<div class="badge-prix">${item.prix}</div>` : '';
+                const badgeQte = item.qte > 1 ? `<div class="badge-qte">${item.qte}</div>` : '';
+                
+                const imgTag = (item.pochette && item.pochette !== "pochettes/placeholder.png")
+                    ? `<img class="cover-image" src="${item.pochette}" alt="Pochette" loading="lazy">`
+                    : `<div class="cover-placeholder">💿 ${item.genre || 'VINYL'}</div>`;
+
+                const linkTag = (item.url && item.url !== '#')
+                    ? `<a href="${item.url}" target="_blank" class="discogs-link">VOIR SUR DISCOGS</a>`
+                    : '';
+
+                return `
+                    <div class="vinyl-card">
+                        ${badgeQte}
+                        ${badgePrix}
+                        <div class="cover-wrapper">${imgTag}</div>
+                        <div class="vinyl-details">
+                            <div>
+                                <div class="tag-type">${item.type || 'SINGLE'}</div>
+                                <div class="vinyl-artist">${item.artist || 'ARTISTE INCONNU'}</div>
+                                <div class="meta-info">${item.year ? item.year : ''}${item.country ? ' • ' + item.country : ''}</div>
+                                <div class="meta-info" style="font-style:italic; color:#4b5563;">${item.label || ''}</div>
+                                
+                                <div class="tracks-block">
+                                    <div class="track-a"><strong>A:</strong> ${item.titleA || 'N/C'} ${item.durationA ? '['+item.durationA+']' : ''}</div>
+                                    ${item.titleB ? `<div class="track-b"><strong>B:</strong> ${item.titleB} ${item.durationB ? '['+item.durationB+']' : ''}</div>` : ''}
+                                </div>
+                            </div>
+                            ${linkTag}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // --- EVENEMENTS FILTRES ET RECHERCHE ---
+        document.getElementById('searchBox').addEventListener('input', (e) => {
+            currentSearch = e.target.value.toLowerCase().strip();
+            document.getElementById('clearSearch').style.display = currentSearch ? 'block' : 'none';
+            renderGrid();
+        });
+
+        document.getElementById('clearSearch').addEventListener('click', () => {
+            const sb = document.getElementById('searchBox');
+            sb.value = "";
+            currentSearch = "";
+            document.getElementById('clearSearch').style.display = 'none';
+            sb.focus();
+            renderGrid();
+        });
+
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('type-filter')) {
+                document.querySelectorAll('.type-filter').forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+                currentType = e.target.dataset.type;
+                renderGrid();
+            }
+            if (e.target.classList.contains('alpha-filter')) {
+                document.querySelectorAll('.alpha-filter').forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+                currentAlpha = e.target.dataset.alpha;
+                renderGrid();
+            }
+            if (e.target.classList.contains('genre-option')) {
+                currentGenre = e.target.dataset.genre;
+                document.getElementById('dropdownLabel').textContent = currentGenre === "ALL" ? "Tous les genres" : currentGenre.toLowerCase();
+                document.getElementById('dropdownBtn').classList.toggle('active', currentGenre !== "ALL");
+                document.getElementById('dropdownContent').classList.remove('show');
+                renderGrid();
+            }
+        });
+
+        const dropBtn = document.getElementById('dropdownBtn');
+        const dropContent = document.getElementById('dropdownContent');
+        dropBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            dropContent.classList.toggle('show');
+            if (dropContent.classList.contains('show')) {
+                document.getElementById('genreSearchInside').focus();
+            }
+        });
+
+        document.getElementById('genreSearchInside').addEventListener('input', (e) => {
+            insideGenreSearch = e.target.value.toLowerCase();
+            buildGenreMenu();
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!dropContent.contains(e.target) && e.target !== dropBtn) {
+                dropContent.remove('show');
+            }
+        });
+
+        const scrollTopBtn = document.getElementById('scrollTopBtn');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 400) {
+                scrollTopBtn.classList.add('visible');
+            } else {
+                scrollTopBtn.classList.remove('visible');
+            }
+        });
+        scrollTopBtn.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        buildGenreMenu();
+        renderGrid();
+    </script>
+</body>
+</html>
+"""
+
 # Écriture du fichier principal (index.html)
 try:
     with open("index.html", "w", encoding="utf-8") as f:
@@ -457,7 +641,7 @@ html_wanted_complet = """<!DOCTYPE html>
         .search-box { width: 100%; padding: 12px 40px 12px 12px; font-size: 16px; border: 2px solid var(--border-color); border-radius: 6px; outline: none; }
         
         .clear-search-btn { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; font-size: 16px; color: #aaa; cursor: pointer; display: none; }
-        .clear-search-btn:hover {{ color: #555; }}
+        .clear-search-btn:hover { color: #555; }
         
         .collection-btn { background-color: #ffffff; color: var(--discogs-black); border: 2px solid var(--discogs-black); padding: 11px 24px; font-size: 15px; font-weight: bold; border-radius: 6px; cursor: pointer; text-decoration: none; text-align: center; white-space: nowrap; transition: all 0.2s ease; }
         .collection-btn:hover { background-color: var(--discogs-black); color: #ffffff; }
@@ -520,7 +704,7 @@ html_wanted_complet = """<!DOCTYPE html>
             
             document.getElementById('recordCount').textContent = filtered.length;
             document.getElementById('vinylGrid').innerHTML = filtered.map(item => {
-                const imgTag = (item.pochette && item.pochette !== "pocheettes/placeholder.png")
+                const imgTag = (item.pochette && item.pochette !== "pochettes/placeholder.png")
                     ? '<img class="cover-image" src="' + item.pochette + '" alt="Pochette">'
                     : '<div class="cover-placeholder">💿 Image indisponible</div>';
                     
@@ -528,51 +712,53 @@ html_wanted_complet = """<!DOCTYPE html>
                         '<div class="cover-wrapper">' + imgTag + '</div>' +
                         '<div class="vinyl-details">' +
                             '<div>' +
-                                '<div class="vinyl-artist">' + (item.artist || '') + '</div>' +
+                                '<div class="vinyl-artist">' + (item.artist || 'ARTISTE INCONNU') + '</div>' +
                                 '<div class="vinyl-title">' + (item.title || '') + '</div>' +
-                                '<div class="meta-info">' +
-                                    '<strong>Commentaires :</strong> ' + (item.comment || 'Aucun') +
-                                '</div>' +
+                                (item.comment ? '<div class="meta-info">💬 ' + item.comment + '</div>' : '') +
                             '</div>' +
-                            '<a href="' + (item.url || '#') + '" target="_blank" class="discogs-link">Voir sur Discogs</a>' +
+                            (item.url && item.url !== "#" ? '<a href="' + item.url + '" target="_blank" class="discogs-link">VOIR SUR DISCOGS</a>' : '') +
                         '</div>' +
-                    '</div>';
+                       '</div>';
             }).join('');
         }
-        
-        renderGrid();
-        
-        const scrollTopBtn = document.getElementById('scrollTopBtn');
-        window.addEventListener('scroll', () => { if (window.scrollY > 300) scrollTopBtn.classList.add('visible'); else scrollTopBtn.classList.remove('visible'); });
-        scrollTopBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
-        
-        const searchBox = document.getElementById('searchBox');
-        const clearSearch = document.getElementById('clearSearch');
-        
-        searchBox.addEventListener('input', e => { 
-            currentSearch = e.target.value.toLowerCase(); 
-            if(currentSearch.length > 0) clearSearch.style.display = "block";
-            else clearSearch.style.display = "none";
-            renderGrid(); 
-        });
-        
-        clearSearch.addEventListener('click', () => {
-            searchBox.value = "";
-            currentSearch = "";
-            clearSearch.style.display = "none";
-            searchBox.focus();
+
+        document.getElementById('searchBox').addEventListener('input', (e) => {
+            currentSearch = e.target.value.toLowerCase().trim();
+            document.getElementById('clearSearch').style.display = currentSearch ? 'block' : 'none';
             renderGrid();
         });
+
+        document.getElementById('clearSearch').addEventListener('click', () => {
+            const sb = document.getElementById('searchBox');
+            sb.value = "";
+            currentSearch = "";
+            document.getElementById('clearSearch').style.display = 'none';
+            sb.focus();
+            renderGrid();
+        });
+
+        const scrollTopBtn = document.getElementById('scrollTopBtn');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 400) {
+                scrollTopBtn.classList.add('visible');
+            } else {
+                scrollTopBtn.classList.remove('visible');
+            }
+        });
+        scrollTopBtn.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        renderGrid();
     </script>
 </body>
 </html>
 """
 
-# Injection des données réelles et écriture de la page Wanted.html
+# Écriture du fichier Wanted secondaire (Wanted.html)
 try:
-    html_wanted_final = html_wanted_complet.replace("__WANTED_DATA_PLACEHOLDER__", json_wanted_data)
     with open("Wanted.html", "w", encoding="utf-8") as f:
-        f.write(html_wanted_final)
-    print("📋 Fichier 'Wanted.html' créé avec succès.")
+        f.write(html_wanted_complet.replace("__WANTED_DATA_PLACEHOLDER__", json_wanted_data))
+    print(f"📋 Fichier 'Wanted.html' créé avec succès (Contient {len(wanted_collection)} lignes valides).")
 except Exception as e:
     print(f"❌ Erreur lors de la création de Wanted.html : {e}")

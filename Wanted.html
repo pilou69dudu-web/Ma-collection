@@ -21,7 +21,7 @@
         .search-box { width: 100%; padding: 12px 40px 12px 12px; font-size: 16px; border: 2px solid var(--border-color); border-radius: 6px; outline: none; }
         
         .clear-search-btn { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; font-size: 16px; color: #aaa; cursor: pointer; display: none; }
-        .clear-search-btn:hover {{ color: #555; }}
+        .clear-search-btn:hover { color: #555; }
         
         .collection-btn { background-color: #ffffff; color: var(--discogs-black); border: 2px solid var(--discogs-black); padding: 11px 24px; font-size: 15px; font-weight: bold; border-radius: 6px; cursor: pointer; text-decoration: none; text-align: center; white-space: nowrap; transition: all 0.2s ease; }
         .collection-btn:hover { background-color: var(--discogs-black); color: #ffffff; }
@@ -84,7 +84,7 @@
             
             document.getElementById('recordCount').textContent = filtered.length;
             document.getElementById('vinylGrid').innerHTML = filtered.map(item => {
-                const imgTag = (item.pochette && item.pochette !== "pocheettes/placeholder.png")
+                const imgTag = (item.pochette && item.pochette !== "pochettes/placeholder.png")
                     ? '<img class="cover-image" src="' + item.pochette + '" alt="Pochette">'
                     : '<div class="cover-placeholder">💿 Image indisponible</div>';
                     
@@ -92,41 +92,44 @@
                         '<div class="cover-wrapper">' + imgTag + '</div>' +
                         '<div class="vinyl-details">' +
                             '<div>' +
-                                '<div class="vinyl-artist">' + (item.artist || '') + '</div>' +
+                                '<div class="vinyl-artist">' + (item.artist || 'ARTISTE INCONNU') + '</div>' +
                                 '<div class="vinyl-title">' + (item.title || '') + '</div>' +
-                                '<div class="meta-info">' +
-                                    '<strong>Commentaires :</strong> ' + (item.comment || 'Aucun') +
-                                '</div>' +
+                                (item.comment ? '<div class="meta-info">💬 ' + item.comment + '</div>' : '') +
                             '</div>' +
-                            '<a href="' + (item.url || '#') + '" target="_blank" class="discogs-link">Voir sur Discogs</a>' +
+                            (item.url && item.url !== "#" ? '<a href="' + item.url + '" target="_blank" class="discogs-link">VOIR SUR DISCOGS</a>' : '') +
                         '</div>' +
-                    '</div>';
+                       '</div>';
             }).join('');
         }
-        
-        renderGrid();
-        
-        const scrollTopBtn = document.getElementById('scrollTopBtn');
-        window.addEventListener('scroll', () => { if (window.scrollY > 300) scrollTopBtn.classList.add('visible'); else scrollTopBtn.classList.remove('visible'); });
-        scrollTopBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
-        
-        const searchBox = document.getElementById('searchBox');
-        const clearSearch = document.getElementById('clearSearch');
-        
-        searchBox.addEventListener('input', e => { 
-            currentSearch = e.target.value.toLowerCase(); 
-            if(currentSearch.length > 0) clearSearch.style.display = "block";
-            else clearSearch.style.display = "none";
-            renderGrid(); 
-        });
-        
-        clearSearch.addEventListener('click', () => {
-            searchBox.value = "";
-            currentSearch = "";
-            clearSearch.style.display = "none";
-            searchBox.focus();
+
+        document.getElementById('searchBox').addEventListener('input', (e) => {
+            currentSearch = e.target.value.toLowerCase().trim();
+            document.getElementById('clearSearch').style.display = currentSearch ? 'block' : 'none';
             renderGrid();
         });
+
+        document.getElementById('clearSearch').addEventListener('click', () => {
+            const sb = document.getElementById('searchBox');
+            sb.value = "";
+            currentSearch = "";
+            document.getElementById('clearSearch').style.display = 'none';
+            sb.focus();
+            renderGrid();
+        });
+
+        const scrollTopBtn = document.getElementById('scrollTopBtn');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 400) {
+                scrollTopBtn.classList.add('visible');
+            } else {
+                scrollTopBtn.classList.remove('visible');
+            }
+        });
+        scrollTopBtn.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        renderGrid();
     </script>
 </body>
 </html>
