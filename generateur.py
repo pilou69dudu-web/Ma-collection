@@ -5,7 +5,7 @@ import re
 import requests
 import time
 import math
-import hashlib  # Pour détecter les changements de lignes
+import hashlib
 
 # =====================================================================
 # CONFIGURATION AUTOMATIQUE
@@ -13,9 +13,6 @@ import hashlib  # Pour détecter les changements de lignes
 nom_fichier_excel = "00_Mes vinyles.xlsx"
 nom_fichier_wanted = "01_Liste achat.xlsx"
 fichier_cache = "vinyles_cache.json"  # Fichier mémoire pour accélérer le script
-
-# PARAMÈTRE NOUVEAUTÉS : Nombre de disques en bas du tableau Excel à marquer comme "NEW"
-NOMBRE_DE_NOUVEAUTES = 30  
 
 CONSUMER_KEY = "pTrgAPVrGOUYZbQrFbbh"
 CONSUMER_SECRET = "XnsdSqnEoZQHJLjtEhVwffLFSYNJTYmV"
@@ -26,13 +23,16 @@ if not os.path.exists("pochettes"):
 
 # Chargement du cache s'il existe
 cache_donnees = {}
-if os.path.exists(fichier_cache):
+cache_existe = os.path.exists(fichier_cache)
+
+if cache_existe:
     try:
         with open(fichier_cache, 'r', encoding='utf-8') as f:
             cache_donnees = json.load(f)
-        print(f"💾 Cache chargé : {len(cache_donnees)} vinyles en mémoire.")
+        print(f"💾 Cache historique chargé : {len(cache_donnees)} vinyles en mémoire.")
     except Exception as e:
         print(f"⚠️ Impossible de lire le cache, il sera réinitialisé : {e}")
+        cache_existe = False
 
 def generer_hash_ligne(row):
     """Crée une empreinte unique de la ligne pour détecter le moindre changement (ex: modification de prix, de titre...)"""
@@ -144,31 +144,30 @@ nouveau_cache = {}
 liste_genres_uniques = set()
 liste_types_uniques = set() 
 
-# Filtrer les lignes valides pour avoir le vrai compte d'index
-df_valide = df[df['ARTISTE'].notna() & (df['ARTISTE'].astype(str).str.strip() != '') & (df['ARTISTE'].astype(str).str.strip() != 'nan')]
-total_lignes_valides = len(df_valide)
-
 print(f"\nAnalyse de la collection en cours... (Total global : {total_vinyles})")
 
 compteur_api = 0
-index_reel = 0 # Compteur pour repérer la position de la ligne
 
 for index, row in df.iterrows():
     artiste = str(row.get('ARTISTE', '')).strip()
     if not artiste or artiste == 'nan':
         continue
-    
-    # Détermination automatique si la ligne fait partie des nouveautés (les X dernières du tableau)
-    est_nouveaute = (total_lignes_valides - index_reel) <= NOMBRE_DE_NOUVEAUTES
-    index_reel += 1
-    
+        
     # Calcul de l'empreinte de la ligne
     hash_ligne = generer_hash_ligne(row)
     
-    # Si la ligne existe dans l'ancien cache, on la charge mais on met à jour son statut "isNew"
+    # LOGIQUE DE DÉTECTION DES NOUVEAUTÉS PAR LE CACHE HIERARCHIQUE
+    # Si le fichier cache n'existait pas du tout (première installation), rien n'est "NEW" par défaut.
+    # Si le cache existait mais que ce disque précis n'y figurait pas : c'est un NOUVEL AJOUT !
+    if not cache_existe:
+        est_nouveaute = False
+    else:
+        est_nouveaute = (hash_ligne not in cache_donnees)
+    
+    # Si la ligne existe déjà dans le cache historique, on récupère les données pour aller vite
     if hash_ligne in cache_donnees:
         viny_data = cache_donnees[hash_ligne]
-        viny_data["isNew"] = est_nouveaute  # On force la mise à jour de la nouveauté
+        viny_data["isNew"] = est_nouveaute  # Devient False puisque présent dans l'historique
         nouveau_cache[hash_ligne] = viny_data
         collection.append(viny_data)
         
@@ -176,7 +175,7 @@ for index, row in df.iterrows():
         if viny_data["genre"] and viny_data["genre"] != "N/C": liste_genres_uniques.add(viny_data["genre"].upper())
         continue
 
-    # SINON : Nouvelle ligne ou modifiée -> Appel API
+    # SINON : C'est une nouvelle ligne (Ajout récent) -> Appel API Discogs
     compteur_api += 1
     titre_a = str(row.get(colonne_titre_a, '')).strip() if colonne_titre_a else ""
     if titre_a == 'nan': titre_a = ""
@@ -235,7 +234,7 @@ for index, row in df.iterrows():
         "pochette": chemin_pochette,
         "prix": prix_affiche,
         "comment": str(row.get('Prix Haut - Commentaires', '')),
-        "isNew": est_nouveaute  # Marqueur envoyé au HTML
+        "isNew": est_nouveaute  # True uniquement s'il vient d'apparaître pour la première fois !
     }
     
     nouveau_cache[hash_ligne] = viny_data
@@ -244,7 +243,7 @@ for index, row in df.iterrows():
 try:
     with open(fichier_cache, 'w', encoding='utf-8') as f:
         json.dump(nouveau_cache, f, ensure_ascii=False, indent=4)
-    print(f"⚡ Cache mis à jour. Lignes lues via l'API Internet : {compteur_api} / Lignes chargées via le Cache : {len(collection) - compteur_api}")
+    print(f"⚡ Mémoire cache synchronisée. Nouveaux disques traités : {compteur_api}")
 except Exception as e:
     print(f"⚠️ Impossible de sauvegarder le cache : {e}")
 
@@ -298,7 +297,7 @@ json_wanted_data = json.dumps(wanted_collection, ensure_ascii=False)
 
 
 # =====================================================================
-# SQUELETTE HTML : PAGE PRINCIPALE (COLLECTION) WITH NEW FEATURES
+# SQUELETTE HTML : PAGE PRINCIPALE (COLLECTION)
 # =====================================================================
 html_debut = """<!DOCTYPE html>
 <html lang="fr">
@@ -334,7 +333,6 @@ html_debut = """<!DOCTYPE html>
         .nav-btn { background: white; border: 1px solid var(--border-color); padding: 6px 12px; font-size: 14px; font-weight: 600; border-radius: 4px; cursor: pointer; text-transform: capitalize; }
         .nav-btn.active { background: var(--discogs-yellow); color: var(--discogs-black); border-color: var(--discogs-yellow); }
         
-        /* Bouton Nouveautés Spécial */
         .btn-news { background: #10b981; color: white; border-color: #10b981; }
         .btn-news:hover { background: #059669; color: white; border-color: #059669; }
         .btn-news.active { background: #047857; color: white; border-color: #047857; font-weight: bold; box-shadow: inset 0 2px 4px rgba(0,0,0,0.2); }
@@ -355,7 +353,7 @@ html_debut = """<!DOCTYPE html>
         .badge-qte { position: absolute; top: 8px; left: 8px; background: linear-gradient(135deg, #ffe600, #ffb300); color: #111111; font-size: 13px; font-weight: 800; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid #ffffff; box-shadow: 0 4px 8px rgba(0,0,0,0.3); z-index: 10; }
         .badge-prix { position: absolute; top: 8px; right: 8px; background: #e11d48; color: #ffffff; font-size: 11px; font-weight: 800; padding: 4px 8px; border-radius: 12px; border: 2px solid #ffffff; box-shadow: 0 4px 8px rgba(0,0,0,0.3); z-index: 10; }
         
-        /* Badge Vinyle Rétro pour les nouveautés chinees */
+        /* Badge Vinyle Réellement choisi par le cache */
         .badge-vinyl-new { position: absolute; bottom: 8px; right: 8px; background: #111111; color: #ffffff; font-size: 9px; font-weight: 900; letter-spacing: 0.5px; width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px dashed rgba(255,255,255,0.3); box-shadow: 0 4px 8px rgba(0,0,0,0.4), inset 0 0 0 4px #111111, inset 0 0 0 5px #f5c518; z-index: 10; text-shadow: 1px 1px 2px rgba(0,0,0,0.8); }
 
         .cover-wrapper { aspect-ratio: 1; background: #222; display: flex; align-items: center; justify-content: center; position: relative; border-bottom: 1px solid var(--border-color); overflow: hidden; }
@@ -369,7 +367,7 @@ html_debut = """<!DOCTYPE html>
         .track-a { font-size: 11px; color: #111111; margin-bottom: 3px; line-height: 1.2; }
         .track-b { font-size: 11px; color: #111111; line-height: 1.2; }
         .discogs-link { display: inline-block; margin-top: 10px; width: 100%; text-align: center; background-color: var(--discogs-black); color: white; text-decoration: none; padding: 6px; font-size: 11px; font-weight: 600; border-radius: 4px; }
-        .discogs-link:hover { background-color: var(--discogs-yellow); color: var(--discogs-black); }
+        .discogs-link:hover { background-color: var(--discogs-yellow); color: var(--discogs-black); transform: scale(1.02); }
         .scroll-to-top { position: fixed; bottom: 25px; right: 25px; background-color: var(--discogs-black); color: white; border: 2px solid var(--discogs-yellow); width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3); z-index: 1000; opacity: 0; visibility: hidden; transition: all 0.3s ease; }
         .scroll-to-top.visible { opacity: 1; visibility: visible; }
         .scroll-to-top:hover { background-color: var(--discogs-yellow); color: var(--discogs-black); transform: scale(1.1); }
@@ -473,8 +471,6 @@ html_fin = """
             let filtered = vinylData.filter(item => {
                 const matchesType = (currentType === "ALL" || item.type === currentType);
                 const matchesGenre = (currentGenre === "ALL" || (item.genre && item.genre.toUpperCase() === currentGenre));
-                
-                // Filtre exclusif nouveautés chînées
                 const matchesNews = (!filterOnlyNews || item.isNew === true);
                 
                 let matchesAlpha = true;
@@ -504,8 +500,6 @@ html_fin = """
             grid.innerHTML = filtered.map(item => {
                 const badgePrix = item.prix ? `<div class="badge-prix">${item.prix}</div>` : '';
                 const badgeQte = item.qte > 1 ? `<div class="badge-qte">${item.qte}</div>` : '';
-                
-                // Intégration du Badge vinyle "NEW" sur la pochette
                 const badgeNewVinyl = item.isNew ? `<div class="badge-vinyl-new" title="Dernière trouvaille !">NEW</div>` : '';
                 
                 const imgTag = (item.pochette && item.pochette !== "pochettes/placeholder.png")
@@ -543,7 +537,7 @@ html_fin = """
             }).join('');
         }
 
-        // --- EVENEMENTS FILTRES ET RECHERCHE ---
+        // --- EVENEMENTS ---
         document.getElementById('searchBox').addEventListener('input', (e) => {
             currentSearch = e.target.value.toLowerCase().trim();
             document.getElementById('clearSearch').style.display = currentSearch ? 'block' : 'none';
@@ -559,7 +553,6 @@ html_fin = """
             renderGrid();
         });
 
-        // Gestion du bouton Nouveautés
         const newsBtn = document.getElementById('newsFilterBtn');
         newsBtn.addEventListener('click', () => {
             filterOnlyNews = !filterOnlyNews;
@@ -638,10 +631,9 @@ try:
         f.write(f"\t\tconst genresAuto = {json_genres};\n")
         f.write(f"\t\tconst vinylData = {json_data};\n")
         f.write(html_fin)
-    print("🎉 Fichier 'index.html' mis à jour avec le module Nouveautés chînées.")
+    print("🎉 Fichier 'index.html' mis à jour.")
 except Exception as e:
     print(f"❌ Erreur lors de la création de index.html : {e}")
-
 
 # =====================================================================
 # SQUELETTE HTML : PAGE SECONDAIRE (WANTED)
