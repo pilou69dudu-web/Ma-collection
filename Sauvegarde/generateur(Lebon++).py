@@ -14,9 +14,6 @@ nom_fichier_excel = "00_Mes vinyles.xlsx"
 nom_fichier_wanted = "01_Liste achat.xlsx"
 fichier_cache = "vinyles_cache.json"  # Fichier mémoire pour accélérer le script
 
-# PARAMÈTRE NOUVEAUTÉS : Nombre de disques en bas du tableau Excel à marquer comme "NEW"
-NOMBRE_DE_NOUVEAUTES = 30  
-
 CONSUMER_KEY = "pTrgAPVrGOUYZbQrFbbh"
 CONSUMER_SECRET = "XnsdSqnEoZQHJLjtEhVwffLFSYNJTYmV"
 # =====================================================================
@@ -144,39 +141,30 @@ nouveau_cache = {}
 liste_genres_uniques = set()
 liste_types_uniques = set() 
 
-# Filtrer les lignes valides pour avoir le vrai compte d'index
-df_valide = df[df['ARTISTE'].notna() & (df['ARTISTE'].astype(str).str.strip() != '') & (df['ARTISTE'].astype(str).str.strip() != 'nan')]
-total_lignes_valides = len(df_valide)
-
 print(f"\nAnalyse de la collection en cours... (Total global : {total_vinyles})")
 
 compteur_api = 0
-index_reel = 0 # Compteur pour repérer la position de la ligne
 
 for index, row in df.iterrows():
     artiste = str(row.get('ARTISTE', '')).strip()
     if not artiste or artiste == 'nan':
         continue
     
-    # Détermination automatique si la ligne fait partie des nouveautés (les X dernières du tableau)
-    est_nouveaute = (total_lignes_valides - index_reel) <= NOMBRE_DE_NOUVEAUTES
-    index_reel += 1
-    
     # Calcul de l'empreinte de la ligne
     hash_ligne = generer_hash_ligne(row)
     
-    # Si la ligne existe dans l'ancien cache, on la charge mais on met à jour son statut "isNew"
+    # Si la ligne existe à l'identique dans l'ancien cache, on reprend les données sans appeler l'API
     if hash_ligne in cache_donnees:
         viny_data = cache_donnees[hash_ligne]
-        viny_data["isNew"] = est_nouveaute  # On force la mise à jour de la nouveauté
         nouveau_cache[hash_ligne] = viny_data
         collection.append(viny_data)
         
+        # On extrait quand même le genre et le type pour les filtres de la page
         if viny_data["type"]: liste_types_uniques.add(viny_data["type"])
         if viny_data["genre"] and viny_data["genre"] != "N/C": liste_genres_uniques.add(viny_data["genre"].upper())
         continue
 
-    # SINON : Nouvelle ligne ou modifiée -> Appel API
+    # SINON : C'est une nouvelle ligne ou elle a été modifiée -> Appel API
     compteur_api += 1
     titre_a = str(row.get(colonne_titre_a, '')).strip() if colonne_titre_a else ""
     if titre_a == 'nan': titre_a = ""
@@ -187,6 +175,7 @@ for index, row in df.iterrows():
     chemin_pochette = telecharger_pochette(id_discogs, artiste, titre_a)
     prix_affiche = recuperer_prix_haut(id_discogs)
     
+    # Si Discogs ne renvoie pas de prix ou si vous souhaitez forcer l'affichage du prix Excel :
     if not prix_affiche or prix_affiche == "":
         valeur_prix_excel = str(row.get('Prix Haut', '')).strip()
         chiffres = re.findall(r"\d+", valeur_prix_excel)
@@ -214,12 +203,10 @@ for index, row in df.iterrows():
     else:
         liste_genres_uniques.add(genre_vinyl.upper())
 
-    annee_str = str(row.get('Année', '')).strip()
-
     viny_data = {
         "id": str(row.get('N°', index)),
         "type": valeur_type,
-        "year": annee_str,
+        "year": str(row.get('Année', '')),
         "country": str(row.get('Pays', '')),
         "genre": genre_vinyl,
         "artist": artiste,
@@ -234,13 +221,14 @@ for index, row in df.iterrows():
         "url": str(lien_discogs),
         "pochette": chemin_pochette,
         "prix": prix_affiche,
-        "comment": str(row.get('Prix Haut - Commentaires', '')),
-        "isNew": est_nouveaute  # Marqueur envoyé au HTML
+        "comment": str(row.get('Prix Haut - Commentaires', ''))
     }
     
+    # Enregistrement dans le nouveau cache et la collection
     nouveau_cache[hash_ligne] = viny_data
     collection.append(viny_data)
 
+# Sauvegarde du fichier cache mis à jour
 try:
     with open(fichier_cache, 'w', encoding='utf-8') as f:
         json.dump(nouveau_cache, f, ensure_ascii=False, indent=4)
@@ -256,17 +244,22 @@ json_types = json.dumps(types_tries, ensure_ascii=False)
 
 
 # =====================================================================
-# TRAITEMENT DU FICHIER WANTED
+# TRAITEMENT DU FICHIER WANTED AVEC FILTRE COLONNE C VIDE (01_LISTE ACHAT.XLSX)
 # =====================================================================
 wanted_collection = []
+print(f"\nAnalyse du fichier Wanted en cours ({nom_fichier_wanted})...")
+
 if os.path.exists(nom_fichier_wanted):
     try:
         df_wanted = pd.read_excel(nom_fichier_wanted)
+        
         for index, row in df_wanted.iterrows():
             valeur_colonne_c = row.iloc[2] if len(row) > 2 else None
+            
             if pd.isna(valeur_colonne_c) or str(valeur_colonne_c).strip() == "" or str(valeur_colonne_c).lower() == "nan":
                 if len(row) > 0 and not pd.isna(row.iloc[0]):
                     chaine_artiste_titre = str(row.iloc[0]).strip()
+                    
                     if " - " in chaine_artiste_titre:
                         parts = chaine_artiste_titre.split(" - ", 1)
                         artiste_w = parts[0].strip()
@@ -274,10 +267,13 @@ if os.path.exists(nom_fichier_wanted):
                     else:
                         artiste_w = chaine_artiste_titre
                         titre_w = ""
+                    
                     com_w = str(row.iloc[3]).strip() if len(row) > 3 and not pd.isna(row.iloc[3]) else ""
                     lien_w = str(row.iloc[5]).strip() if len(row) > 5 and not pd.isna(row.iloc[5]) else "#"
                     
+                    # Pour la liste Wanted, on peut utiliser le lien comme clé de cache simple pour la pochette
                     hash_wanted = hashlib.md5((artiste_w + titre_w + lien_w).encode('utf-8')).hexdigest()
+                    
                     if hash_wanted in cache_donnees:
                         pochette_w = cache_donnees[hash_wanted].get('pochette', 'pochettes/placeholder.png')
                     else:
@@ -293,12 +289,14 @@ if os.path.exists(nom_fichier_wanted):
                     })
     except Exception as e:
         print(f"⚠️ Erreur lors de la lecture du fichier Wanted : {e}")
+else:
+    print(f"⚠️ Fichier {nom_fichier_wanted} introuvable. Page Wanted créée vide.")
 
 json_wanted_data = json.dumps(wanted_collection, ensure_ascii=False)
 
 
 # =====================================================================
-# SQUELETTE HTML : PAGE PRINCIPALE (COLLECTION) WITH NEW FEATURES
+# SQUELETTE HTML : PAGE PRINCIPALE (COLLECTION)
 # =====================================================================
 html_debut = """<!DOCTYPE html>
 <html lang="fr">
@@ -334,11 +332,6 @@ html_debut = """<!DOCTYPE html>
         .nav-btn { background: white; border: 1px solid var(--border-color); padding: 6px 12px; font-size: 14px; font-weight: 600; border-radius: 4px; cursor: pointer; text-transform: capitalize; }
         .nav-btn.active { background: var(--discogs-yellow); color: var(--discogs-black); border-color: var(--discogs-yellow); }
         
-        /* Bouton Nouveautés Spécial */
-        .btn-news { background: #10b981; color: white; border-color: #10b981; }
-        .btn-news:hover { background: #059669; color: white; border-color: #059669; }
-        .btn-news.active { background: #047857; color: white; border-color: #047857; font-weight: bold; box-shadow: inset 0 2px 4px rgba(0,0,0,0.2); }
-
         .custom-dropdown { position: relative; display: inline-block; }
         .dropdown-trigger { background: white; border: 1px solid var(--border-color); padding: 6px 16px; font-size: 14px; font-weight: 600; border-radius: 4px; cursor: pointer; min-width: 220px; text-align: left; display: flex; justify-content: space-between; align-items: center; }
         .dropdown-trigger.active { background: var(--discogs-yellow); color: var(--discogs-black); border-color: var(--discogs-yellow); }
@@ -354,9 +347,6 @@ html_debut = """<!DOCTYPE html>
         
         .badge-qte { position: absolute; top: 8px; left: 8px; background: linear-gradient(135deg, #ffe600, #ffb300); color: #111111; font-size: 13px; font-weight: 800; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid #ffffff; box-shadow: 0 4px 8px rgba(0,0,0,0.3); z-index: 10; }
         .badge-prix { position: absolute; top: 8px; right: 8px; background: #e11d48; color: #ffffff; font-size: 11px; font-weight: 800; padding: 4px 8px; border-radius: 12px; border: 2px solid #ffffff; box-shadow: 0 4px 8px rgba(0,0,0,0.3); z-index: 10; }
-        
-        /* Badge Vinyle Rétro pour les nouveautés chinees */
-        .badge-vinyl-new { position: absolute; bottom: 8px; right: 8px; background: #111111; color: #ffffff; font-size: 9px; font-weight: 900; letter-spacing: 0.5px; width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px dashed rgba(255,255,255,0.3); box-shadow: 0 4px 8px rgba(0,0,0,0.4), inset 0 0 0 4px #111111, inset 0 0 0 5px #f5c518; z-index: 10; text-shadow: 1px 1px 2px rgba(0,0,0,0.8); }
 
         .cover-wrapper { aspect-ratio: 1; background: #222; display: flex; align-items: center; justify-content: center; position: relative; border-bottom: 1px solid var(--border-color); overflow: hidden; }
         .cover-image { width: 100%; height: 100%; object-fit: cover; }
@@ -398,7 +388,7 @@ html_debut = """<!DOCTYPE html>
                     </div>
                     <div class="filter-row">
                         <span class="filter-label">Genre :</span>
-                        <div class="custom-dropdown" style="margin-right: 8px;">
+                        <div class="custom-dropdown">
                             <button id="dropdownBtn" class="dropdown-trigger">
                                 <span id="dropdownLabel">Tous les genres</span>
                                 <span>▼</span>
@@ -409,7 +399,6 @@ html_debut = """<!DOCTYPE html>
                                 <div id="optionsContainer"></div>
                             </div>
                         </div>
-                        <button id="newsFilterBtn" class="nav-btn btn-news" data-news="OFF">✨ Nouveautés</button>
                     </div>
                     <div class="filter-row">
                         <span class="filter-label">Alphabet :</span>
@@ -428,13 +417,13 @@ html_debut = """<!DOCTYPE html>
     <script>
 """
 
+# VARIABLE CORRIGÉE REPLACÉE ICI (Le morceau manquant que Python ne trouvait pas)
 html_fin = """
         let currentType = "ALL";
         let currentGenre = "ALL";
         let currentAlpha = "ALL";
         let currentSearch = "";
         let insideGenreSearch = "";
-        let filterOnlyNews = false;
 
         document.getElementById('totalCounter').textContent = totalCollectionStr;
 
@@ -474,9 +463,6 @@ html_fin = """
                 const matchesType = (currentType === "ALL" || item.type === currentType);
                 const matchesGenre = (currentGenre === "ALL" || (item.genre && item.genre.toUpperCase() === currentGenre));
                 
-                // Filtre exclusif nouveautés chînées
-                const matchesNews = (!filterOnlyNews || item.isNew === true);
-                
                 let matchesAlpha = true;
                 if (currentAlpha !== "ALL") {
                     const firstChar = item.artist ? item.artist.trim().charAt(0).toUpperCase() : "";
@@ -495,7 +481,7 @@ html_fin = """
                     (item.label && item.label.toLowerCase().includes(currentSearch)) ||
                     (item.year && item.year.toString().includes(currentSearch));
 
-                return matchesType && matchesGenre && matchesNews && matchesAlpha && matchesSearch;
+                return matchesType && matchesGenre && matchesAlpha && matchesSearch;
             });
 
             document.getElementById('recordCount').textContent = filtered.length;
@@ -504,9 +490,6 @@ html_fin = """
             grid.innerHTML = filtered.map(item => {
                 const badgePrix = item.prix ? `<div class="badge-prix">${item.prix}</div>` : '';
                 const badgeQte = item.qte > 1 ? `<div class="badge-qte">${item.qte}</div>` : '';
-                
-                // Intégration du Badge vinyle "NEW" sur la pochette
-                const badgeNewVinyl = item.isNew ? `<div class="badge-vinyl-new" title="Dernière trouvaille !">NEW</div>` : '';
                 
                 const imgTag = (item.pochette && item.pochette !== "pochettes/placeholder.png")
                     ? `<img class="cover-image" src="${item.pochette}" alt="Pochette" loading="lazy">`
@@ -520,10 +503,7 @@ html_fin = """
                     <div class="vinyl-card">
                         ${badgeQte}
                         ${badgePrix}
-                        <div class="cover-wrapper">
-                            ${imgTag}
-                            ${badgeNewVinyl}
-                        </div>
+                        <div class="cover-wrapper">${imgTag}</div>
                         <div class="vinyl-details">
                             <div>
                                 <div class="tag-type">${item.type || 'SINGLE'}</div>
@@ -545,7 +525,7 @@ html_fin = """
 
         // --- EVENEMENTS FILTRES ET RECHERCHE ---
         document.getElementById('searchBox').addEventListener('input', (e) => {
-            currentSearch = e.target.value.toLowerCase().trim();
+            currentSearch = e.target.value.toLowerCase().strip();
             document.getElementById('clearSearch').style.display = currentSearch ? 'block' : 'none';
             renderGrid();
         });
@@ -556,14 +536,6 @@ html_fin = """
             currentSearch = "";
             document.getElementById('clearSearch').style.display = 'none';
             sb.focus();
-            renderGrid();
-        });
-
-        // Gestion du bouton Nouveautés
-        const newsBtn = document.getElementById('newsFilterBtn');
-        newsBtn.addEventListener('click', () => {
-            filterOnlyNews = !filterOnlyNews;
-            newsBtn.classList.toggle('active', filterOnlyNews);
             renderGrid();
         });
 
@@ -606,7 +578,7 @@ html_fin = """
 
         document.addEventListener('click', (e) => {
             if (!dropContent.contains(e.target) && e.target !== dropBtn) {
-                dropContent.classList.remove('show');
+                dropContent.remove('show');
             }
         });
 
@@ -638,7 +610,7 @@ try:
         f.write(f"\t\tconst genresAuto = {json_genres};\n")
         f.write(f"\t\tconst vinylData = {json_data};\n")
         f.write(html_fin)
-    print("🎉 Fichier 'index.html' mis à jour avec le module Nouveautés chînées.")
+    print("🎉 Fichier 'index.html' créé avec succès.")
 except Exception as e:
     print(f"❌ Erreur lors de la création de index.html : {e}")
 
@@ -787,6 +759,6 @@ html_wanted_complet = """<!DOCTYPE html>
 try:
     with open("Wanted.html", "w", encoding="utf-8") as f:
         f.write(html_wanted_complet.replace("__WANTED_DATA_PLACEHOLDER__", json_wanted_data))
-    print(f"📋 Fichier 'Wanted.html' créé avec succès.")
+    print(f"📋 Fichier 'Wanted.html' créé avec succès (Contient {len(wanted_collection)} lignes valides).")
 except Exception as e:
     print(f"❌ Erreur lors de la création de Wanted.html : {e}")
