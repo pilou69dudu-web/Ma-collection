@@ -150,21 +150,16 @@ for index, row in df.iterrows():
     if not artiste or artiste == 'nan':
         continue
     
-    # Calcul de l'empreinte de la ligne
     hash_ligne = generer_hash_ligne(row)
     
-    # Si la ligne existe à l'identique dans l'ancien cache, on reprend les données sans appeler l'API
     if hash_ligne in cache_donnees:
         viny_data = cache_donnees[hash_ligne]
         nouveau_cache[hash_ligne] = viny_data
         collection.append(viny_data)
-        
-        # On extrait quand même le genre et le type pour les filtres de la page
         if viny_data["type"]: liste_types_uniques.add(viny_data["type"])
         if viny_data["genre"] and viny_data["genre"] != "N/C": liste_genres_uniques.add(viny_data["genre"].upper())
         continue
 
-    # SINON : C'est une nouvelle ligne ou elle a été modifiée -> Appel API
     compteur_api += 1
     titre_a = str(row.get(colonne_titre_a, '')).strip() if colonne_titre_a else ""
     if titre_a == 'nan': titre_a = ""
@@ -175,7 +170,6 @@ for index, row in df.iterrows():
     chemin_pochette = telecharger_pochette(id_discogs, artiste, titre_a)
     prix_affiche = recuperer_prix_haut(id_discogs)
     
-    # Si Discogs ne renvoie pas de prix ou si vous souhaitez forcer l'affichage du prix Excel :
     if not prix_affiche or prix_affiche == "":
         valeur_prix_excel = str(row.get('Prix Haut', '')).strip()
         chiffres = re.findall(r"\d+", valeur_prix_excel)
@@ -224,11 +218,9 @@ for index, row in df.iterrows():
         "comment": str(row.get('Prix Haut - Commentaires', ''))
     }
     
-    # Enregistrement dans le nouveau cache et la collection
     nouveau_cache[hash_ligne] = viny_data
     collection.append(viny_data)
 
-# Sauvegarde du fichier cache mis à jour
 try:
     with open(fichier_cache, 'w', encoding='utf-8') as f:
         json.dump(nouveau_cache, f, ensure_ascii=False, indent=4)
@@ -244,7 +236,7 @@ json_types = json.dumps(types_tries, ensure_ascii=False)
 
 
 # =====================================================================
-# TRAITEMENT DU FICHIER WANTED AVEC FILTRE COLONNE C VIDE (01_LISTE ACHAT.XLSX)
+# TRAITEMENT DU FICHIER WANTED (01_LISTE ACHAT.XLSX)
 # =====================================================================
 wanted_collection = []
 print(f"\nAnalyse du fichier Wanted en cours ({nom_fichier_wanted})...")
@@ -271,7 +263,6 @@ if os.path.exists(nom_fichier_wanted):
                     com_w = str(row.iloc[3]).strip() if len(row) > 3 and not pd.isna(row.iloc[3]) else ""
                     lien_w = str(row.iloc[5]).strip() if len(row) > 5 and not pd.isna(row.iloc[5]) else "#"
                     
-                    # Pour la liste Wanted, on peut utiliser le lien comme clé de cache simple pour la pochette
                     hash_wanted = hashlib.md5((artiste_w + titre_w + lien_w).encode('utf-8')).hexdigest()
                     
                     if hash_wanted in cache_donnees:
@@ -296,7 +287,7 @@ json_wanted_data = json.dumps(wanted_collection, ensure_ascii=False)
 
 
 # =====================================================================
-# SQUELETTE HTML : PAGE PRINCIPALE (COLLECTION)
+# SQUELETTE HTML : PAGE PRINCIPALE (COLLECTION.HTML)
 # =====================================================================
 html_debut = """<!DOCTYPE html>
 <html lang="fr">
@@ -417,36 +408,42 @@ html_debut = """<!DOCTYPE html>
     <script>
 """
 
-html_fin = """
+# Injection des variables de données globales pour la page index.html
+html_fin = f"""
+        const totalCollectionStr = "{total_vinyles}";
+        const vinylData = {json_data};
+        const genresAuto = {json_genres};
+        const typesAuto = {json_types};
+
         let currentSearch = "", currentType = "ALL", currentAlpha = "ALL", currentGenre = "ALL";
         
         document.getElementById('totalCounter').textContent = totalCollectionStr;
 
         const typeContainer = document.getElementById('typeButtonsContainer');
-        typesAuto.forEach(type => {
+        typesAuto.forEach(type => {{
             const btn = document.createElement('button');
             btn.className = 'nav-btn type-filter';
             btn.setAttribute('data-type', type);
             btn.textContent = type.toLowerCase();
             typeContainer.appendChild(btn);
-        });
+        }});
         
         const optionsContainer = document.getElementById('optionsContainer');
         
-        function populateGenreOptions(filterText = "") {
+        function populateGenreOptions(filterText = "") {{
             optionsContainer.innerHTML = "";
             const lowerFilter = filterText.toLowerCase();
             
-            genresAuto.forEach(genre => {
-                if (!filterText || genre.toLowerCase().includes(lowerFilter)) {
+            genresAuto.forEach(genre => {{
+                if (!filterText || genre.toLowerCase().includes(lowerFilter)) {{
                     const div = document.createElement('div');
                     div.className = 'genre-option';
                     div.setAttribute('data-genre', genre);
                     div.textContent = genre;
                     optionsContainer.appendChild(div);
-                }
-            });
-        }
+                }}
+            }});
+        }}
         populateGenreOptions();
 
         const container = document.getElementById('alphabetContainer');
@@ -454,13 +451,13 @@ html_fin = """
         alphaList.splice(alphaList.indexOf('S')+1, 0, 'The');
         alphaList.push('0 à 9');
 
-        alphaList.forEach(item => {
+        alphaList.forEach(item => {{
             const b = document.createElement('button'); b.className = 'nav-btn alpha-filter';
             b.textContent = item; b.setAttribute('data-alpha', item); container.appendChild(b);
-        });
+        }});
 
-        function renderGrid() {
-            let filtered = vinylData.filter(item => {
+        function renderGrid() {{
+            let filtered = vinylData.filter(item => {{
                 const sMatch = !currentSearch || 
                                (item.artist && item.artist.toLowerCase().includes(currentSearch)) || 
                                (item.titleA && item.titleA.toLowerCase().includes(currentSearch)) || 
@@ -471,16 +468,16 @@ html_fin = """
                 const gMatch = currentGenre === "ALL" || (item.genre && item.genre.toUpperCase() === currentGenre);
                 
                 let aMatch = currentAlpha === "ALL";
-                if(item.artist) {
+                if(item.artist) {{
                     if(currentAlpha === "The") aMatch = item.artist.toLowerCase().startsWith("the ");
                     else if(currentAlpha === "0 à 9") aMatch = /^[0-9]/.test(item.artist);
                     else if(!aMatch) aMatch = item.artist.toUpperCase().startsWith(currentAlpha);
-                }
+                }}
                 return sMatch && tMatch && gMatch && aMatch;
-            });
+            }});
 
             document.getElementById('recordCount').textContent = filtered.length;
-            document.getElementById('vinylGrid').innerHTML = filtered.map(item => {
+            document.getElementById('vinylGrid').innerHTML = filtered.map(item => {{
                 const badgeQte = item.qte > 1 ? '<div class="badge-qte">' + item.qte + '</div>' : '';
                 const badgePrix = (item.prix && item.prix !== "") ? '<div class="badge-prix">' + item.prix + '</div>' : '';
                 
@@ -508,92 +505,89 @@ html_fin = """
                             '<a href="' + (item.url || '#') + '" target="_blank" class="discogs-link">Voir sur Discogs</a>' +
                         '</div>' +
                     '</div>';
-            }).join('');
-        }
+            }}).join('');
+        }}
 
         const scrollTopBtn = document.getElementById('scrollTopBtn');
-        window.addEventListener('scroll', () => { if (window.scrollY > 300) scrollTopBtn.classList.add('visible'); else scrollTopBtn.classList.remove('visible'); });
-        scrollTopBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+        window.addEventListener('scroll', () => {{ if (window.scrollY > 300) scrollTopBtn.classList.add('visible'); else scrollTopBtn.classList.remove('visible'); }});
+        scrollTopBtn.addEventListener('click', () => window.scrollTo({{ top: 0, behavior: 'smooth' }}));
         
         const searchBox = document.getElementById('searchBox');
         const clearSearch = document.getElementById('clearSearch');
 
-        searchBox.addEventListener('input', e => { 
+        searchBox.addEventListener('input', e => {{ 
             currentSearch = e.target.value.toLowerCase(); 
             if(currentSearch.length > 0) clearSearch.style.display = "block";
             else clearSearch.style.display = "none";
             renderGrid(); 
-        });
+        }});
 
-        clearSearch.addEventListener('click', () => {
+        clearSearch.addEventListener('click', () => {{
             searchBox.value = "";
             currentSearch = "";
             clearSearch.style.display = "none";
             searchBox.focus();
             renderGrid();
-        });
+        }});
         
-        document.getElementById('typeButtonsContainer').addEventListener('click', e => {
+        document.getElementById('typeButtonsContainer').addEventListener('click', e => {{
             const btn = e.target.closest('.type-filter');
-            if (btn) {
+            if (btn) {{
                 document.querySelectorAll('.type-filter').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
                 currentType = btn.getAttribute('data-type');
                 renderGrid();
-            }
-        });
+            }}
+        }});
         
         const dropdownBtn = document.getElementById('dropdownBtn');
         const dropdownContent = document.getElementById('dropdownContent');
         const searchInside = document.getElementById('genreSearchInside');
         const dropdownLabel = document.getElementById('dropdownLabel');
 
-        dropdownBtn.addEventListener('click', (e) => {
+        dropdownBtn.addEventListener('click', (e) => {{
             e.stopPropagation();
             dropdownContent.classList.toggle('show');
-            if(dropdownContent.classList.contains('show')) {
+            if(dropdownContent.classList.contains('show')) {{
                 searchInside.focus();
-            }
-        });
+            }}
+        }});
 
-        searchInside.addEventListener('input', (e) => {
+        searchInside.addEventListener('input', (e) => {{
             populateGenreOptions(e.target.value);
-        });
+        }});
 
         searchInside.addEventListener('click', (e) => e.stopPropagation());
 
-        document.addEventListener('click', (e) => {
+        document.addEventListener('click', (e) => {{
             const option = e.target.closest('.genre-option');
-            if (option) {
+            if (option) {{
                 const selectedGenre = option.getAttribute('data-genre');
                 currentGenre = selectedGenre;
                 
-                if (selectedGenre === "ALL") {
+                if (selectedGenre === "ALL") {{
                     dropdownLabel.textContent = "Tous les genres";
                     dropdownBtn.classList.remove('active');
-                } else {
+                }} else {{
                     dropdownLabel.textContent = selectedGenre;
                     dropdownBtn.classList.add('active');
-                }
-                
+                }}
                 dropdownContent.classList.remove('show');
-                searchInside.value = "";
-                populateGenreOptions();
                 renderGrid();
-            } else if (!e.target.closest('.custom-dropdown')) {
+            }} else {{
                 dropdownContent.classList.remove('show');
-            }
-        });
+            }}
+        }});
 
-        document.getElementById('alphabetContainer').addEventListener('click', e => {
+        document.getElementById('alphabetContainer').addEventListener('click', e => {{
             const btn = e.target.closest('.alpha-filter');
-            if (btn) {
+            if (btn) {{
                 document.querySelectorAll('.alpha-filter').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
                 currentAlpha = btn.getAttribute('data-alpha');
                 renderGrid();
-            }
-        });
+            }}
+        }});
 
         renderGrid();
     </script>
@@ -601,102 +595,176 @@ html_fin = """
 </html>
 """
 
-# =====================================================================
-# ÉCRITURE PHYSIQUE DU FICHIER INDEX.HTML
-# =====================================================================
-print("\n📝 Fabrication du fichier de la collection (index.html)...")
-with open("index.html", "w", encoding="utf-8") as file_html:
-    file_html.write(html_debut)
-    file_html.write(f"\nconst totalCollectionStr = '{total_vinyles}';")
-    file_html.write(f"\nconst typesAuto = {json_types};")
-    file_html.write(f"\nconst genresAuto = {json_genres};")
-    file_html.write(f"\nconst vinylData = {json_data};")
-    file_html.write(html_fin)
-print("✨ Fichier index.html créé avec succès !")
+# Sauvegarde de MaCollectionWeb.html
+try:
+    with open("MaCollectionWeb.html", "w", encoding="utf-8") as file:
+        file.write(html_debut + html_fin)
+    print("🎉 Fichier 'MaCollectionWeb.html' créé avec succès.")
+except Exception as e:
+    print(f"❌ Erreur lors de la création du fichier principal HTML : {e}")
 
 
 # =====================================================================
-# SQUELETTE HTML ENTIER ET ÉCRITURE DE LA PAGE WANTED (WANTED.HTML)
+# NOUVELLE SQUELETTE HTML AMÉLIORÉE POUR LA PAGE "WANTED" (WANTED.HTML)
 # =====================================================================
-print("\n📝 Fabrication du fichier de recherche (Wanted.html)...")
 html_wanted_complet = f"""<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Ma Liste de Recherche (Wanted) - Discogs Style</title>
+    <title>Ma Liste de Recherche (Wanted)</title>
     <style>
-        :root {{ --discogs-black: #111111; --discogs-yellow: #f5c518; --light-bg: #f8f9fa; --border-color: #e5e7eb; }}
+        :root {{ --discogs-black: #111111; --discogs-yellow: #f5c518; --light-bg: #f8f9fa; --border-color: #e5e7eb; --text-muted: #6b7280; }}
         * {{ box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }}
         body {{ background-color: var(--light-bg); color: var(--discogs-black); padding-bottom: 50px; }}
-        header {{ background-color: var(--discogs-black); color: white; padding: 20px; border-bottom: 4px solid var(--discogs-yellow); display: flex; align-items: center; justify-content: space-between; }}
-        header h1 {{ font-size: 22px; }}
-        .back-btn {{ background-color: white; color: var(--discogs-black); border: 2px solid white; padding: 8px 16px; font-size: 14px; font-weight: bold; border-radius: 6px; cursor: pointer; text-decoration: none; }}
-        .back-btn:hover {{ background-color: var(--discogs-yellow); border-color: var(--discogs-yellow); }}
-        .container {{ max-width: 1350px; margin: 20px auto; padding: 0 15px; }}
-        .wanted-grid {{ display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }}
-        .wanted-card {{ background: white; border: 1px solid var(--border-color); border-radius: 6px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 3px 5px rgba(0,0,0,0.02); }}
-        .cover-wrapper {{ aspect-ratio: 1; background: #222; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid var(--border-color); overflow: hidden; }}
+        
+        /* Même structure d'entête noire que Ma Collection */
+        header {{ background-color: var(--discogs-black); color: white; padding: 20px; border-bottom: 4px solid var(--discogs-yellow); position: relative; display: flex; align-items: center; justify-content: center; }}
+        header h1 {{ font-size: 24px; }}
+        
+        /* Style identique pour le compteur d'albums voulus */
+        .global-counter {{ position: absolute; left: 20px; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); padding: 6px 14px; border-radius: 6px; font-size: 14px; font-weight: bold; color: #ffffff; }}
+        .global-counter span {{ color: var(--discogs-yellow); font-size: 16px; margin-left: 5px; }}
+        
+        .sticky-wrapper {{ position: -webkit-sticky; position: sticky; top: 0; z-index: 100; background-color: var(--light-bg); padding-top: 15px; padding-bottom: 10px; border-bottom: 1px solid var(--border-color); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }}
+        .container {{ max-width: 1350px; margin: 0 auto; padding: 0 15px; }}
+        
+        .search-container {{ background: white; padding: 20px; border-radius: 8px; border: 1px solid var(--border-color); box-shadow: 0 2px 4px rgba(0,0,0,0.02); }}
+        .search-row-wrapper {{ display: flex; gap: 15px; align-items: center; width: 100%; }}
+        
+        .search-box-container {{ position: relative; flex-grow: 1; }}
+        .search-box {{ width: 100%; padding: 12px 40px 12px 12px; font-size: 16px; border: 2px solid var(--border-color); border-radius: 6px; outline: none; }}
+        
+        .clear-search-btn {{ position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; font-size: 16px; color: #aaa; cursor: pointer; display: none; }}
+        .clear-search-btn:hover { color: #555; }
+        
+        /* Bouton Ma Collection aligné à droite */
+        .collection-btn {{ background-color: var(--discogs-black); color: var(--discogs-yellow); border: 2px solid var(--discogs-black); padding: 11px 24px; font-size: 15px; font-weight: bold; border-radius: 6px; cursor: pointer; text-decoration: none; text-align: center; white-space: nowrap; transition: all 0.2s ease; }}
+        .collection-btn:hover {{ background-color: var(--discogs-yellow); color: var(--discogs-black); }}
+        
+        .vinyl-grid {{ display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 15px; margin-top: 20px; }}
+        .vinyl-card {{ background: white; border: 1px solid var(--border-color); border-radius: 6px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 3px 5px rgba(0,0,0,0.02); position: relative; }}
+        
+        .cover-wrapper {{ aspect-ratio: 1; background: #222; display: flex; align-items: center; justify-content: center; position: relative; border-bottom: 1px solid var(--border-color); overflow: hidden; }}
         .cover-image {{ width: 100%; height: 100%; object-fit: cover; }}
-        .cover-placeholder {{ color: #777; font-size: 12px; font-weight: bold; padding: 10px; text-align: center; }}
-        .wanted-details {{ padding: 12px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }}
-        .wanted-artist {{ font-size: 14px; font-weight: 700; text-transform: uppercase; margin-bottom: 4px; }}
-        .wanted-title {{ font-size: 13px; color: #333; font-style: italic; margin-bottom: 8px; }}
-        .wanted-comment {{ font-size: 11px; color: #e11d48; font-weight: 600; background: #fff1f2; padding: 4px 8px; border-radius: 4px; margin-bottom: 10px; }}
-        .discogs-link {{ display: block; text-align: center; background-color: var(--discogs-black); color: white; text-decoration: none; padding: 8px; font-size: 11px; font-weight: 600; border-radius: 4px; }}
+        .cover-placeholder {{ color: #777; font-size: 11px; font-weight: bold; padding: 10px; text-align: center; text-transform: uppercase; }}
+        
+        .vinyl-details {{ padding: 10px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }}
+        .vinyl-artist {{ font-size: 13px; font-weight: 700; text-transform: uppercase; line-height: 1.2; margin-bottom: 4px; }}
+        .vinyl-title {{ font-size: 12px; color: #111111; margin-bottom: 6px; font-style: italic; line-height: 1.2; }}
+        .comment-block {{ border-top: 1px dashed var(--border-color); margin-top: 6px; padding-top: 6px; font-size: 11px; color: #b45309; background-color: #fffbeb; padding: 6px; border-radius: 4px; font-weight: 500; }}
+        
+        .discogs-link {{ display: inline-block; margin-top: 10px; width: 100%; text-align: center; background-color: var(--discogs-black); color: white; text-decoration: none; padding: 6px; font-size: 11px; font-weight: 600; border-radius: 4px; }}
         .discogs-link:hover {{ background-color: var(--discogs-yellow); color: var(--discogs-black); }}
+        
+        .scroll-to-top {{ position: fixed; bottom: 25px; right: 25px; background-color: var(--discogs-black); color: white; border: 2px solid var(--discogs-yellow); width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3); z-index: 1000; opacity: 0; visibility: hidden; transition: all 0.3s ease; }}
+        .scroll-to-top.visible {{ opacity: 1; visibility: visible; }}
+        .scroll-to-top:hover {{ background-color: var(--discogs-yellow); color: var(--discogs-black); transform: scale(1.1); }}
+        @media (max-width: 768px) {{ header {{ flex-direction: column; gap: 10px; text-align: center; }} .global-counter {{ position: static; margin-bottom: 5px; }} .search-row-wrapper {{ flex-direction: column; gap: 10px; }} .collection-btn {{ width: 100%; }} }}
     </style>
 </head>
 <body>
     <header>
-        <h1>📋 Ma Liste de Recherche (Wanted)</h1>
-        <a href="index.html" class="back-btn">📁 Voir la Collection</a>
+        <div class="global-counter">Nombre d'albums recherchés : <span id="totalWantedCounter">0</span></div>
+        <h1>Ma Liste de Recherche (Wanted)</h1>
     </header>
-    <div class="container">
-        <div style="margin-bottom:15px; font-size:14px; color:#6b7280;">Nombre d'albums recherchés : <span id="wantedCount">0</span></div>
-        <div class="wanted-grid" id="wantedGrid"></div>
+    
+    <div class="sticky-wrapper">
+        <div class="container">
+            <div class="search-container">
+                <div class="search-row-wrapper">
+                    <div class="search-box-container">
+                        <input type="text" id="searchWantedBox" class="search-box" placeholder="Rechercher un artiste, un titre ou un commentaire dans la liste Wanted...">
+                        <button id="clearWantedSearch" class="clear-search-btn" title="Effacer la recherche">✖</button>
+                    </div>
+                    <a href="MaCollectionWeb.html" class="collection-btn">📁 Ma Collection</a>
+                </div>
+            </div>
+        </div>
     </div>
+
+    <div class="container" style="margin-top: 20px;">
+        <div style="margin-bottom:15px; font-size:14px; color:var(--text-muted);">Disques filtrés : <span id="wantedRecordCount">0</span></div>
+        <div class="vinyl-grid" id="wantedVinylGrid"></div>
+    </div>
+
+    <button class="scroll-to-top" id="scrollTopWantedBtn" title="Retour en haut">▲</button>
 
     <script>
         const wantedData = {json_wanted_data};
-        document.getElementById('wantedCount').textContent = wantedData.length;
+        let currentWantedSearch = "";
 
-        document.getElementById('wantedGrid').innerHTML = wantedData.map(item => {{
-            const imgTag = (item.pochette && item.pochette !== "pochettes/placeholder.png")
-                ? '<img class="cover-image" src="' + item.pochette + '" alt="Pochette">'
-                : '<div class="cover-placeholder">💿 Image indisponible</div>';
+        // Initialisation automatique du nombre total à chercher
+        document.getElementById('totalWantedCounter').textContent = wantedData.length;
 
-            const commentTag = item.comment ? '<div class="wanted-comment">' + item.comment + '</div>' : '';
+        function renderWantedGrid() {{
+            let filtered = wantedData.filter(item => {{
+                const sMatch = !currentWantedSearch || 
+                               (item.artist && item.artist.toLowerCase().includes(currentWantedSearch)) || 
+                               (item.title && item.title.toLowerCase().includes(currentWantedSearch)) || 
+                               (item.comment && item.comment.toLowerCase().includes(currentWantedSearch));
+                return sMatch;
+            }});
 
-            return '<div class="wanted-card">' +
-                    '<div class="cover-wrapper">' + imgTag + '</div>' +
-                    '<div class="wanted-details">' +
-                        '<div>' +
-                            '<div class="wanted-artist">' + item.artist + '</div>' +
-                            '<div class="wanted-title">' + (item.title || 'Album / Titre Inconnu') + '</div>' +
-                            commentTag +
+            document.getElementById('wantedRecordCount').textContent = filtered.length;
+            
+            document.getElementById('wantedVinylGrid').innerHTML = filtered.map(item => {{
+                const imgTag = (item.pochette && item.pochette !== "pochettes/placeholder.png")
+                    ? '<img class="cover-image" src="' + item.pochette + '" alt="Pochette">'
+                    : '<div class="cover-placeholder">💿 Image indisponible</div>';
+                
+                const commentTag = (item.comment && item.comment.trim() !== "")
+                    ? '<div class="comment-block">💬 ' + item.comment + '</div>'
+                    : '';
+
+                return '<div class="vinyl-card">' +
+                        '<div class="cover-wrapper">' + imgTag + '</div>' +
+                        '<div class="vinyl-details">' +
+                            '<div>' +
+                                '<div class="vinyl-artist">' + (item.artist || 'Artiste inconnu') + '</div>' +
+                                '<div class="vinyl-title">' + (item.title || 'Titre inconnu') + '</div>' +
+                                commentTag +
+                            '</div>' +
+                            '<a href="' + (item.url || '#') + '" target="_blank" class="discogs-link">Voir sur Discogs</a>' +
                         '</div>' +
-                        '<a href="' + item.url + '" target="_blank" class="discogs-link">Rechercher sur Discogs</a>' +
-                    '</div>' +
-                '</div>';
-        }}).join('');
+                    '</div>';
+            }}).join('');
+        }}
+
+        // Gestionnaires d'évènements pour la recherche dynamique
+        const searchWantedBox = document.getElementById('searchWantedBox');
+        const clearWantedSearch = document.getElementById('clearWantedSearch');
+
+        searchWantedBox.addEventListener('input', e => {{
+            currentWantedSearch = e.target.value.toLowerCase();
+            if(currentWantedSearch.length > 0) clearWantedSearch.style.display = "block";
+            else clearWantedSearch.style.display = "none";
+            renderWantedGrid();
+        }});
+
+        clearWantedSearch.addEventListener('click', () => {{
+            searchWantedBox.value = "";
+            currentWantedSearch = "";
+            clearWantedSearch.style.display = "none";
+            searchWantedBox.focus();
+            renderWantedGrid();
+        }});
+
+        // Bouton retour en haut
+        const scrollTopWantedBtn = document.getElementById('scrollTopWantedBtn');
+        window.addEventListener('scroll', () => {{ if (window.scrollY > 300) scrollTopWantedBtn.classList.add('visible'); else scrollTopWantedBtn.classList.remove('visible'); }});
+        scrollTopWantedBtn.addEventListener('click', () => window.scrollTo({{ top: 0, behavior: 'smooth' }}));
+
+        // Premier rendu au chargement
+        renderWantedGrid();
     </script>
 </body>
 </html>
 """
 
-with open("Wanted.html", "w", encoding="utf-8") as file_wanted:
-    file_wanted.write(html_wanted_complet)
-print("✨ Fichier Wanted.html créé avec succès !")
-
-
-# =====================================================================
-# TRANSFERT AUTOMATIQUE VERS GITHUB
-# =====================================================================
-print("\n🚀 Transfert automatique vers GitHub en cours...")
+# Sauvegarde de Wanted.html
 try:
-    os.system("git add index.html Wanted.html vinyles_cache.json pochettes/*")
-    os.system('git commit -m "Mise a jour automatique de la collection et de la liste Wanted via generateur.py"')
-    os.system("git push origin main")
-    print("\n🟢 [SUCCÈS] Tout a été traité et synchronisé sur votre GitHub ! Vous pouvez rafraîchir votre site.")
-except Exception as github_err:
-    print(f"⚠️ Échec de la synchronisation automatique Git : {github_err}")
+    with open("Wanted.html", "w", encoding="utf-8") as file:
+        file.write(html_wanted_complet)
+    print("🎉 Fichier 'Wanted.html' mis à jour et harmonisé avec succès.")
+except Exception as e:
+    print(f"❌ Erreur lors de la création du fichier Wanted HTML : {e}")
