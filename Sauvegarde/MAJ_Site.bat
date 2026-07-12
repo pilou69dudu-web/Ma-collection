@@ -9,7 +9,7 @@ echo =====================================================================
 echo                       MENU GESTION DE LA COLLECTION
 echo =====================================================================
 echo.
-echo [1] Mise a jour de ma collection de vinyles (Page Web)
+echo [1] Générer la Page Web et envoyer sur GitHub
 echo [2] Mise a jour des prix haut (Discogs API - Excel)
 echo [3] Quitter
 echo.
@@ -30,19 +30,32 @@ goto menu
 :option1
 cls
 echo =====================================================================
-echo             GÉNÉRATION DE LA PAGE WEB ET ANALYSE DE L'EXCEL
+echo             GÉNÉRATION DE LA PAGE WEB ET ENVOI SUR GITHUB
 echo =====================================================================
 echo.
+echo 1. Génération de la collection de Vinyles...
+echo --------------------------------------------------
 python generateur.py
+
 echo.
-echo Fin de l'exécution.
+echo 2. Envoi des mises à jour sur GitHub...
+echo --------------------------------------------------
+:: Ajoute les fichiers modifiés et les nouvelles pochettes
+git add .
+git commit -m "Mise a jour automatique de la collection et de la page Wanted"
+git push origin main
+
+echo.
+echo --------------------------------------------------
+echo Terminé ! Votre application et votre site sont à jour.
+echo --------------------------------------------------
 pause
 goto menu
 
 :option2
 cls
 echo =====================================================================
-echo                    MISE À JOUR DES PRIX DEPUIS DISCOGS
+echo                     MISE À JOUR DES PRIX DEPUIS DISCOGS
 echo =====================================================================
 echo.
 python update_prices.py
