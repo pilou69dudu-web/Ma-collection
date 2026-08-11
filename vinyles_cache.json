@@ -1028,7 +1028,7 @@
         "comment": "",
         "isNew": false
     },
-    "8d80e80caca61b18f45faf474f6df66d": {
+    "6641a665e70ad0ee123497607caae3a9": {
         "id": "49",
         "type": "ALBUM",
         "year": "1980",
@@ -1047,9 +1047,9 @@
         "pochette": "pochettes/2766216.jpg",
         "prix": "40€",
         "comment": "",
-        "isNew": false
+        "isNew": true
     },
-    "c5caa5c9645a06569d7e10e00761e220": {
+    "3140e7b4e031f5e93b29f965842a8b67": {
         "id": "50",
         "type": "ALBUM",
         "year": "1979",
@@ -1068,7 +1068,7 @@
         "pochette": "pochettes/6353294.jpg",
         "prix": "29€",
         "comment": "",
-        "isNew": false
+        "isNew": true
     },
     "af4f59aa1517e55ce04695112f431a65": {
         "id": "51",
@@ -1679,7 +1679,7 @@
         "comment": "",
         "isNew": false
     },
-    "098c608cb52ad077c7fa3e2373c3847f": {
+    "5e79d21ced506d230bd31183b86386f4": {
         "id": "80",
         "type": "SINGLE",
         "year": "1983",
@@ -1698,7 +1698,7 @@
         "pochette": "pochettes/152467.jpg",
         "prix": "25€",
         "comment": "",
-        "isNew": false
+        "isNew": true
     },
     "cbbc75ab2f823fcb6dd0873d8df93a6b": {
         "id": "81",
@@ -1868,7 +1868,7 @@
         "comment": "",
         "isNew": false
     },
-    "9dfc91ad0df4fd07acf4bd9f35efcb99": {
+    "23cea66b706bd9efa60679ac6f29eba7": {
         "id": "89",
         "type": "SINGLE",
         "year": "1979",
@@ -1887,7 +1887,7 @@
         "pochette": "pochettes/2056654.jpg",
         "prix": "11€",
         "comment": "",
-        "isNew": false
+        "isNew": true
     },
     "bb71b8e1374889438a3b93eeb45bd854": {
         "id": "90",
@@ -2813,7 +2813,7 @@
         "comment": "",
         "isNew": false
     },
-    "1799795674c6fffdeeb37b7e85ff6c0c": {
+    "70a32862a4d9586ce36a1aa818957293": {
         "id": "134",
         "type": "SINGLE",
         "year": "1983",
@@ -2832,7 +2832,7 @@
         "pochette": "pochettes/212463.jpg",
         "prix": "38€",
         "comment": "",
-        "isNew": false
+        "isNew": true
     },
     "9e572f8b579f0bf02649d7269008ce93": {
         "id": "135",
@@ -3758,7 +3758,7 @@
         "comment": "",
         "isNew": false
     },
-    "09f59ac98e13cbd587f583097cfb8b66": {
+    "983c4b29a4f2cb29f3282435d97fc966": {
         "id": "179",
         "type": "SINGLE",
         "year": "1986",
@@ -3777,7 +3777,7 @@
         "pochette": "pochettes/492074.jpg",
         "prix": "8€",
         "comment": "",
-        "isNew": false
+        "isNew": true
     },
     "afd3838062727961b6a0bc99f042c9bc": {
         "id": "180",
@@ -3947,7 +3947,7 @@
         "comment": "",
         "isNew": false
     },
-    "53e4ded97f851b9c13152f91adb104bc": {
+    "462e6c680a8b88cc171209bf4bd3d86e": {
         "id": "188",
         "type": "ALBUM",
         "year": "1981",
@@ -3957,16 +3957,16 @@
         "titleA": "On The Road Again",
         "qte": 1,
         "durationA": "05:52:00",
-        "bpmA": "nan",
+        "bpmA": "117",
         "titleB": "nan",
         "durationB": "nan",
-        "bpmB": "nan",
+        "bpmB": "LP",
         "label": "Barclay",
         "url": "https://www.discogs.com/release/1812252-Barrabas-Piel-De-Barrabas",
         "pochette": "pochettes/1812252.jpg",
         "prix": "15€",
         "comment": "",
-        "isNew": false
+        "isNew": true
     },
     "eebd4508a24020598766b780f6dd004e": {
         "id": "189",
@@ -4535,7 +4535,7 @@
         "comment": "",
         "isNew": false
     },
-    "ce14bcf8344b74682b61da11ba9aca5e": {
+    "790c36181a3c1d815b0c4271b1198fad": {
         "id": "216",
         "type": "ALBUM",
         "year": "1976",
@@ -4554,7 +4554,7 @@
         "pochette": "pochettes/5772566.jpg",
         "prix": "15€",
         "comment": "",
-        "isNew": false
+        "isNew": true
     },
     "55f8c1fcf510a64d035dc2f73a5c3684": {
         "id": "217",
@@ -10142,7 +10142,7 @@
         "comment": "",
         "isNew": false
     },
-    "731b27009432c7e29ce672f853d5407e": {
+    "ec8477b4afe6075017c5240cc79ce671": {
         "id": "483",
         "type": "ALBUM",
         "year": "1984",
@@ -10153,15 +10153,15 @@
         "qte": 1,
         "durationA": "nan",
         "bpmA": "LP",
-        "titleB": "nan",
-        "durationB": "nan",
-        "bpmB": "LP",
+        "titleB": "I Feel For You",
+        "durationB": "05:44:00",
+        "bpmB": "125",
         "label": "Warner Bros. Records",
         "url": "https://www.discogs.com/release/700471-Chaka-Khan-I-Feel-For-You",
         "pochette": "pochettes/700471.jpg",
         "prix": "19€",
         "comment": "",
-        "isNew": false
+        "isNew": true
     },
     "2a5a7c203f3467804b0a0eb2dcf6233f": {
         "id": "484",
@@ -15245,7 +15245,7 @@
         "comment": "",
         "isNew": false
     },
-    "91ecff1734f31e2e1611511661051c29": {
+    "43f2f6527ea6f466bbed2e9976223969": {
         "id": "726",
         "type": "SINGLE",
         "year": "1980",
@@ -15264,7 +15264,7 @@
         "pochette": "pochettes/3108236.jpg",
         "prix": "40€",
         "comment": "",
-        "isNew": false
+        "isNew": true
     },
     "c00119c3b380821c2aacbf36f077f859": {
         "id": "727",
@@ -23036,7 +23036,7 @@
         "comment": "",
         "isNew": false
     },
-    "8f8c540a971e9521cee65a5995d96d5e": {
+    "66834d2c63727827ab5fbbe4c6dad13d": {
         "id": "1097",
         "type": "ALBUM",
         "year": "1982",
@@ -23047,15 +23047,15 @@
         "qte": 1,
         "durationA": "nan",
         "bpmA": "LP",
-        "titleB": "nan",
-        "durationB": "nan",
-        "bpmB": "LP",
+        "titleB": "Love Fever",
+        "durationB": "06:37:00",
+        "bpmB": "106",
         "label": "EMI",
         "url": "https://www.discogs.com/release/855855-Gayle-Adams-Love-Fever",
         "pochette": "pochettes/855855.jpg",
         "prix": "40€",
         "comment": "",
-        "isNew": false
+        "isNew": true
     },
     "46093dd7dee6f90239be63e57d7956b0": {
         "id": "1098",
@@ -23981,7 +23981,7 @@
         "comment": "",
         "isNew": false
     },
-    "629b86f22086e93ce4222e26299b0ea9": {
+    "b150aeb20426f1b9892d806835291b95": {
         "id": "1142",
         "type": "SINGLE",
         "year": "1983",
@@ -24000,7 +24000,7 @@
         "pochette": "pochettes/1599210.jpg",
         "prix": "50€",
         "comment": "",
-        "isNew": false
+        "isNew": true
     },
     "7a498607b4e06f147eceb4a97c5e773a": {
         "id": "1143",
@@ -25598,13 +25598,13 @@
         "comment": "",
         "isNew": false
     },
-    "e8e4b9bf0884f36272a8346ca9c8ba40": {
+    "0e74ae404d51685bd825eea611ae489a": {
         "id": "1219",
         "type": "ALBUM",
         "year": "1982",
         "country": "France",
         "genre": "Funk",
-        "artist": "HERBIE HANCOOK",
+        "artist": "HERBIE HANCOCK",
         "titleA": "",
         "qte": 1,
         "durationA": "nan",
@@ -25617,7 +25617,7 @@
         "pochette": "pochettes/149894.jpg",
         "prix": "21€",
         "comment": "",
-        "isNew": false
+        "isNew": true
     },
     "d0e1eb19941729625bfd6cf44f5e81c8": {
         "id": "1220",
@@ -26081,7 +26081,7 @@
         "comment": "",
         "isNew": false
     },
-    "768463b803f11a4e38aaa13264d3e450": {
+    "dee8504d221aac603b82780ba8a543cb": {
         "id": "1242",
         "type": "SINGLE",
         "year": "1977",
@@ -26100,7 +26100,7 @@
         "pochette": "pochettes/351249.jpg",
         "prix": "34€",
         "comment": "",
-        "isNew": false
+        "isNew": true
     },
     "85041da243a953b034e10c2bf489b679": {
         "id": "1243",
@@ -26165,7 +26165,7 @@
         "comment": "",
         "isNew": false
     },
-    "976ed7975b0d84cf01bcf6af9554d203": {
+    "a1851ca19ae7c67f68da4886a215b6b2": {
         "id": "1246",
         "type": "SINGLE",
         "year": "1985",
@@ -26184,7 +26184,7 @@
         "pochette": "pochettes/5773629.jpg",
         "prix": "7€",
         "comment": "",
-        "isNew": false
+        "isNew": true
     },
     "5a07b576873612b2875228d69d070e8b": {
         "id": "1247",
@@ -26879,26 +26879,26 @@
         "comment": "",
         "isNew": false
     },
-    "ee652ffe005e9019f06e16390480c791": {
+    "17279a7711ed5195856b60c6c33fabfa": {
         "id": "1280",
         "type": "ALBUM",
         "year": "1983",
         "country": "France",
         "genre": "Funk",
         "artist": "IMAGINATION",
-        "titleA": "Night Dubbing",
+        "titleA": "Music And Lights / Flashback / Just An Illusion / So Good, So Right",
         "qte": 1,
-        "durationA": "nan",
-        "bpmA": "LP",
-        "titleB": "nan",
-        "durationB": "nan",
-        "bpmB": "LP",
+        "durationA": "5:40 / 4:45 / 6:36 / 4:40",
+        "bpmA": "102 / 110 / 107 / 106",
+        "titleB": "Burnin' Up / Heart 'n' Soul / Changes / Body Talk",
+        "durationB": "4:22 / 4:10 / 6:28 / 4:45",
+        "bpmB": "114 / 129 / 113 / 82",
         "label": "Clemence Melody",
         "url": "https://www.discogs.com/release/715163-Imagination-Night-Dubbing",
         "pochette": "pochettes/715163.jpg",
         "prix": "13€",
         "comment": "",
-        "isNew": false
+        "isNew": true
     },
     "cefa3303fdebf04ab6f65a647dae9ca4": {
         "id": "1281",
@@ -27404,7 +27404,7 @@
         "comment": "",
         "isNew": false
     },
-    "527396b97afa0119daaaf3be150f64cf": {
+    "5c9a2e82eadda914b1a91ac81960b729": {
         "id": "1305",
         "type": "SINGLE",
         "year": "1978",
@@ -27415,7 +27415,7 @@
         "qte": 1,
         "durationA": "09:46:00",
         "bpmA": "113",
-        "titleB": "I Got My Mind Made Up",
+        "titleB": "Crying",
         "durationB": "07:32:00",
         "bpmB": "129",
         "label": "Salsoul Records",
@@ -27423,7 +27423,7 @@
         "pochette": "pochettes/151387.jpg",
         "prix": "14€",
         "comment": "",
-        "isNew": false
+        "isNew": true
     },
     "9e362a0e2c5243cdfbf0140dd39ab940": {
         "id": "1306",
@@ -28034,7 +28034,7 @@
         "comment": "",
         "isNew": false
     },
-    "55acdeb651c59fac42a67ff8047e15ec": {
+    "5b0f3ccf76c33c1f98a89756a084c0f2": {
         "id": "1335",
         "type": "SINGLE",
         "year": "1979",
@@ -28053,7 +28053,7 @@
         "pochette": "pochettes/1306106.jpg",
         "prix": "25€",
         "comment": "",
-        "isNew": false
+        "isNew": true
     },
     "718e0a58809715ed71a50b31d156de25": {
         "id": "1336",
@@ -28265,14 +28265,14 @@
         "comment": "",
         "isNew": false
     },
-    "0efe8a603f431a10345376ab2e8ad310": {
+    "ae129d2ead7838dbdf9c8eb896d9b3dd": {
         "id": "1346",
         "type": "ALBUM",
         "year": "1975",
         "country": "France",
         "genre": "Funk",
         "artist": "JAMES BROWN",
-        "titleA": "Sex Machine Part I And Part II",
+        "titleA": "Sex Machine Part I And Part II / I Feel Good",
         "qte": 1,
         "durationA": "12:05:00",
         "bpmA": "109",
@@ -28284,7 +28284,7 @@
         "pochette": "pochettes/1433146.jpg",
         "prix": "19€",
         "comment": "",
-        "isNew": false
+        "isNew": true
     },
     "9f5b46621e3686047bf9bf05e8271bf2": {
         "id": "1347",
@@ -28874,7 +28874,7 @@
         "comment": "",
         "isNew": false
     },
-    "2e4f57c5db1479f9be44d1886a1b50ab": {
+    "146feb3ef9e87afb67e16e9e48ed7974": {
         "id": "1375",
         "type": "SINGLE",
         "year": "1984",
@@ -28891,9 +28891,9 @@
         "label": "Epic",
         "url": "https://www.discogs.com/release/1303373-Jean-Jacques-Goldman-Encore-Un-Matin",
         "pochette": "pochettes/1303373.jpg",
-        "prix": "27€",
+        "prix": "99€",
         "comment": "",
-        "isNew": false
+        "isNew": true
     },
     "9e434f3affd51300b0aee2ac7b502afe": {
         "id": "1376",
@@ -28937,7 +28937,7 @@
         "comment": "",
         "isNew": false
     },
-    "e2738d9dca8df3c347d1346fe2b082d2": {
+    "4949ffcd748b88658bd6403dd7c288a0": {
         "id": "1378",
         "type": "SINGLE",
         "year": "1985",
@@ -28954,11 +28954,11 @@
         "label": "Epic",
         "url": "https://www.discogs.com/release/1059760-Jean-Jacques-Goldman-Je-Marche-Seul",
         "pochette": "pochettes/1059760.jpg",
-        "prix": "38€",
+        "prix": "16€",
         "comment": "",
-        "isNew": false
+        "isNew": true
     },
-    "2add319d61ec729afd26ee6825d13073": {
+    "f3c373d85829d28813c2dda9555c756c": {
         "id": "1379",
         "type": "SINGLE",
         "year": "1986",
@@ -28975,11 +28975,11 @@
         "label": "Epic",
         "url": "https://www.discogs.com/release/1805887-Jean-Jacques-Goldman-La-Vie-Par-Procuration-En-Public",
         "pochette": "pochettes/1805887.jpg",
-        "prix": "15€",
+        "prix": "12€",
         "comment": "",
-        "isNew": false
+        "isNew": true
     },
-    "506a45c5c578e343737a5c340176c315": {
+    "6c83daf47491af422a3973136294d13d": {
         "id": "1380",
         "type": "MEDLEY",
         "year": "1987",
@@ -28996,11 +28996,11 @@
         "label": "Epic",
         "url": "https://www.discogs.com/release/2056116-JJ-Goldman-En-Public-Medley",
         "pochette": "pochettes/2056116.jpg",
-        "prix": "10€",
+        "prix": "30€",
         "comment": "",
-        "isNew": false
+        "isNew": true
     },
-    "eb836970c29c97b0c34b214ed260c64c": {
+    "cbbf5019987e7848f862425481f37ff2": {
         "id": "1381",
         "type": "SINGLE",
         "year": "1985",
@@ -29017,9 +29017,9 @@
         "label": "Epic",
         "url": "https://www.discogs.com/release/2306729-Jean-Jacques-Goldman-Pas-Toi",
         "pochette": "pochettes/2306729.jpg",
-        "prix": "5€",
+        "prix": "22€",
         "comment": "",
-        "isNew": false
+        "isNew": true
     },
     "f398d359a99c3236f7fa2ed155590d61": {
         "id": "1382",
@@ -34145,7 +34145,7 @@
         "comment": "",
         "isNew": false
     },
-    "ada40fc7e527278223ab95f273a5ed3c": {
+    "48aa9d58e943eb2e73961907aaa4cf92": {
         "id": "1626",
         "type": "ALBUM",
         "year": "1982",
@@ -34164,9 +34164,9 @@
         "pochette": "pochettes/1695403.jpg",
         "prix": "30€",
         "comment": "",
-        "isNew": false
+        "isNew": true
     },
-    "3d95f0e2621076384a0ea0a9b3656c64": {
+    "33a2f6294c2588db5dff3016aaf94a7b": {
         "id": "1627",
         "type": "SINGLE",
         "year": "1982",
@@ -34185,7 +34185,7 @@
         "pochette": "pochettes/535768.jpg",
         "prix": "10€",
         "comment": "",
-        "isNew": false
+        "isNew": true
     },
     "8d83eaf1a3b4a7b599dedaf51a49e36d": {
         "id": "1628",
@@ -35678,7 +35678,7 @@
         "comment": "",
         "isNew": false
     },
-    "2c87ef24107caabf35734fe4e24f53dd": {
+    "1c7dd6c129d2fc588c151ab5bb9704b5": {
         "id": "1699",
         "type": "SINGLE",
         "year": "1986",
@@ -35697,7 +35697,7 @@
         "pochette": "pochettes/1276905.jpg",
         "prix": "15€",
         "comment": "",
-        "isNew": false
+        "isNew": true
     },
     "d6f5cc5c3460ca19ca302fc5dbd1b028": {
         "id": "1700",
@@ -35825,26 +35825,26 @@
         "comment": "",
         "isNew": false
     },
-    "41e3b3d8b727ab35d22109b8ed1d01de": {
+    "b054af94d10817849b52ffdf227ad624": {
         "id": "1706",
         "type": "ALBUM",
         "year": "1980",
         "country": "France",
         "genre": "Disco",
         "artist": "LIPPS, INC.",
-        "titleA": "Mouth To Mouth",
+        "titleA": "Funkytown",
         "qte": 2,
-        "durationA": "nan",
-        "bpmA": "LP",
-        "titleB": "nan",
-        "durationB": "nan",
-        "bpmB": "LP",
+        "durationA": "07:51:00",
+        "bpmA": "122",
+        "titleB": "Rock It",
+        "durationB": "05:40:00",
+        "bpmB": "128",
         "label": "Casablanca",
         "url": "https://www.discogs.com/release/717273-Lipps-Inc-Mouth-To-Mouth",
         "pochette": "pochettes/717273.jpg",
         "prix": "20€",
         "comment": "",
-        "isNew": false
+        "isNew": true
     },
     "d41707c6eb6a9ffd4aad1fff0b814cc1": {
         "id": "1707",
@@ -40676,7 +40676,7 @@
         "comment": "",
         "isNew": false
     },
-    "e12a8b9e2f45cc974a95feb617beb828": {
+    "bd901eea9103eb063ec58f26a254371f": {
         "id": "1937",
         "type": "SINGLE",
         "year": "1981",
@@ -40695,7 +40695,7 @@
         "pochette": "pochettes/1378347.jpg",
         "prix": "25€",
         "comment": "",
-        "isNew": false
+        "isNew": true
     },
     "8b1fdea92018f0af7f33be92c7ac438c": {
         "id": "1938",
@@ -43196,7 +43196,7 @@
         "comment": "",
         "isNew": false
     },
-    "dc6e0568a57c4e6ed37c8d9239954fa3": {
+    "d2b9ae4123f0d13b56f8f4527da9100d": {
         "id": "2057",
         "type": "SINGLE",
         "year": "1986",
@@ -43215,7 +43215,7 @@
         "pochette": "pochettes/1053479.jpg",
         "prix": "25€",
         "comment": "",
-        "isNew": false
+        "isNew": true
     },
     "3513c395706516f3f7876e727548aced": {
         "id": "2058",
@@ -48047,7 +48047,7 @@
         "comment": "",
         "isNew": false
     },
-    "0542587a10286078e07e4064c00111f4": {
+    "94a191d9243657dd97e00fda1126cb3c": {
         "id": "2288",
         "type": "SINGLE",
         "year": "1981",
@@ -48066,7 +48066,7 @@
         "pochette": "pochettes/699752.jpg",
         "prix": "15€",
         "comment": "",
-        "isNew": false
+        "isNew": true
     },
     "f8d10509eb3aa7a5386f063b4d74a743": {
         "id": "2289",
@@ -48635,18 +48635,18 @@
         "comment": "",
         "isNew": false
     },
-    "4e5d7927988c79d0713b040b04625224": {
+    "2bacc333c73598d8fb9177a6452ed5cb": {
         "id": "2316",
         "type": "SINGLE",
         "year": "????",
         "country": "US",
         "genre": "Funk",
         "artist": "RAY PARKER JR. & RAYDIO / THE LIMIT",
-        "titleA": "It's Time To Party Now",
+        "titleA": "It's Time To Party Now(1980)",
         "qte": 1,
         "durationA": "05:58:00",
         "bpmA": "111",
-        "titleB": "She's So Divine",
+        "titleB": "She's So Divine(1982)",
         "durationB": "06:38:00",
         "bpmB": "115",
         "label": "Dance Classics",
@@ -48654,7 +48654,7 @@
         "pochette": "pochettes/1203031.jpg",
         "prix": "22€",
         "comment": "",
-        "isNew": false
+        "isNew": true
     },
     "480a1946e3ac4bb1ae01825c88948bea": {
         "id": "2317",
@@ -51239,7 +51239,7 @@
         "comment": "",
         "isNew": false
     },
-    "eb802c27c30b0b8907ced642398f3ac4": {
+    "75ad254f74b37a72c27d1328bfcc3e19": {
         "id": "2440",
         "type": "SINGLE",
         "year": "1983",
@@ -51258,7 +51258,7 @@
         "pochette": "pochettes/7801013.jpg",
         "prix": "20€",
         "comment": "",
-        "isNew": false
+        "isNew": true
     },
     "ad1fe1eed1ce516fdf6b6bf9c6591da4": {
         "id": "2441",
@@ -55943,7 +55943,7 @@
         "comment": "",
         "isNew": false
     },
-    "96f424fa895657aa96f43e02d4b074c2": {
+    "123b40f66915c70b63b93bcc5e9d50e7": {
         "id": "2664",
         "type": "SINGLE",
         "year": "1983",
@@ -55962,7 +55962,7 @@
         "pochette": "pochettes/2736268.jpg",
         "prix": "30€",
         "comment": "",
-        "isNew": false
+        "isNew": true
     },
     "37dd36a2f4fbbb0b8c60e56b50d97beb": {
         "id": "2665",
@@ -56300,7 +56300,7 @@
         "comment": "",
         "isNew": false
     },
-    "efb23b92c454104e2c10cc997566d180": {
+    "6c1863a219b3d2e4e946b8a8c670de2a": {
         "id": "2681",
         "type": "SINGLE",
         "year": "1983",
@@ -56319,7 +56319,7 @@
         "pochette": "pochettes/12652657.jpg",
         "prix": "14€",
         "comment": "",
-        "isNew": false
+        "isNew": true
     },
     "24cb7f1c5c7cd50668b98cb63a0e49a0": {
         "id": "2682",
@@ -58400,7 +58400,7 @@
         "comment": "",
         "isNew": false
     },
-    "cc8de4711b87b61c232bc11d07ecf91c": {
+    "f4806bfae56caa7a64080580f0b28b71": {
         "id": "2781",
         "type": "SINGLE",
         "year": "1977",
@@ -58419,7 +58419,7 @@
         "pochette": "pochettes/844005.jpg",
         "prix": "65€",
         "comment": "",
-        "isNew": false
+        "isNew": true
     },
     "3ad6c339ce55bb88d3414344990c1497": {
         "id": "2782",
@@ -59429,7 +59429,7 @@
         "comment": "",
         "isNew": false
     },
-    "135de3099dfca3bc16b72b1ea274f098": {
+    "1f18870fb50780cc685bbd7e96f1317b": {
         "id": "2830",
         "type": "SINGLE",
         "year": "1982",
@@ -59448,9 +59448,9 @@
         "pochette": "pochettes/188600.jpg",
         "prix": "31€",
         "comment": "",
-        "isNew": false
+        "isNew": true
     },
-    "bd4d153b47048bb18b70de515510ab55": {
+    "a8d33419e8aa8341f756682030c2b8d2": {
         "id": "2831",
         "type": "SINGLE",
         "year": "1982",
@@ -59469,7 +59469,7 @@
         "pochette": "pochettes/528262.jpg",
         "prix": "22€",
         "comment": "",
-        "isNew": false
+        "isNew": true
     },
     "692f0a0e3cc4e18e5a110a1acd5e0502": {
         "id": "2832",
@@ -60836,7 +60836,7 @@
         "comment": "",
         "isNew": false
     },
-    "78553ffd404d3eb9345f3263f15fd157": {
+    "8c5f0e74b2a2fbe827a07a2735443e7f": {
         "id": "2897",
         "type": "ALBUM",
         "year": "1980",
@@ -60855,9 +60855,9 @@
         "pochette": "pochettes/13714774.jpg",
         "prix": "23€",
         "comment": "",
-        "isNew": false
+        "isNew": true
     },
-    "8528414ab760582b95eae0743722d899": {
+    "16f7035a8a75f99d39d337bd24c8e775": {
         "id": "2898",
         "type": "ALBUM",
         "year": "1979",
@@ -60876,7 +60876,7 @@
         "pochette": "pochettes/795325.jpg",
         "prix": "34€",
         "comment": "",
-        "isNew": false
+        "isNew": true
     },
     "07103de1e9db52f269abdcc08933e529": {
         "id": "2899",
@@ -61298,7 +61298,7 @@
         "comment": "",
         "isNew": false
     },
-    "5c8333672d9a60579f7752b29864c38a": {
+    "80a5d76a602ab0e81fffd9331414600b": {
         "id": "2919",
         "type": "ALBUM",
         "year": "1987",
@@ -61317,7 +61317,7 @@
         "pochette": "pochettes/168136.jpg",
         "prix": "30€",
         "comment": "",
-        "isNew": false
+        "isNew": true
     },
     "6bcfc5023a8d11ab0f54548bfc3eb4ce": {
         "id": "2920",
@@ -62138,7 +62138,7 @@
         "comment": "",
         "isNew": false
     },
-    "e3922b80f1601984e8b8c1ea09113af3": {
+    "c42b6ee7b34a1aac361beb68548b9579": {
         "id": "2959",
         "type": "SINGLE",
         "year": "1985",
@@ -62157,7 +62157,7 @@
         "pochette": "pochettes/1801886.jpg",
         "prix": "16€",
         "comment": "",
-        "isNew": false
+        "isNew": true
     },
     "12dbf80d7c78eb33739defcbcc46de31": {
         "id": "2960",
@@ -63629,18 +63629,18 @@
         "comment": "",
         "isNew": false
     },
-    "3a9a2880bff83b27b16398e090a12f1d": {
+    "27034f328f37b1ae62f3a0553e4e469e": {
         "id": "3030",
         "type": "SINGLE",
         "year": "1988",
         "country": "Canada",
         "genre": "Funk",
         "artist": "TRACY WEBER",
-        "titleA": "Sure Shot",
+        "titleA": "Sure Shot(1981)",
         "qte": 1,
         "durationA": "07:18:00",
         "bpmA": "117",
-        "titleB": "Sure Shot (Inst.) / One Step At A Time",
+        "titleB": "Sure Shot (Inst.)(1981) / One Step At A Time(1983)",
         "durationB": "5:42 / 5:57",
         "bpmB": "117 / 123",
         "label": "Unidisc",
@@ -63648,7 +63648,7 @@
         "pochette": "pochettes/12703163.jpg",
         "prix": "18€",
         "comment": "",
-        "isNew": false
+        "isNew": true
     },
     "83e0f07133997b8fdc793a8429037fc6": {
         "id": "3031",
@@ -64595,7 +64595,7 @@
         "comment": "",
         "isNew": false
     },
-    "04a1db36e45978cc15ad896654dff8a2": {
+    "011a0699ac3313f0ca24a3f406363663": {
         "id": "3076",
         "type": "SINGLE",
         "year": "1985",
@@ -64614,7 +64614,7 @@
         "pochette": "pochettes/413712.jpg",
         "prix": "18€",
         "comment": "",
-        "isNew": false
+        "isNew": true
     },
     "9f610bfbd6ea4a40b0a33d5a899028c1": {
         "id": "3077",
@@ -66548,7 +66548,7 @@
         "comment": "",
         "isNew": false
     },
-    "1963b683907a1aea0de31b6c3c3eedee": {
+    "21548e2da6bb5457f1333ebed3f4ed84": {
         "id": "3169",
         "type": "SINGLE",
         "year": "1981",
@@ -66567,7 +66567,7 @@
         "pochette": "pochettes/1117846.jpg",
         "prix": "14€",
         "comment": "",
-        "isNew": false
+        "isNew": true
     },
     "a12b5b905cb0f22fe3b4b3ef0092e110": {
         "id": "3170",
@@ -68311,5 +68311,26 @@
         "prix": "13€",
         "comment": "",
         "isNew": false
+    },
+    "db1ea331cdaa62482d1c977f786eb68e": {
+        "id": "3253",
+        "type": "ALBUM",
+        "year": "1979",
+        "country": "Belgium",
+        "genre": "Ambiance",
+        "artist": "CARLOS",
+        "titleA": "Big Bisou",
+        "qte": 1,
+        "durationA": "03:30:00",
+        "bpmA": "121",
+        "titleB": "nan",
+        "durationB": "nan",
+        "bpmB": "LP",
+        "label": "Prestige For Pleasure",
+        "url": "https://www.discogs.com/release/3534023-Carlos-Big-Bisou",
+        "pochette": "pochettes/3534023.jpg",
+        "prix": "5€",
+        "comment": "",
+        "isNew": true
     }
 }
