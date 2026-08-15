@@ -1047,7 +1047,7 @@
         "pochette": "pochettes/2766216.jpg",
         "prix": "40€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "3140e7b4e031f5e93b29f965842a8b67": {
         "id": "50",
@@ -1068,7 +1068,7 @@
         "pochette": "pochettes/6353294.jpg",
         "prix": "29€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "af4f59aa1517e55ce04695112f431a65": {
         "id": "51",
@@ -1698,7 +1698,7 @@
         "pochette": "pochettes/152467.jpg",
         "prix": "25€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "cbbc75ab2f823fcb6dd0873d8df93a6b": {
         "id": "81",
@@ -1887,7 +1887,7 @@
         "pochette": "pochettes/2056654.jpg",
         "prix": "11€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "bb71b8e1374889438a3b93eeb45bd854": {
         "id": "90",
@@ -2832,7 +2832,7 @@
         "pochette": "pochettes/212463.jpg",
         "prix": "38€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "9e572f8b579f0bf02649d7269008ce93": {
         "id": "135",
@@ -3777,7 +3777,7 @@
         "pochette": "pochettes/492074.jpg",
         "prix": "8€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "afd3838062727961b6a0bc99f042c9bc": {
         "id": "180",
@@ -3966,7 +3966,7 @@
         "pochette": "pochettes/1812252.jpg",
         "prix": "15€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "eebd4508a24020598766b780f6dd004e": {
         "id": "189",
@@ -4554,7 +4554,7 @@
         "pochette": "pochettes/5772566.jpg",
         "prix": "15€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "55f8c1fcf510a64d035dc2f73a5c3684": {
         "id": "217",
@@ -6089,7 +6089,7 @@
         "comment": "",
         "isNew": false
     },
-    "7b57403557801f740273b4a4ab7104fa": {
+    "6e8d9b25af94b2dfba601de9e1e317f4": {
         "id": "290",
         "type": "ALBUM",
         "year": "1987",
@@ -6097,7 +6097,7 @@
         "genre": "Reggae",
         "artist": "BOB MARLEY & THE WAILERS",
         "titleA": "Exodus",
-        "qte": 1,
+        "qte": 2,
         "durationA": "nan",
         "bpmA": "LP",
         "titleB": "nan",
@@ -6106,9 +6106,9 @@
         "label": "Island Records",
         "url": "https://www.discogs.com/release/685303-Bob-Marley-The-Wailers-Exodus",
         "pochette": "pochettes/685303.jpg",
-        "prix": "25€",
+        "prix": "32€",
         "comment": "",
-        "isNew": false
+        "isNew": true
     },
     "b0c8ec79c4f73e70af0305027b6bb508": {
         "id": "291",
@@ -6152,7 +6152,7 @@
         "comment": "",
         "isNew": false
     },
-    "1483703016cd47ad03a4c334e1ea8fb8": {
+    "3d868c0ee221d9dea52c9494e71d6bf6": {
         "id": "293",
         "type": "ALBUM",
         "year": "1976",
@@ -6160,7 +6160,7 @@
         "genre": "Reggae",
         "artist": "BOB MARLEY & THE WAILERS",
         "titleA": "Rastaman Vibration",
-        "qte": 1,
+        "qte": 2,
         "durationA": "nan",
         "bpmA": "LP",
         "titleB": "nan",
@@ -6169,9 +6169,9 @@
         "label": "Island Records",
         "url": "https://www.discogs.com/release/11149951-Bob-Marley-The-Wailers-Rastaman-Vibration",
         "pochette": "pochettes/11149951.jpg",
-        "prix": "25€",
+        "prix": "35€",
         "comment": "",
-        "isNew": false
+        "isNew": true
     },
     "cde1515d16c8e7dab3fd8ca283c5fede": {
         "id": "294",
@@ -10161,7 +10161,7 @@
         "pochette": "pochettes/700471.jpg",
         "prix": "19€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "2a5a7c203f3467804b0a0eb2dcf6233f": {
         "id": "484",
@@ -15264,7 +15264,7 @@
         "pochette": "pochettes/3108236.jpg",
         "prix": "40€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "c00119c3b380821c2aacbf36f077f859": {
         "id": "727",
@@ -17450,7 +17450,7 @@
         "comment": "",
         "isNew": false
     },
-    "31b3309a7c18c0fe5f227dc9e8c11da5": {
+    "fdec8eed64211a12c176d2cd4d56fed8": {
         "id": "831",
         "type": "ALBUM",
         "year": "1975",
@@ -17458,7 +17458,7 @@
         "genre": "Disco",
         "artist": "DONNA SUMMER",
         "titleA": "Love To Love You Baby",
-        "qte": 1,
+        "qte": 2,
         "durationA": "16:50:00",
         "bpmA": "097",
         "titleB": "nan",
@@ -17469,7 +17469,7 @@
         "pochette": "pochettes/447605.jpg",
         "prix": "30€",
         "comment": "",
-        "isNew": false
+        "isNew": true
     },
     "43e4729fccdba8337dde0ffc3c6b6712": {
         "id": "832",
@@ -23055,7 +23055,7 @@
         "pochette": "pochettes/855855.jpg",
         "prix": "40€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "46093dd7dee6f90239be63e57d7956b0": {
         "id": "1098",
@@ -24000,7 +24000,7 @@
         "pochette": "pochettes/1599210.jpg",
         "prix": "50€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "7a498607b4e06f147eceb4a97c5e773a": {
         "id": "1143",
@@ -25617,7 +25617,7 @@
         "pochette": "pochettes/149894.jpg",
         "prix": "21€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "d0e1eb19941729625bfd6cf44f5e81c8": {
         "id": "1220",
@@ -26100,7 +26100,7 @@
         "pochette": "pochettes/351249.jpg",
         "prix": "34€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "85041da243a953b034e10c2bf489b679": {
         "id": "1243",
@@ -26184,7 +26184,7 @@
         "pochette": "pochettes/5773629.jpg",
         "prix": "7€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "5a07b576873612b2875228d69d070e8b": {
         "id": "1247",
@@ -26898,7 +26898,7 @@
         "pochette": "pochettes/715163.jpg",
         "prix": "13€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "cefa3303fdebf04ab6f65a647dae9ca4": {
         "id": "1281",
@@ -27423,7 +27423,7 @@
         "pochette": "pochettes/151387.jpg",
         "prix": "14€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "9e362a0e2c5243cdfbf0140dd39ab940": {
         "id": "1306",
@@ -28053,7 +28053,7 @@
         "pochette": "pochettes/1306106.jpg",
         "prix": "25€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "718e0a58809715ed71a50b31d156de25": {
         "id": "1336",
@@ -28284,7 +28284,7 @@
         "pochette": "pochettes/1433146.jpg",
         "prix": "19€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "9f5b46621e3686047bf9bf05e8271bf2": {
         "id": "1347",
@@ -28893,7 +28893,7 @@
         "pochette": "pochettes/1303373.jpg",
         "prix": "99€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "9e434f3affd51300b0aee2ac7b502afe": {
         "id": "1376",
@@ -28956,7 +28956,7 @@
         "pochette": "pochettes/1059760.jpg",
         "prix": "16€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "f3c373d85829d28813c2dda9555c756c": {
         "id": "1379",
@@ -28977,7 +28977,7 @@
         "pochette": "pochettes/1805887.jpg",
         "prix": "12€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "6c83daf47491af422a3973136294d13d": {
         "id": "1380",
@@ -28998,7 +28998,7 @@
         "pochette": "pochettes/2056116.jpg",
         "prix": "30€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "cbbf5019987e7848f862425481f37ff2": {
         "id": "1381",
@@ -29019,7 +29019,7 @@
         "pochette": "pochettes/2306729.jpg",
         "prix": "22€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "f398d359a99c3236f7fa2ed155590d61": {
         "id": "1382",
@@ -34164,7 +34164,7 @@
         "pochette": "pochettes/1695403.jpg",
         "prix": "30€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "33a2f6294c2588db5dff3016aaf94a7b": {
         "id": "1627",
@@ -34185,7 +34185,7 @@
         "pochette": "pochettes/535768.jpg",
         "prix": "10€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "8d83eaf1a3b4a7b599dedaf51a49e36d": {
         "id": "1628",
@@ -35697,7 +35697,7 @@
         "pochette": "pochettes/1276905.jpg",
         "prix": "15€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "d6f5cc5c3460ca19ca302fc5dbd1b028": {
         "id": "1700",
@@ -35844,7 +35844,7 @@
         "pochette": "pochettes/717273.jpg",
         "prix": "20€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "d41707c6eb6a9ffd4aad1fff0b814cc1": {
         "id": "1707",
@@ -38072,13 +38072,13 @@
         "comment": "",
         "isNew": false
     },
-    "1489b01e35e28acdea335146e8bdc242": {
+    "1ffa27568f7357fd448eee3375d88a3d": {
         "id": "1813",
         "type": "SINGLE",
         "year": "1982",
         "country": "France",
         "genre": "Hip Hop",
-        "artist": "MALCOM McLAREN",
+        "artist": "MALCOLM McLAREN",
         "titleA": "Buffalo Gals (Version Longue)",
         "qte": 1,
         "durationA": "03:40:00",
@@ -38091,7 +38091,7 @@
         "pochette": "pochettes/734470.jpg",
         "prix": "10€",
         "comment": "",
-        "isNew": false
+        "isNew": true
     },
     "69f77f94beea8ddf5764acd20456c3dd": {
         "id": "1814",
@@ -40695,7 +40695,7 @@
         "pochette": "pochettes/1378347.jpg",
         "prix": "25€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "8b1fdea92018f0af7f33be92c7ac438c": {
         "id": "1938",
@@ -43215,7 +43215,7 @@
         "pochette": "pochettes/1053479.jpg",
         "prix": "25€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "3513c395706516f3f7876e727548aced": {
         "id": "2058",
@@ -48066,7 +48066,7 @@
         "pochette": "pochettes/699752.jpg",
         "prix": "15€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "f8d10509eb3aa7a5386f063b4d74a743": {
         "id": "2289",
@@ -48654,7 +48654,7 @@
         "pochette": "pochettes/1203031.jpg",
         "prix": "22€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "480a1946e3ac4bb1ae01825c88948bea": {
         "id": "2317",
@@ -51258,7 +51258,7 @@
         "pochette": "pochettes/7801013.jpg",
         "prix": "20€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "ad1fe1eed1ce516fdf6b6bf9c6591da4": {
         "id": "2441",
@@ -55962,7 +55962,7 @@
         "pochette": "pochettes/2736268.jpg",
         "prix": "30€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "37dd36a2f4fbbb0b8c60e56b50d97beb": {
         "id": "2665",
@@ -56319,7 +56319,7 @@
         "pochette": "pochettes/12652657.jpg",
         "prix": "14€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "24cb7f1c5c7cd50668b98cb63a0e49a0": {
         "id": "2682",
@@ -58419,7 +58419,7 @@
         "pochette": "pochettes/844005.jpg",
         "prix": "65€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "3ad6c339ce55bb88d3414344990c1497": {
         "id": "2782",
@@ -59448,7 +59448,7 @@
         "pochette": "pochettes/188600.jpg",
         "prix": "31€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "a8d33419e8aa8341f756682030c2b8d2": {
         "id": "2831",
@@ -59469,7 +59469,7 @@
         "pochette": "pochettes/528262.jpg",
         "prix": "22€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "692f0a0e3cc4e18e5a110a1acd5e0502": {
         "id": "2832",
@@ -60855,7 +60855,7 @@
         "pochette": "pochettes/13714774.jpg",
         "prix": "23€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "16f7035a8a75f99d39d337bd24c8e775": {
         "id": "2898",
@@ -60876,7 +60876,7 @@
         "pochette": "pochettes/795325.jpg",
         "prix": "34€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "07103de1e9db52f269abdcc08933e529": {
         "id": "2899",
@@ -61317,7 +61317,7 @@
         "pochette": "pochettes/168136.jpg",
         "prix": "30€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "6bcfc5023a8d11ab0f54548bfc3eb4ce": {
         "id": "2920",
@@ -62157,7 +62157,7 @@
         "pochette": "pochettes/1801886.jpg",
         "prix": "16€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "12dbf80d7c78eb33739defcbcc46de31": {
         "id": "2960",
@@ -63648,7 +63648,7 @@
         "pochette": "pochettes/12703163.jpg",
         "prix": "18€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "83e0f07133997b8fdc793a8429037fc6": {
         "id": "3031",
@@ -64614,7 +64614,7 @@
         "pochette": "pochettes/413712.jpg",
         "prix": "18€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "9f610bfbd6ea4a40b0a33d5a899028c1": {
         "id": "3077",
@@ -66567,7 +66567,7 @@
         "pochette": "pochettes/1117846.jpg",
         "prix": "14€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "a12b5b905cb0f22fe3b4b3ef0092e110": {
         "id": "3170",
@@ -68330,6 +68330,132 @@
         "url": "https://www.discogs.com/release/3534023-Carlos-Big-Bisou",
         "pochette": "pochettes/3534023.jpg",
         "prix": "5€",
+        "comment": "",
+        "isNew": false
+    },
+    "1a9c6f90a40551828430f185090357a0": {
+        "id": "3254",
+        "type": "ALBUM",
+        "year": "1977",
+        "country": "\tBarbados",
+        "genre": "Reggae",
+        "artist": "BOB MARLEY & THE WAILERS",
+        "titleA": "Exodus",
+        "qte": 1,
+        "durationA": "nan",
+        "bpmA": "LP",
+        "titleB": "nan",
+        "durationB": "nan",
+        "bpmB": "LP",
+        "label": "Tuff Gong",
+        "url": "https://www.discogs.com/release/4702896-Bob-Marley-The-Wailers-Exodus",
+        "pochette": "pochettes/4702896.jpg",
+        "prix": "95€",
+        "comment": "",
+        "isNew": true
+    },
+    "56d5448e8901d6ac94e22cdf1ace3491": {
+        "id": "3255",
+        "type": "SINGLE",
+        "year": "1977",
+        "country": "France",
+        "genre": "Disco",
+        "artist": "THELMA HUSTON",
+        "titleA": "I'm Here Again",
+        "qte": 1,
+        "durationA": "03:50:00",
+        "bpmA": "115",
+        "titleB": "Sharing Something Perfect Between Ourselves",
+        "durationB": "03:48:00",
+        "bpmB": "Slow",
+        "label": "Motown",
+        "url": "https://www.discogs.com/release/416089-Thelma-Houston-Im-Here-Again-Sharing-Something-Perfect-Between-Ourselves",
+        "pochette": "pochettes/416089.jpg",
+        "prix": "23€",
+        "comment": "",
+        "isNew": true
+    },
+    "dd21c82d0902f5281352af343a482319": {
+        "id": "3256",
+        "type": "ALBUM",
+        "year": "1978",
+        "country": "France",
+        "genre": "Reggae",
+        "artist": "BOB MARLEY & THE WAILERS",
+        "titleA": "Rastaman Vibration",
+        "qte": 1,
+        "durationA": "nan",
+        "bpmA": "LP",
+        "titleB": "nan",
+        "durationB": "nan",
+        "bpmB": "LP",
+        "label": "Island Records",
+        "url": "https://www.discogs.com/release/8968364-Bob-Marley-The-Wailers-Rastaman-Vibration",
+        "pochette": "pochettes/8968364.jpg",
+        "prix": "25€",
+        "comment": "",
+        "isNew": true
+    },
+    "0d6caad06fd1022808db3bc2fd19f842": {
+        "id": "3257",
+        "type": "SINGLE",
+        "year": "1979",
+        "country": "Europe",
+        "genre": "Pop / Rock",
+        "artist": "SUPERTRAMP",
+        "titleA": "A2-The Logical Song / A3-Goodbye Stranger",
+        "qte": 1,
+        "durationA": "4:08 / 5:47",
+        "bpmA": "120 / 125",
+        "titleB": "B1-Take The Long Way Home",
+        "durationB": "05:02:00",
+        "bpmB": "77",
+        "label": "A&M Records",
+        "url": "https://www.discogs.com/release/372272-Supertramp-Breakfast-In-America",
+        "pochette": "pochettes/372272.jpg",
+        "prix": "18€",
+        "comment": "",
+        "isNew": true
+    },
+    "bbe10e88a416912c39a1d505186c1f52": {
+        "id": "3258",
+        "type": "ALBUM",
+        "year": "1976",
+        "country": "France",
+        "genre": "Disco",
+        "artist": "DONNA SUMMER",
+        "titleA": "Spring Affair / Summer Fever",
+        "qte": 1,
+        "durationA": "8:32 / 8:08",
+        "bpmA": "121 / 121",
+        "titleB": "nan",
+        "durationB": "nan",
+        "bpmB": "LP",
+        "label": "Atlantic",
+        "url": "https://www.discogs.com/release/1155788-Donna-Summer-Four-Seasons-Of-Love",
+        "pochette": "pochettes/1155788.jpg",
+        "prix": "17€",
+        "comment": "",
+        "isNew": true
+    },
+    "5cdd16b6b345c5b2675606f2f82ba7e6": {
+        "id": "3259",
+        "type": "ALBUM",
+        "year": "1978",
+        "country": "France",
+        "genre": "Disco",
+        "artist": "BONEY M.",
+        "titleA": "A1-Nightflight To Venus /",
+        "qte": 1,
+        "durationA": "05:15:00",
+        "bpmA": "122",
+        "titleB": "B1-Rivers Of Babylon",
+        "durationB": "05:00:00",
+        "bpmB": "115",
+        "label": "Carrere",
+        "url": "https://www.discogs.com/release/872214-Boney-M-Nightflight-To-Venus",
+        "pochette": "pochettes/872214.jpg",
+        "prix": "24€",
         "comment": "",
         "isNew": true
     }
