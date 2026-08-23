@@ -641,11 +641,22 @@ html_wanted = f"""<!DOCTYPE html>
         body {{ background-color: var(--light-bg); color: var(--discogs-black); padding-bottom: 50px; }}
         header {{ background-color: var(--discogs-black); color: white; padding: 20px; border-bottom: 4px solid var(--discogs-yellow); position: relative; display: flex; align-items: center; justify-content: center; }}
         header h1 {{ font-size: 24px; color: var(--discogs-yellow); }}
-        .container {{ max-width: 1350px; margin: 0 auto; padding: 20px 15px; }}
-        .top-bar {{ display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; gap: 15px; }}
-        .back-btn {{ background-color: var(--discogs-black); color: white; border: 2px solid var(--discogs-black); padding: 10px 20px; font-size: 14px; font-weight: bold; border-radius: 6px; cursor: pointer; text-decoration: none; transition: all 0.2s ease; }}
+        .sticky-wrapper {{ position: -webkit-sticky; position: sticky; top: 0; z-index: 100; background-color: var(--light-bg); padding-top: 15px; padding-bottom: 10px; border-bottom: 1px solid var(--border-color); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }}
+        .container {{ max-width: 1350px; margin: 0 auto; padding: 0 15px; }}
+        
+        .search-container {{ background: white; padding: 20px; border-radius: 8px; border: 1px solid var(--border-color); box-shadow: 0 2px 4px rgba(0,0,0,0.02); }}
+        .search-row-wrapper {{ display: flex; gap: 15px; align-items: center; width: 100%; }}
+        
+        .search-box-container {{ position: relative; flex-grow: 1; }}
+        .search-box {{ width: 100%; padding: 12px 40px 12px 12px; font-size: 16px; border: 2px solid var(--border-color); border-radius: 6px; outline: none; }}
+        
+        .clear-search-btn {{ position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; font-size: 16px; color: #aaa; cursor: pointer; display: none; }}
+        .clear-search-btn:hover {{ color: #555; }}
+        
+        .back-btn {{ background-color: var(--discogs-black); color: white; border: 2px solid var(--discogs-black); padding: 11px 24px; font-size: 15px; font-weight: bold; border-radius: 6px; cursor: pointer; text-decoration: none; text-align: center; white-space: nowrap; transition: all 0.2s ease; }}
         .back-btn:hover {{ background-color: var(--discogs-yellow); color: var(--discogs-black); }}
-        .wanted-grid {{ display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; }}
+        
+        .wanted-grid {{ display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; margin-top: 20px; }}
         .wanted-card {{ background: white; border: 1px solid var(--border-color); border-radius: 6px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 3px 5px rgba(0,0,0,0.02); }}
         .cover-wrapper {{ aspect-ratio: 1; background: #222; display: flex; align-items: center; justify-content: center; overflow: hidden; border-bottom: 1px solid var(--border-color); }}
         .cover-image {{ width: 100%; height: 100%; object-fit: cover; }}
@@ -655,47 +666,87 @@ html_wanted = f"""<!DOCTYPE html>
         .comment-box {{ font-size: 11px; font-style: italic; color: var(--text-muted); margin-bottom: 10px; background: #f3f4f6; padding: 6px; border-radius: 4px; }}
         .discogs-link {{ display: block; width: 100%; text-align: center; background-color: var(--discogs-black); color: white; text-decoration: none; padding: 6px; font-size: 11px; font-weight: 600; border-radius: 4px; }}
         .discogs-link:hover {{ background-color: var(--discogs-yellow); color: var(--discogs-black); }}
+        
+        @media (max-width: 768px) {{ .search-row-wrapper {{ flex-direction: column; gap: 10px; }} .back-btn {{ width: 100%; }} }}
     </style>
 </head>
 <body>
     <header>
         <h1>🎯 Liste Wanted / Achats souhaités</h1>
     </header>
-    <div class="container">
-        <div class="top-bar">
-            <a href="index.html" class="back-btn">⬅ Retour à la collection</a>
-            <div style="font-weight: bold; color: var(--text-muted);">Recherchés : <span id="wantedCount">0</span></div>
+    <div class="sticky-wrapper">
+        <div class="container">
+            <div class="search-container">
+                <div class="search-row-wrapper">
+                    <a href="index.html" class="back-btn">⬅ Retour à la collection</a>
+                    <div class="search-box-container">
+                        <input type="text" id="searchBox" class="search-box" placeholder="Rechercher dans la liste wanted...">
+                        <button id="clearSearch" class="clear-search-btn" title="Effacer la recherche">✖</button>
+                    </div>
+                </div>
+            </div>
         </div>
+    </div>
+    <div class="container" style="margin-top: 20px;">
+        <div style="margin-bottom:15px; font-size:14px; color:var(--text-muted);">Recherchés affichés : <span id="wantedCount">0</span></div>
         <div class="wanted-grid" id="wantedGrid"></div>
     </div>
     <script>
         const wantedData = {json_wanted_data};
-        document.getElementById('wantedCount').textContent = wantedData.length;
-        
-        const grid = document.getElementById('wantedGrid');
-        grid.innerHTML = wantedData.map(item => {{
-            const imgTag = (item.pochette && item.pochette !== "pochettes/placeholder.png")
-                ? `<img class="cover-image" src="${{item.pochette}}" alt="Pochette" loading="lazy">`
-                : `<div style="color:#777; font-size:11px; font-weight:bold;">🔍 WANTED</div>`;
-                
-            const linkTag = (item.url && item.url !== '#')
-                ? `<a href="${{item.url}}" target="_blank" class="discogs-link">VOIR SUR DISCOGS</a>`
-                : '';
-                
-            return `
-                <div class="wanted-card">
-                    <div class="cover-wrapper">${{imgTag}}</div>
-                    <div class="card-details">
-                        <div>
-                            <div class="artist-name">${{item.artist || 'ARTISTE INCONNU'}}</div>
-                            <div class="track-title">${{item.title || ''}}</div>
-                            ${{item.comment ? `<div class="comment-box">${{item.comment}}</div>` : ''}}
+        let currentSearch = "";
+
+        function renderWantedGrid() {{
+            const filtered = wantedData.filter(item => {{
+                if (!currentSearch) return true;
+                return (item.artist && item.artist.toLowerCase().includes(currentSearch)) ||
+                       (item.title && item.title.toLowerCase().includes(currentSearch)) ||
+                       (item.comment && item.comment.toLowerCase().includes(currentSearch));
+            }});
+
+            document.getElementById('wantedCount').textContent = filtered.length;
+            
+            const grid = document.getElementById('wantedGrid');
+            grid.innerHTML = filtered.map(item => {{
+                const imgTag = (item.pochette && item.pochette !== "pochettes/placeholder.png")
+                    ? `<img class="cover-image" src="${{item.pochette}}" alt="Pochette" loading="lazy">`
+                    : `<div style="color:#777; font-size:11px; font-weight:bold;">🔍 WANTED</div>`;
+                    
+                const linkTag = (item.url && item.url !== '#')
+                    ? `<a href="${{item.url}}" target="_blank" class="discogs-link">VOIR SUR DISCOGS</a>`
+                    : '';
+                    
+                return `
+                    <div class="wanted-card">
+                        <div class="cover-wrapper">${{imgTag}}</div>
+                        <div class="card-details">
+                            <div>
+                                <div class="artist-name">${{item.artist || 'ARTISTE INCONNU'}}</div>
+                                <div class="track-title">${{item.title || ''}}</div>
+                                ${{item.comment ? `<div class="comment-box">${{item.comment}}</div>` : ''}}
+                            </div>
+                            ${{linkTag}}
                         </div>
-                        ${{linkTag}}
                     </div>
-                </div>
-            `;
-        }}).join('');
+                `;
+            }}).join('');
+        }}
+
+        document.getElementById('searchBox').addEventListener('input', (e) => {{
+            currentSearch = e.target.value.toLowerCase().trim();
+            document.getElementById('clearSearch').style.display = currentSearch ? 'block' : 'none';
+            renderWantedGrid();
+        }});
+
+        document.getElementById('clearSearch').addEventListener('click', () => {{
+            const sb = document.getElementById('searchBox');
+            sb.value = "";
+            currentSearch = "";
+            document.getElementById('clearSearch').style.display = 'none';
+            sb.focus();
+            renderWantedGrid();
+        }});
+
+        renderWantedGrid();
     </script>
 </body>
 </html>
