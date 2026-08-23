@@ -1,0 +1,771 @@
+import pandas as pd
+import json
+import os
+import re
+import requests
+import time
+import math
+import hashlib
+
+# =====================================================================
+# CONFIGURATION
+# =====================================================================
+nom_fichier_excel = "00_Mes vinyles.xlsx"
+nom_fichier_wanted = "01_Liste achat.xlsx"
+fichier_cache = "vinyles_cache.json"
+
+CONSUMER_KEY = "pTrgAPVrGOUYZbQrFbbh"
+CONSUMER_SECRET = "XnsdSqnEoZQHJLjtEhVwffLFSYNJTYmV"
+# =====================================================================
+
+# S'assurer que le dossier pochettes existe
+if not os.path.exists("pochettes"):
+    os.makedirs("pochettes")
+
+# Chargement du cache s'il existe
+cache_donnees = {}
+cache_existe = os.path.exists(fichier_cache)
+
+if cache_existe:
+    try:
+        with open(fichier_cache, 'r', encoding='utf-8') as f:
+            cache_donnees = json.load(f)
+        print(f"💾 Cache chargé : {len(cache_donnees)} vinyles en mémoire.")
+    except Exception as e:
+        print(f"⚠️ Réinitialisation du cache suite à une erreur : {e}")
+        cache_existe = False
+
+def generer_hash_ligne(row):
+    chaine_complete = "".join(str(val) for val in row.values)
+    return hashlib.md5(chaine_complete.encode('utf-8')).hexdigest()
+
+def extraire_id_discogs(url):
+    if pd.isna(url):
+        return None
+    match = re.search(r"release/(\d+)", str(url))
+    return match.group(1) if match else None
+
+def telecharger_pochette(release_id, artiste, titre):
+    if not release_id:
+        return "pochettes/placeholder.png"
+    
+    chemin_image = f"pochettes/{release_id}.jpg"
+    
+    if os.path.exists(chemin_image) and os.path.getsize(chemin_image) > 0:
+        return chemin_image
+        
+    try:
+        url_api = f"https://api.discogs.com/releases/{release_id}"
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+            "Authorization": f"Discogs key={CONSUMER_KEY}, secret={CONSUMER_SECRET}"
+        }
+        reponse = requests.get(url_api, headers=headers)
+        
+        if reponse.status_code == 200:
+            images = reponse.json().get('images', [])
+            if images:
+                url_image = images[0].get('uri') or images[0].get('resource_url')
+                if url_image:
+                    img_req = requests.get(url_image, headers=headers)
+                    if img_req.status_code == 200:
+                        with open(chemin_image, 'wb') as handler:
+                            handler.write(img_req.content)
+                        print(f"📸 Image récupérée : {artiste} - {titre}")
+                        time.sleep(1.2)
+                        return chemin_image
+        elif reponse.status_code == 429:
+            time.sleep(8)
+    except Exception:
+        pass
+        
+    return "pochettes/placeholder.png"
+
+def recuperer_prix_haut(release_id):
+    if not release_id:
+        return None
+    try:
+        url_api = f"https://api.discogs.com/marketplace/price_suggestions/{release_id}"
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+            "Authorization": f"Discogs key={CONSUMER_KEY}, secret={CONSUMER_SECRET}"
+        }
+        reponse = requests.get(url_api, headers=headers)
+        
+        if reponse.status_code == 200:
+            data = reponse.json()
+            prix_brut = None
+            if "Mint (M)" in data:
+                prix_brut = data["Mint (M)"]["value"]
+            elif "Near Mint (NM or M-)" in data:
+                prix_brut = data["Near Mint (NM or M-)"]["value"]
+            elif data.values():
+                prix_brut = max(item["value"] for item in data.values() if isinstance(item, dict) and "value" in item)
+            
+            if prix_brut:
+                return f"{math.ceil(prix_brut)}€"
+        elif reponse.status_code == 429:
+            time.sleep(3)
+    except Exception:
+        pass
+    return None
+
+# =====================================================================
+# TRAITEMENT DU FICHIER PRINCIPAL (00_Mes vinyles.xlsx)
+# =====================================================================
+try:
+    df_brut = pd.read_excel(nom_fichier_excel, header=None)
+    valeur_a2 = df_brut.iloc[1, 0]
+    
+    if pd.isna(valeur_a2):
+        total_vinyles = "Non spécifié"
+    else:
+        try:
+            total_vinyles = str(int(float(valeur_a2)))
+        except ValueError:
+            total_vinyles = str(valeur_a2).strip()
+
+    df = pd.read_excel(nom_fichier_excel, header=0)
+
+except Exception as e:
+    print(f"❌ Impossible de lire le fichier principal Excel '{nom_fichier_excel}' : {e}")
+    exit()
+
+colonne_artiste = next((c for c in df.columns if 'artiste' in str(c).lower() or 'artist' in str(c).lower()), None)
+if not colonne_artiste and len(df.columns) > 1:
+    colonne_artiste = df.columns[1]
+
+colonne_type = next((c for c in df.columns if any(k in str(c).lower() for k in ['album', 'compil', 'sing', 'type'])), df.columns[2] if len(df.columns) > 2 else df.columns[0])
+colonne_titre_a = next((c for c in df.columns if 'titre' in str(c).lower() and any(k in str(c).lower() for k in ['face a', 'album', 'a'])), None)
+if not colonne_titre_a:
+    colonne_titre_a = next((c for c in df.columns if 'titre' in str(c).lower()), df.columns[1] if len(df.columns) > 1 else df.columns[0])
+
+colonne_lien = next((c for c in df.columns if 'lien' in str(c).lower() or 'discogs' in str(c).lower()), 'Lien')
+colonne_genre = next((c for c in df.columns if 'genre' in str(c).lower() or 'style' in str(c).lower()), None)
+
+collection = []
+nouveau_cache = {}
+liste_genres_uniques = set()
+liste_types_uniques = set() 
+
+print(f"\nAnalyse de la collection... Total affiché en en-tête (Cellule A2) : {total_vinyles}")
+compteur_api = 0
+
+for index, row in df.iterrows():
+    artiste = str(row.get(colonne_artiste, '')).strip()
+    
+    if not artiste or artiste.lower() == 'nan':
+        continue
+        
+    hash_ligne = generer_hash_ligne(row)
+    est_nouveaute = False if not cache_existe else (hash_ligne not in cache_donnees)
+    
+    if hash_ligne in cache_donnees:
+        viny_data = cache_donnees[hash_ligne]
+        viny_data["isNew"] = est_nouveaute
+        nouveau_cache[hash_ligne] = viny_data
+        collection.append(viny_data)
+        
+        if viny_data.get("type"): 
+            liste_types_uniques.add(viny_data["type"])
+        if viny_data.get("genre") and viny_data["genre"] != "N/C": 
+            liste_genres_uniques.add(viny_data["genre"].upper())
+        continue
+
+    compteur_api += 1
+    titre_a = str(row.get(colonne_titre_a, '')).strip() if colonne_titre_a else ""
+    if titre_a.lower() == 'nan': 
+        titre_a = ""
+        
+    lien_discogs = row.get(colonne_lien, '#')
+    id_discogs = extraire_id_discogs(lien_discogs)
+    
+    chemin_pochette = telecharger_pochette(id_discogs, artiste, titre_a)
+    prix_affiche = recuperer_prix_haut(id_discogs)
+    
+    if not prix_affiche or prix_affiche == "":
+        valeur_prix_excel = str(row.get('Prix Haut', '')).strip()
+        chiffres = re.findall(r"\d+", valeur_prix_excel)
+        prix_affiche = f"{chiffres[0]}€" if chiffres else ""
+
+    quantite = row.get('Qté', 1)
+    try: 
+        quantite = int(quantite) if not pd.isna(quantite) else 1
+    except Exception: 
+        quantite = 1
+
+    valeur_type = str(row.get(colonne_type, 'SINGLE')).strip().upper()
+    if 'MEDLEY' in valeur_type: valeur_type = 'MEDLEY'
+    elif 'JINGLE' in valeur_type: valeur_type = 'JINGLE'
+    elif 'COMPIL' in valeur_type: valeur_type = 'COMPILS'
+    elif valeur_type in ['NAN', '']: valeur_type = 'SINGLE'
+    
+    if valeur_type:
+        liste_types_uniques.add(valeur_type)
+        
+    genre_vinyl = str(row.get(colonne_genre, '')).strip() if colonne_genre else ""
+    if genre_vinyl.lower() in ['nan', '']: 
+        genre_vinyl = "N/C"
+    else:
+        liste_genres_uniques.add(genre_vinyl.upper())
+
+    annee_str = str(row.get('Année', '')).strip()
+    if annee_str.lower() == 'nan': 
+        annee_str = ""
+
+    viny_data = {
+        "id": str(row.get('N°', index)),
+        "type": valeur_type,
+        "year": annee_str,
+        "country": str(row.get('Pays', '')),
+        "genre": genre_vinyl,
+        "artist": artiste,
+        "titleA": titre_a,
+        "qte": quantite,
+        "durationA": str(row.get('Durée A', '')),
+        "bpmA": str(row.get('Bpm A', '')),
+        "titleB": str(row.get('Titre Face B', '')),
+        "durationB": str(row.get('Durée B', '')),
+        "bpmB": str(row.get('Bpm B', '')),
+        "label": str(row.get('Préssage / Labels', '')),
+        "url": str(lien_discogs),
+        "pochette": chemin_pochette,
+        "prix": prix_affiche,
+        "comment": str(row.get('Prix Haut - Commentaires', '')),
+        "isNew": est_nouveaute
+    }
+    
+    nouveau_cache[hash_ligne] = viny_data
+    collection.append(viny_data)
+
+try:
+    with open(fichier_cache, 'w', encoding='utf-8') as f:
+        json.dump(nouveau_cache, f, ensure_ascii=False, indent=4)
+    print(f"⚡ Cache sauvegardé avec succès. ({compteur_api} nouveaux traitements API)")
+except Exception as e:
+    print(f"⚠️ Erreur de sauvegarde du cache : {e}")
+
+json_data = json.dumps(collection, ensure_ascii=False)
+genres_tries = sorted(list(liste_genres_uniques))
+json_genres = json.dumps(genres_tries, ensure_ascii=False)
+types_tries = sorted(list(liste_types_uniques))
+json_types = json.dumps(types_tries, ensure_ascii=False)
+
+# =====================================================================
+# TRAITEMENT DU FICHIER WANTED (01_Liste achat.xlsx)
+# =====================================================================
+wanted_collection = []
+if os.path.exists(nom_fichier_wanted):
+    try:
+        df_wanted = pd.read_excel(nom_fichier_wanted)
+        for index, row in df_wanted.iterrows():
+            valeur_colonne_c = row.iloc[2] if len(row) > 2 else None
+            if pd.isna(valeur_colonne_c) or str(valeur_colonne_c).strip() == "" or str(valeur_colonne_c).lower() == "nan":
+                if len(row) > 0 and not pd.isna(row.iloc[0]):
+                    chaine_artiste_titre = str(row.iloc[0]).strip()
+                    if " - " in chaine_artiste_titre:
+                        parts = chaine_artiste_titre.split(" - ", 1)
+                        artiste_w = parts[0].strip()
+                        titre_w = parts[1].strip()
+                    else:
+                        artiste_w = chaine_artiste_titre
+                        titre_w = ""
+                    com_w = str(row.iloc[3]).strip() if len(row) > 3 and not pd.isna(row.iloc[3]) else ""
+                    lien_w = str(row.iloc[5]).strip() if len(row) > 5 and not pd.isna(row.iloc[5]) else "#"
+                    
+                    hash_wanted = hashlib.md5((artiste_w + titre_w + lien_w).encode('utf-8')).hexdigest()
+                    pochette_w = cache_donnees.get(hash_wanted, {}).get('pochette', 'pochettes/placeholder.png') if hash_wanted in cache_donnees else telecharger_pochette(extraire_id_discogs(lien_w), artiste_w, titre_w)
+                    
+                    wanted_collection.append({
+                        "artist": artiste_w,
+                        "title": titre_w,
+                        "comment": com_w,
+                        "url": lien_w,
+                        "pochette": pochette_w
+                    })
+    except Exception as e:
+        print(f"⚠️ Erreur lors de la lecture de la liste wanted : {e}")
+
+json_wanted_data = json.dumps(wanted_collection, ensure_ascii=False)
+
+# =====================================================================
+# GENERATION INDEX.HTML
+# =====================================================================
+html_debut = f"""<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Ma Collection de Vinyles - Discogs Style</title>
+    <style>
+        :root {{ --discogs-black: #111111; --discogs-yellow: #f5c518; --light-bg: #f8f9fa; --border-color: #e5e7eb; --text-muted: #6b7280; }}
+        * {{ box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }}
+        body {{ background-color: var(--light-bg); color: var(--discogs-black); padding-bottom: 50px; }}
+        header {{ background-color: var(--discogs-black); color: white; padding: 20px; border-bottom: 4px solid var(--discogs-yellow); position: relative; display: flex; align-items: center; justify-content: center; }}
+        header h1 {{ font-size: 24px; }}
+        .global-counter {{ position: absolute; left: 20px; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); padding: 6px 14px; border-radius: 6px; font-size: 14px; font-weight: bold; color: #ffffff; }}
+        .global-counter span {{ color: var(--discogs-yellow); font-size: 16px; margin-left: 5px; }}
+        .sticky-wrapper {{ position: -webkit-sticky; position: sticky; top: 0; z-index: 100; background-color: var(--light-bg); padding-top: 15px; padding-bottom: 10px; border-bottom: 1px solid var(--border-color); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }}
+        .container {{ max-width: 1350px; margin: 0 auto; padding: 0 15px; }}
+        
+        .search-container {{ background: white; padding: 20px; border-radius: 8px; border: 1px solid var(--border-color); box-shadow: 0 2px 4px rgba(0,0,0,0.02); }}
+        .search-row-wrapper {{ display: flex; gap: 15px; align-items: center; width: 100%; }}
+        
+        .search-box-container {{ position: relative; flex-grow: 1; }}
+        .search-box {{ width: 100%; padding: 12px 40px 12px 12px; font-size: 16px; border: 2px solid var(--border-color); border-radius: 6px; outline: none; }}
+        
+        .clear-search-btn {{ position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; font-size: 16px; color: #aaa; cursor: pointer; display: none; }}
+        .clear-search-btn:hover {{ color: #555; }}
+        
+        .wanted-btn {{ background-color: var(--discogs-black); color: var(--discogs-yellow); border: 2px solid var(--discogs-black); padding: 11px 24px; font-size: 15px; font-weight: bold; border-radius: 6px; cursor: pointer; text-decoration: none; text-align: center; white-space: nowrap; transition: all 0.2s ease; }}
+        .wanted-btn:hover {{ background-color: var(--discogs-yellow); color: var(--discogs-black); }}
+        
+        .navigation-filters {{ display: flex; flex-direction: column; gap: 12px; padding-top: 10px; border-top: 1px dashed var(--border-color); margin-top: 15px; }}
+        .filter-row {{ display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }}
+        .filter-label {{ font-size: 13px; font-weight: bold; color: var(--text-muted); text-transform: uppercase; min-width: 90px; }}
+        .nav-btn {{ background: white; border: 1px solid var(--border-color); padding: 6px 12px; font-size: 14px; font-weight: 600; border-radius: 4px; cursor: pointer; text-transform: capitalize; }}
+        .nav-btn.active {{ background: var(--discogs-yellow); color: var(--discogs-black); border-color: var(--discogs-yellow); }}
+        
+        .btn-news {{ background: #10b981; color: white; border-color: #10b981; }}
+        .btn-news:hover {{ background: #059669; color: white; border-color: #059669; }}
+        .btn-news.active {{ background: #047857; color: white; border-color: #047857; font-weight: bold; box-shadow: inset 0 2px 4px rgba(0,0,0,0.2); }}
+
+        .custom-dropdown {{ position: relative; display: inline-block; }}
+        .dropdown-trigger {{ background: white; border: 1px solid var(--border-color); padding: 6px 16px; font-size: 14px; font-weight: 600; border-radius: 4px; cursor: pointer; min-width: 220px; text-align: left; display: flex; justify-content: space-between; align-items: center; }}
+        .dropdown-trigger.active {{ background: var(--discogs-yellow); color: var(--discogs-black); border-color: var(--discogs-yellow); }}
+        .dropdown-menu {{ position: absolute; top: 100%; left: 0; background: white; border: 1px solid var(--border-color); border-radius: 4px; width: 280px; max-height: 350px; overflow-y: auto; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); display: none; z-index: 999; margin-top: 4px; padding: 8px; }}
+        .dropdown-menu.show {{ display: block; }}
+        .genre-search-inside {{ width: 100%; padding: 8px; font-size: 13px; border: 1px solid var(--border-color); border-radius: 4px; outline: none; margin-bottom: 8px; }}
+        .genre-option {{ padding: 6px 10px; font-size: 13px; font-weight: 600; cursor: pointer; border-radius: 3px; display: flex; justify-content: space-between; }}
+        .genre-option:hover {{ background-color: #f3f4f6; color: var(--discogs-black); }}
+        .genre-option.all-option {{ color: #dc2626; border-bottom: 1px solid var(--border-color); margin-bottom: 5px; padding-bottom: 8px; }}
+
+        .vinyl-grid {{ display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 15px; margin-top: 20px; }}
+        .vinyl-card {{ background: white; border: 1px solid var(--border-color); border-radius: 6px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 3px 5px rgba(0,0,0,0.02); position: relative; }}
+        
+        .badge-qte {{ position: absolute; top: 8px; left: 8px; background: linear-gradient(135deg, #ffe600, #ffb300); color: #111111; font-size: 13px; font-weight: 800; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid #ffffff; box-shadow: 0 4px 8px rgba(0,0,0,0.3); z-index: 10; }}
+        .badge-prix {{ position: absolute; top: 8px; right: 8px; background: #e11d48; color: #ffffff; font-size: 11px; font-weight: 800; padding: 4px 8px; border-radius: 12px; border: 2px solid #ffffff; box-shadow: 0 4px 8px rgba(0,0,0,0.3); z-index: 10; }}
+        .badge-vinyl-new {{ position: absolute; bottom: 8px; right: 8px; background: #111111; color: #ffffff; font-size: 9px; font-weight: 900; letter-spacing: 0.5px; width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px dashed rgba(255,255,255,0.3); box-shadow: 0 4px 8px rgba(0,0,0,0.4), inset 0 0 0 4px #111111, inset 0 0 0 5px #f5c518; z-index: 10; text-shadow: 1px 1px 2px rgba(0,0,0,0.8); }}
+
+        .cover-wrapper {{ aspect-ratio: 1; background: #222; display: flex; align-items: center; justify-content: center; position: relative; border-bottom: 1px solid var(--border-color); overflow: hidden; }}
+        .cover-image {{ width: 100%; height: 100%; object-fit: cover; }}
+        .cover-placeholder {{ color: #777; font-size: 11px; font-weight: bold; padding: 10px; text-align: center; text-transform: uppercase; }}
+        .vinyl-details {{ padding: 10px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }}
+        .tag-type {{ align-self: flex-start; font-size: 9px; font-weight: 700; text-transform: uppercase; padding: 1px 4px; border-radius: 2px; background: #e2d9f3; color: #432874; margin-bottom: 6px; }}
+        .vinyl-artist {{ font-size: 13px; font-weight: 700; text-transform: uppercase; line-height: 1.2; margin-bottom: 4px; }}
+        .meta-info {{ font-size: 11px; color: var(--text-muted); margin-bottom: 3px; line-height: 1.3; }}
+        .tracks-block {{ border-top: 1px solid var(--border-color); margin-top: 6px; padding-top: 6px; }}
+        .track-a {{ font-size: 11px; color: #111111; margin-bottom: 3px; line-height: 1.2; }}
+        .track-b {{ font-size: 11px; color: #111111; line-height: 1.2; }}
+        .discogs-link {{ display: inline-block; margin-top: 10px; width: 100%; text-align: center; background-color: var(--discogs-black); color: white; text-decoration: none; padding: 6px; font-size: 11px; font-weight: 600; border-radius: 4px; }}
+        .discogs-link:hover {{ background-color: var(--discogs-yellow); color: var(--discogs-black); transform: scale(1.02); }}
+        .scroll-to-top {{ position: fixed; bottom: 25px; right: 25px; background-color: var(--discogs-black); color: white; border: 2px solid var(--discogs-yellow); width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3); z-index: 1000; opacity: 0; visibility: hidden; transition: all 0.3s ease; }}
+        .scroll-to-top.visible {{ opacity: 1; visibility: visible; }}
+        .scroll-to-top:hover {{ background-color: var(--discogs-yellow); color: var(--discogs-black); transform: scale(1.1); }}
+        @media (max-width: 768px) {{ header {{ flex-direction: column; gap: 10px; text-align: center; }} .global-counter {{ position: static; margin-bottom: 5px; }} .search-row-wrapper {{ flex-direction: column; gap: 10px; }} .wanted-btn {{ width: 100%; }} }}
+    </style>
+</head>
+<body>
+    <header>
+        <div class="global-counter">Total collection : <span id="totalCounter">0</span></div>
+        <h1>Ma Collection de Vinyles</h1>
+    </header>
+    <div class="sticky-wrapper">
+        <div class="container">
+            <div class="search-container">
+                <div class="search-row-wrapper">
+                    <div class="search-box-container">
+                        <input type="text" id="searchBox" class="search-box" placeholder="Rechercher un artiste, un titre, un pays...">
+                        <button id="clearSearch" class="clear-search-btn" title="Effacer la recherche">✖</button>
+                    </div>
+                    <a href="Wanted.html" class="wanted-btn">Wanted ➔</a>
+                </div>
+                <div class="navigation-filters">
+                    <div class="filter-row" id="typeButtonsContainer">
+                        <span class="filter-label">Type :</span>
+                        <button class="nav-btn type-filter active" data-type="ALL">Tous</button>
+                    </div>
+                    <div class="filter-row">
+                        <span class="filter-label">Genre :</span>
+                        <div class="custom-dropdown" style="margin-right: 8px;">
+                            <button id="dropdownBtn" class="dropdown-trigger">
+                                <span id="dropdownLabel">Tous les genres</span>
+                                <span>▼</span>
+                            </button>
+                            <div id="dropdownContent" class="dropdown-menu">
+                                <input type="text" id="genreSearchInside" class="genre-search-inside" placeholder="🔍 Rechercher un genre...">
+                                <div class="genre-option all-option" data-genre="ALL">❌ Tous les genres</div>
+                                <div id="optionsContainer"></div>
+                            </div>
+                        </div>
+                        <button id="newsFilterBtn" class="nav-btn btn-news" data-news="OFF">✨ Nouveautés</button>
+                    </div>
+                    <div class="filter-row">
+                        <span class="filter-label">Alphabet :</span>
+                        <button class="nav-btn alpha-filter active" data-alpha="ALL">Tous</button>
+                        <div id="alphabetContainer" style="display:inline-flex; flex-wrap:wrap; gap:4px;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container" style="margin-top: 20px;">
+        <div style="margin-bottom:15px; font-size:14px; color:var(--text-muted);">Disques affichés : <span id="recordCount">0</span></div>
+        <div class="vinyl-grid" id="vinylGrid"></div>
+    </div>
+    <button class="scroll-to-top" id="scrollTopBtn" title="Retour en haut">▲</button>
+    <script>
+        const totalCollectionStr = "{total_vinyles}";
+        const vinylData = {json_data};
+        const genresAuto = {json_genres};
+        const typesAuto = {json_types};
+
+        let currentType = "ALL";
+        let currentGenre = "ALL";
+        let currentAlpha = "ALL";
+        let currentSearch = "";
+        let insideGenreSearch = "";
+        let filterOnlyNews = false;
+
+        document.getElementById('totalCounter').textContent = totalCollectionStr;
+
+        const typeButtonsContainer = document.getElementById('typeButtonsContainer');
+        typesAuto.forEach(t => {{
+            const btn = document.createElement('button');
+            btn.className = 'nav-btn type-filter';
+            btn.dataset.type = t;
+            btn.textContent = t.toLowerCase();
+            typeButtonsContainer.appendChild(btn);
+        }});
+
+        const alphabetContainer = document.getElementById('alphabetContainer');
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZ#".split("").forEach(lettre => {{
+            const btn = document.createElement('button');
+            btn.className = 'nav-btn alpha-filter';
+            btn.dataset.alpha = lettre;
+            btn.textContent = lettre;
+            alphabetContainer.appendChild(btn);
+        }});
+
+        function buildGenreMenu() {{
+            const container = document.getElementById('optionsContainer');
+            container.innerHTML = "";
+            genresAuto.forEach(g => {{
+                if (insideGenreSearch && !g.toLowerCase().includes(insideGenreSearch)) return;
+                const div = document.createElement('div');
+                div.className = `genre-option ${{currentGenre === g ? 'active' : ''}}`;
+                div.dataset.genre = g;
+                div.textContent = g.toLowerCase();
+                container.appendChild(div);
+            }});
+        }}
+
+        function renderGrid() {{
+            let filtered = vinylData.filter(item => {{
+                const matchesType = (currentType === "ALL" || item.type === currentType);
+                const matchesGenre = (currentGenre === "ALL" || (item.genre && item.genre.toUpperCase() === currentGenre));
+                const matchesNews = (!filterOnlyNews || item.isNew === true);
+                
+                let matchesAlpha = true;
+                if (currentAlpha !== "ALL") {{
+                    const firstChar = item.artist ? item.artist.trim().charAt(0).toUpperCase() : "";
+                    if (currentAlpha === "#") {{
+                        matchesAlpha = !/[A-Z]/.test(firstChar);
+                    }} else {{
+                        matchesAlpha = (firstChar === currentAlpha);
+                    }}
+                }}
+
+                const matchesSearch = !currentSearch || 
+                    (item.artist && item.artist.toLowerCase().includes(currentSearch)) ||
+                    (item.titleA && item.titleA.toLowerCase().includes(currentSearch)) ||
+                    (item.titleB && item.titleB.toLowerCase().includes(currentSearch)) ||
+                    (item.country && item.country.toLowerCase().includes(currentSearch)) ||
+                    (item.label && item.label.toLowerCase().includes(currentSearch)) ||
+                    (item.year && item.year.toString().includes(currentSearch));
+
+                return matchesType && matchesGenre && matchesNews && matchesAlpha && matchesSearch;
+            }});
+
+            document.getElementById('recordCount').textContent = filtered.length;
+            
+            const grid = document.getElementById('vinylGrid');
+            grid.innerHTML = filtered.map(item => {{
+                const badgePrix = item.prix ? `<div class="badge-prix">${{item.prix}}</div>` : '';
+                const badgeQte = item.qte > 1 ? `<div class="badge-qte">${{item.qte}}</div>` : '';
+                const badgeNewVinyl = item.isNew ? `<div class="badge-vinyl-new" title="Nouveauté">NEW</div>` : '';
+                
+                const imgTag = (item.pochette && item.pochette !== "pochettes/placeholder.png")
+                    ? `<img class="cover-image" src="${{item.pochette}}" alt="Pochette" loading="lazy">`
+                    : `<div class="cover-placeholder">💿 ${{item.genre || 'VINYL'}}</div>`;
+
+                const linkTag = (item.url && item.url !== '#')
+                    ? `<a href="${{item.url}}" target="_blank" class="discogs-link">VOIR SUR DISCOGS</a>`
+                    : '';
+
+                return `
+                    <div class="vinyl-card">
+                        ${{badgeQte}}
+                        ${{badgePrix}}
+                        <div class="cover-wrapper">
+                            ${{imgTag}}
+                            ${{badgeNewVinyl}}
+                        </div>
+                        <div class="vinyl-details">
+                            <div>
+                                <div class="tag-type">${{item.type || 'SINGLE'}}</div>
+                                <div class="vinyl-artist">${{item.artist || 'ARTISTE INCONNU'}}</div>
+                                <div class="meta-info">${{item.year ? item.year : ''}}${{item.country ? ' • ' + item.country : ''}}</div>
+                                <div class="meta-info" style="font-style:italic; color:#4b5563;">${{item.label || ''}}</div>
+                                
+                                <div class="tracks-block">
+                                    <div class="track-a"><strong>A:</strong> ${{item.titleA || 'N/C'}} ${{item.durationA ? '['+item.durationA+']' : ''}}</div>
+                                    ${{item.titleB ? `<div class="track-b"><strong>B:</strong> ${{item.titleB}} ${{item.durationB ? '['+item.durationB+']' : ''}}</div>` : ''}}
+                                </div>
+                            </div>
+                            ${{linkTag}}
+                        </div>
+                    </div>
+                `;
+            }}).join('');
+        }}
+"""
+
+html_fin = """
+        document.getElementById('searchBox').addEventListener('input', (e) => {
+            currentSearch = e.target.value.toLowerCase().trim();
+            document.getElementById('clearSearch').style.display = currentSearch ? 'block' : 'none';
+            renderGrid();
+        });
+
+        document.getElementById('clearSearch').addEventListener('click', () => {
+            const sb = document.getElementById('searchBox');
+            sb.value = "";
+            currentSearch = "";
+            document.getElementById('clearSearch').style.display = 'none';
+            sb.focus();
+            renderGrid();
+        });
+
+        const newsBtn = document.getElementById('newsFilterBtn');
+        newsBtn.addEventListener('click', () => {
+            filterOnlyNews = !filterOnlyNews;
+            newsBtn.classList.toggle('active', filterOnlyNews);
+            renderGrid();
+        });
+
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('type-filter')) {
+                document.querySelectorAll('.type-filter').forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+                currentType = e.target.dataset.type;
+                renderGrid();
+            }
+            if (e.target.classList.contains('alpha-filter')) {
+                document.querySelectorAll('.alpha-filter').forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+                currentAlpha = e.target.dataset.alpha;
+                renderGrid();
+            }
+            if (e.target.classList.contains('genre-option')) {
+                currentGenre = e.target.dataset.genre;
+                document.getElementById('dropdownLabel').textContent = currentGenre === "ALL" ? "Tous les genres" : currentGenre.toLowerCase();
+                document.getElementById('dropdownBtn').classList.toggle('active', currentGenre !== "ALL");
+                document.getElementById('dropdownContent').classList.remove('show');
+                renderGrid();
+            }
+        });
+
+        const dropdownBtn = document.getElementById('dropdownBtn');
+        const dropdownContent = document.getElementById('dropdownContent');
+        dropdownBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            dropdownContent.classList.toggle('show');
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!dropdownContent.contains(e.target) && !dropdownBtn.contains(e.target)) {
+                dropdownContent.classList.remove('show');
+            }
+        });
+
+        document.getElementById('genreSearchInside').addEventListener('input', (e) => {
+            insideGenreSearch = e.target.value.toLowerCase().trim();
+            buildGenreMenu();
+        });
+
+        const scrollTopBtn = document.getElementById('scrollTopBtn');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) {
+                scrollTopBtn.classList.add('visible');
+            } else {
+                scrollTopBtn.classList.remove('visible');
+            }
+        });
+
+        scrollTopBtn.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        buildGenreMenu();
+        renderGrid();
+    </script>
+</body>
+</html>
+"""
+
+try:
+    with open("index.html", "w", encoding="utf-8") as f:
+        f.write(html_debut + html_fin)
+    print("✅ index.html régénéré avec succès")
+except Exception as e:
+    print(f"❌ Erreur lors de la création de index.html : {e}")
+
+# =====================================================================
+# GENERATION WANTED.HTML (Correction barre de recherche & visuels)
+# =====================================================================
+html_wanted = f"""<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Liste Wanted - Recherche de Vinyles</title>
+    <style>
+        :root {{ --discogs-black: #111111; --discogs-yellow: #f5c518; --light-bg: #f8f9fa; --border-color: #e5e7eb; --text-muted: #6b7280; }}
+        * {{ box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }}
+        body {{ background-color: var(--light-bg); color: var(--discogs-black); padding-bottom: 50px; }}
+        header {{ background-color: var(--discogs-black); color: white; padding: 20px; border-bottom: 4px solid var(--discogs-yellow); text-align: center; }}
+        header h1 {{ font-size: 24px; color: var(--discogs-yellow); }}
+        
+        .sticky-wrapper {{ position: -webkit-sticky; position: sticky; top: 0; z-index: 100; background-color: var(--light-bg); padding-top: 15px; padding-bottom: 10px; border-bottom: 1px solid var(--border-color); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }}
+        .container {{ max-width: 1350px; margin: 0 auto; padding: 0 15px; }}
+        
+        .search-container {{ background: white; padding: 20px; border-radius: 8px; border: 1px solid var(--border-color); box-shadow: 0 2px 4px rgba(0,0,0,0.02); }}
+        .search-row-wrapper {{ display: flex; gap: 15px; align-items: center; width: 100%; }}
+        .search-box-container {{ position: relative; flex-grow: 1; }}
+        .search-box {{ width: 100%; padding: 12px 40px 12px 12px; font-size: 16px; border: 2px solid var(--border-color); border-radius: 6px; outline: none; }}
+        .clear-search-btn {{ position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; font-size: 16px; color: #aaa; cursor: pointer; display: none; }}
+        .clear-search-btn:hover {{ color: #555; }}
+        
+        .back-btn {{ background-color: var(--discogs-black); color: white; border: 2px solid var(--discogs-black); padding: 11px 24px; font-size: 15px; font-weight: bold; border-radius: 6px; cursor: pointer; text-decoration: none; text-align: center; white-space: nowrap; transition: all 0.2s ease; }}
+        .back-btn:hover {{ background-color: var(--discogs-yellow); color: var(--discogs-black); border-color: var(--discogs-yellow); }}
+
+        .wanted-grid {{ display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 15px; margin-top: 20px; }}
+        .wanted-card {{ background: white; border: 1px solid var(--border-color); border-radius: 6px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 3px 5px rgba(0,0,0,0.02); }}
+        .cover-wrapper {{ aspect-ratio: 1; background: #222; display: flex; align-items: center; justify-content: center; overflow: hidden; border-bottom: 1px solid var(--border-color); position: relative; }}
+        .cover-image {{ width: 100%; height: 100%; object-fit: cover; }}
+        .card-details {{ padding: 10px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }}
+        .artist-name {{ font-size: 13px; font-weight: 700; text-transform: uppercase; line-height: 1.2; margin-bottom: 4px; }}
+        .track-title {{ font-size: 12px; color: #374151; margin-bottom: 6px; line-height: 1.2; }}
+        .comment-box {{ font-size: 11px; font-style: italic; color: var(--text-muted); margin-top: 4px; background: #f3f4f6; padding: 4px 6px; border-radius: 4px; word-break: break-word; }}
+        .discogs-link {{ display: inline-block; margin-top: 10px; width: 100%; text-align: center; background-color: var(--discogs-black); color: white; text-decoration: none; padding: 6px; font-size: 11px; font-weight: 600; border-radius: 4px; }}
+        .discogs-link:hover {{ background-color: var(--discogs-yellow); color: var(--discogs-black); transform: scale(1.02); }}
+        
+        .scroll-to-top {{ position: fixed; bottom: 25px; right: 25px; background-color: var(--discogs-black); color: white; border: 2px solid var(--discogs-yellow); width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3); z-index: 1000; opacity: 0; visibility: hidden; transition: all 0.3s ease; }}
+        .scroll-to-top.visible {{ opacity: 1; visibility: visible; }}
+        .scroll-to-top:hover {{ background-color: var(--discogs-yellow); color: var(--discogs-black); transform: scale(1.1); }}
+        @media (max-width: 768px) {{ .search-row-wrapper {{ flex-direction: column-reverse; gap: 10px; }} .back-btn {{ width: 100%; }} }}
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🎯 Liste Wanted / Achats souhaités</h1>
+    </header>
+    <div class="sticky-wrapper">
+        <div class="container">
+            <div class="search-container">
+                <div class="search-row-wrapper">
+                    <a href="index.html" class="back-btn">← Retour à la collection</a>
+                    <div class="search-box-container">
+                        <input type="text" id="searchBoxWanted" class="search-box" placeholder="Rechercher un artiste, un titre...">
+                        <button id="clearSearchWanted" class="clear-search-btn" title="Effacer la recherche">✖</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container" style="margin-top: 20px;">
+        <div style="margin-bottom:15px; font-size:14px; color:var(--text-muted); text-align: right;">Recherchés : <span id="wantedCount">0</span></div>
+        <div class="wanted-grid" id="wantedGrid"></div>
+    </div>
+    <button class="scroll-to-top" id="scrollTopBtn" title="Retour en haut">▲</button>
+    <script>
+        const wantedData = {json_wanted_data};
+        let currentSearchWanted = "";
+
+        function renderWantedGrid() {{
+            let filtered = wantedData.filter(item => {{
+                return !currentSearchWanted || 
+                    (item.artist && item.artist.toLowerCase().includes(currentSearchWanted)) ||
+                    (item.title && item.title.toLowerCase().includes(currentSearchWanted)) ||
+                    (item.comment && item.comment.toLowerCase().includes(currentSearchWanted));
+            }});
+
+            document.getElementById('wantedCount').textContent = filtered.length;
+            
+            const grid = document.getElementById('wantedGrid');
+            grid.innerHTML = filtered.map(item => {{
+                const imgTag = (item.pochette && item.pochette !== "pochettes/placeholder.png")
+                    ? `<img class="cover-image" src="${{item.pochette}}" alt="Pochette" loading="lazy">`
+                    : `<div style="color:#777; font-size:11px; font-weight:bold; padding:10px; text-align:center;">🔍 WANTED</div>`;
+                    
+                const linkTag = (item.url && item.url !== '#')
+                    ? `<a href="${{item.url}}" target="_blank" class="discogs-link">VOIR SUR DISCOGS</a>`
+                    : '';
+                    
+                return `
+                    <div class="wanted-card">
+                        <div class="cover-wrapper">${{imgTag}}</div>
+                        <div class="card-details">
+                            <div>
+                                <div class="artist-name">${{item.artist || 'ARTISTE INCONNU'}}</div>
+                                <div class="track-title">${{item.title || ''}}</div>
+                                ${{item.comment ? `<div class="comment-box">${{item.comment}}</div>` : ''}}
+                            </div>
+                            ${{linkTag}}
+                        </div>
+                    </div>
+                `;
+            }}).join('');
+        }}
+
+        const searchBox = document.getElementById('searchBoxWanted');
+        const clearBtn = document.getElementById('clearSearchWanted');
+
+        searchBox.addEventListener('input', (e) => {{
+            currentSearchWanted = e.target.value.toLowerCase().trim();
+            clearBtn.style.display = currentSearchWanted ? 'block' : 'none';
+            renderWantedGrid();
+        }});
+
+        clearBtn.addEventListener('click', () => {{
+            searchBox.value = "";
+            currentSearchWanted = "";
+            clearBtn.style.display = 'none';
+            searchBox.focus();
+            renderWantedGrid();
+        }});
+
+        const scrollTopBtn = document.getElementById('scrollTopBtn');
+        window.addEventListener('scroll', () => {{
+            if (window.scrollY > 300) {{
+                scrollTopBtn.classList.add('visible');
+            }} else {{
+                scrollTopBtn.classList.remove('visible');
+            }}
+        }});
+
+        scrollTopBtn.addEventListener('click', () => {{
+            window.scrollTo({{ top: 0, behavior: 'smooth' }});
+        }});
+
+        renderWantedGrid();
+    </script>
+</body>
+</html>
+"""
+
+try:
+    with open("Wanted.html", "w", encoding="utf-8") as f:
+        f.write(html_wanted)
+    print("✅ Wanted.html régénéré avec succès")
+except Exception as e:
+    print(f"❌ Erreur lors de la création de Wanted.html : {e}")
