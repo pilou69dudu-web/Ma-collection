@@ -34,6 +34,11 @@ if cache_existe:
         print(f"⚠️ Impossible de lire le cache, il sera réinitialisé : {e}")
         cache_existe = False
 
+def generer_hash_ligne(row):
+    """Crée une empreinte unique de la ligne pour détecter le moindre changement (ex: modification de prix, de titre...)"""
+    chaine_complete = "".join(str(val) for val in row.values)
+    return hashlib.md5(chaine_complete.encode('utf-8')).hexdigest()
+
 def extraire_id_discogs(url):
     if pd.isna(url):
         return None
@@ -133,14 +138,6 @@ colonne_lien = next((c for c in df.columns if 'lien' in str(c).lower()), 'Lien')
 colonne_genre = next((c for c in df.columns if 'genre' in str(c).lower()), None)
 if not colonne_genre and len(df.columns) > 6:
     colonne_genre = df.columns[6]
-
-def generer_hash_ligne(row):
-    """Génère un identifiant unique basé sur les données du disque (Artiste + Titre + Lien) et indépendant de sa ligne dans Excel."""
-    artiste = str(row.get('ARTISTE', '')).strip().lower()
-    titre = str(row.get(colonne_titre_a, '')).strip().lower() if colonne_titre_a else ""
-    lien = str(row.get(colonne_lien, '')).strip().lower() if colonne_lien else ""
-    chaine_identifiante = f"{artiste}|{titre}|{lien}"
-    return hashlib.md5(chaine_identifiante.encode('utf-8')).hexdigest()
 
 collection = []
 nouveau_cache = {}
