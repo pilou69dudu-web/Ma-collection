@@ -525,8 +525,8 @@
         "prix": "13€",
         "comment": "",
         "isNew": false,
-        "a_vendre": false,
-        "qte_vente": 0
+        "a_vendre": true,
+        "qte_vente": 1
     },
     "3c6786a7cbda525eaaf49d8a47cd22a9": {
         "id": "23",
