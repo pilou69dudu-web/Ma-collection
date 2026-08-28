@@ -513,7 +513,7 @@
         "genre": "House",
         "artist": "49ERS",
         "titleA": "Die Walküre (Club House Mix)",
-        "qte": 3,
+        "qte": 2,
         "durationA": "08:00:00",
         "bpmA": "114",
         "titleB": "Die Walküre (Instrumental)",
@@ -525,8 +525,8 @@
         "prix": "13€",
         "comment": "",
         "isNew": false,
-        "a_vendre": true,
-        "qte_vente": 1
+        "a_vendre": false,
+        "qte_vente": 0
     },
     "3c6786a7cbda525eaaf49d8a47cd22a9": {
         "id": "23",
