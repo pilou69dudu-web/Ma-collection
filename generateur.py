@@ -10,7 +10,8 @@ import hashlib
 # =====================================================================
 # CONFIGURATION AUTOMATIQUE
 # =====================================================================
-nom_fichier_excel = "00_Mes vinyles.xlsx"
+# Détection automatique du fichier Excel (supporte .xlsm et .xlsx)
+nom_fichier_excel = "00_Mes vinyles.xlsm" if os.path.exists("00_Mes vinyles.xlsm") else "00_Mes vinyles.xlsx"
 nom_fichier_wanted = "01_Liste achat.xlsx"
 fichier_cache = "vinyles_cache.json"  # Fichier mémoire pour accélérer le script
 
@@ -116,6 +117,7 @@ def recuperer_prix_haut(release_id):
 # TRAITEMENT DU FICHIER PRINCIPAL (MES VINYLES)
 # =====================================================================
 try:
+    print(f"📖 Lecture du fichier : {nom_fichier_excel}")
     df_brut = pd.read_excel(nom_fichier_excel, header=None)
     valeur_a1 = df_brut.iloc[0, 0]
     total_vinyles = str(int(float(valeur_a1))) if not pd.isna(valeur_a1) else "Non spécifié"
@@ -134,10 +136,13 @@ colonne_genre = next((c for c in df.columns if 'genre' in str(c).lower()), None)
 if not colonne_genre and len(df.columns) > 6:
     colonne_genre = df.columns[6]
 
-colonne_a_vendre = next((c for c in df.columns if 'vendre' in str(c).lower()), None)
+colonne_a_vendre = next((c for c in df.columns if 'vendre' in str(c).lower() and 'qt' not in str(c).lower()), None)
+
+# Identification de la Colonne T (Qté à vendre)
+colonne_qte_vente = next((c for c in df.columns if 'qt' in str(c).lower() and 'vendre' in str(c).lower()), 'Qté à vendre')
 
 def generer_hash_ligne(row):
-    """Génère un identifiant unique basé sur les données du disque (Artiste + Titre + Lien) et indépendant de sa ligne dans Excel."""
+    """Génère un identifiant unique basé sur les données du disque (Artiste + Titre + Lien)."""
     artiste = str(row.get('ARTISTE', '')).strip().lower()
     titre = str(row.get(colonne_titre_a, '')).strip().lower() if colonne_titre_a else ""
     lien = str(row.get(colonne_lien, '')).strip().lower() if colonne_lien else ""
@@ -164,14 +169,17 @@ for index, row in df.iterrows():
     val_a_vendre = str(row.get(colonne_a_vendre, '')).strip().lower() if colonne_a_vendre else str(row.get('À vendre', '')).strip().lower()
     est_a_vendre = (val_a_vendre == 'oui')
 
-    # Récupération Quantité (Colonne E : Qté) et calcul quantité à vendre
+    # Récupération Quantité (Colonne E : Qté)
     quantite = row.get('Qté', 1)
     try: quantite = int(quantite) if not pd.isna(quantite) else 1
     except: quantite = 1
     
-    qte_vente = quantite - 2
-    if qte_vente <= 0:
-        qte_vente = 1
+    # Récupération directe de la Colonne T (Qté à vendre)
+    qte_a_vendre_val = row.get(colonne_qte_vente, 0)
+    try:
+        qte_vente = int(qte_a_vendre_val) if not pd.isna(qte_a_vendre_val) else 0
+    except:
+        qte_vente = 0
 
     if not cache_existe:
         est_nouveaute = False
@@ -745,7 +753,7 @@ html_vente = f"""<!DOCTYPE html>
 
     <script>
         const fullData = {json_data};
-        const venteData = fullData.filter(item => item.a_vendre === true);
+        const venteData = fullData.filter(item => item.a_vendre === true && item.qte_vente > 0);
         const typesAuto = {json_types};
 
         let currentType = "ALL";
