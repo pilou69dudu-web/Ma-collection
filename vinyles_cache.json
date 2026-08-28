@@ -25112,8 +25112,8 @@
         "prix": "10€",
         "comment": "",
         "isNew": false,
-        "a_vendre": false,
-        "qte_vente": 0
+        "a_vendre": true,
+        "qte_vente": 2
     },
     "0176760c8bb4d102d3365085acbd6fef": {
         "id": "1092",
@@ -32920,7 +32920,7 @@
         "genre": "Funk",
         "artist": "JOCELYN BROWN",
         "titleA": "Somebody Else's Guy",
-        "qte": 2,
+        "qte": 3,
         "durationA": "06:28:00",
         "bpmA": "105",
         "titleB": "Somebody Else's Guy (Dub)",
@@ -48802,8 +48802,8 @@
         "prix": "19€",
         "comment": "",
         "isNew": false,
-        "a_vendre": false,
-        "qte_vente": 0
+        "a_vendre": true,
+        "qte_vente": 1
     },
     "3338288941225ad82b5a0a0a644acd70": {
         "id": "2123",
@@ -49377,8 +49377,8 @@
         "prix": "20€",
         "comment": "",
         "isNew": false,
-        "a_vendre": false,
-        "qte_vente": 0
+        "a_vendre": true,
+        "qte_vente": 2
     },
     "fb7fd03cab3b47ef679539f503322b73": {
         "id": "2148",
