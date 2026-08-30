@@ -4711,8 +4711,8 @@
         "prix": "8€",
         "comment": "",
         "isNew": false,
-        "a_vendre": false,
-        "qte_vente": 0
+        "a_vendre": true,
+        "qte_vente": 1
     },
     "103e61223628ad552938c113b30f4e39": {
         "id": "205",
@@ -5585,8 +5585,8 @@
         "prix": "18€",
         "comment": "",
         "isNew": false,
-        "a_vendre": false,
-        "qte_vente": 0
+        "a_vendre": true,
+        "qte_vente": 1
     },
     "cd045fdc3cee785249a40645fe6089ff": {
         "id": "243",
@@ -6551,8 +6551,8 @@
         "prix": "5€",
         "comment": "",
         "isNew": false,
-        "a_vendre": false,
-        "qte_vente": 0
+        "a_vendre": true,
+        "qte_vente": 1
     },
     "7c8efed587ae0e5ae0d19d6caf04ba9d": {
         "id": "285",
@@ -10058,7 +10058,7 @@
         "genre": "Funk",
         "artist": "CAROL WILLIAMS",
         "titleA": "What's The Deal",
-        "qte": 1,
+        "qte": 2,
         "durationA": "05:25:00",
         "bpmA": "105",
         "titleB": "Have You For My Love",
@@ -10070,8 +10070,8 @@
         "prix": "24€",
         "comment": "",
         "isNew": false,
-        "a_vendre": false,
-        "qte_vente": 0
+        "a_vendre": true,
+        "qte_vente": 1
     },
     "0e8b48653cfbb0272ea4bf6622cdc06b": {
         "id": "438",
@@ -14670,8 +14670,8 @@
         "prix": "14€",
         "comment": "",
         "isNew": false,
-        "a_vendre": false,
-        "qte_vente": 0
+        "a_vendre": true,
+        "qte_vente": 1
     },
     "61e0ce2d4028f3f34e17d2bedbe7deb4": {
         "id": "638",
@@ -14923,8 +14923,8 @@
         "prix": "5€",
         "comment": "",
         "isNew": false,
-        "a_vendre": false,
-        "qte_vente": 0
+        "a_vendre": true,
+        "qte_vente": 1
     },
     "963decee994fdd1af82eaabe0241e2c5": {
         "id": "649",
@@ -16717,8 +16717,8 @@
         "prix": "6€",
         "comment": "",
         "isNew": false,
-        "a_vendre": false,
-        "qte_vente": 0
+        "a_vendre": true,
+        "qte_vente": 1
     },
     "876732461a169fee05795f13ea360e8d": {
         "id": "727",
@@ -20950,7 +20950,7 @@
         "comment": "",
         "isNew": false,
         "a_vendre": false,
-        "qte_vente": 0
+        "qte_vente": 1
     },
     "1fccb8c31d12e40294fca8b48b4d8f4c": {
         "id": "911",
@@ -22444,8 +22444,8 @@
         "prix": "14€",
         "comment": "",
         "isNew": false,
-        "a_vendre": false,
-        "qte_vente": 0
+        "a_vendre": true,
+        "qte_vente": 1
     },
     "2911cde59be85cb116e2dc257bac44c4": {
         "id": "976",
@@ -24767,8 +24767,8 @@
         "prix": "14€",
         "comment": "",
         "isNew": false,
-        "a_vendre": false,
-        "qte_vente": 0
+        "a_vendre": true,
+        "qte_vente": 1
     },
     "dd3e7fd4a28b501dfaec08e9a9bdde8a": {
         "id": "1077",
@@ -25365,8 +25365,8 @@
         "prix": "40€",
         "comment": "",
         "isNew": false,
-        "a_vendre": false,
-        "qte_vente": 0
+        "a_vendre": true,
+        "qte_vente": 1
     },
     "c77a0023de903a998913d060545a427d": {
         "id": "1103",
@@ -28033,8 +28033,8 @@
         "prix": "10€",
         "comment": "",
         "isNew": false,
-        "a_vendre": false,
-        "qte_vente": 0
+        "a_vendre": true,
+        "qte_vente": 1
     },
     "d81ccdba2521ac88e2bde80dbe90fbc0": {
         "id": "1219",
@@ -29413,8 +29413,8 @@
         "prix": "4€",
         "comment": "",
         "isNew": false,
-        "a_vendre": false,
-        "qte_vente": 0
+        "a_vendre": true,
+        "qte_vente": 1
     },
     "9e9d152754a9bb9051bb1012b0c417a8": {
         "id": "1279",
@@ -29597,8 +29597,8 @@
         "prix": "24€",
         "comment": "",
         "isNew": false,
-        "a_vendre": false,
-        "qte_vente": 0
+        "a_vendre": true,
+        "qte_vente": 1
     },
     "1b19bea42685baa34e8c5deec5c1c7c6": {
         "id": "1287",
@@ -30724,8 +30724,8 @@
         "prix": "7€",
         "comment": "",
         "isNew": false,
-        "a_vendre": false,
-        "qte_vente": 0
+        "a_vendre": true,
+        "qte_vente": 1
     },
     "e866b1dc5eb18ee7f9d0f41f4f1044d1": {
         "id": "1336",
@@ -30908,8 +30908,8 @@
         "prix": "7€",
         "comment": "",
         "isNew": false,
-        "a_vendre": false,
-        "qte_vente": 0
+        "a_vendre": true,
+        "qte_vente": 1
     },
     "06f2c3416346793f66a7b374db9b5d1a": {
         "id": "1344",
@@ -32058,8 +32058,8 @@
         "prix": "8€",
         "comment": "",
         "isNew": false,
-        "a_vendre": false,
-        "qte_vente": 0
+        "a_vendre": true,
+        "qte_vente": 1
     },
     "1e0e1ad5a988e62401ecfc97bbccbcbb": {
         "id": "1394",
@@ -32081,8 +32081,8 @@
         "prix": "15€",
         "comment": "",
         "isNew": false,
-        "a_vendre": false,
-        "qte_vente": 0
+        "a_vendre": true,
+        "qte_vente": 1
     },
     "3217f8094601d83d5d8f88638d690a35": {
         "id": "1395",
@@ -32403,8 +32403,8 @@
         "prix": "29€",
         "comment": "",
         "isNew": false,
-        "a_vendre": false,
-        "qte_vente": 0
+        "a_vendre": true,
+        "qte_vente": 1
     },
     "9d6d5cd1d61b0fb3ba2c79765a62c95b": {
         "id": "1409",
@@ -32817,8 +32817,8 @@
         "prix": "5€",
         "comment": "",
         "isNew": false,
-        "a_vendre": false,
-        "qte_vente": 0
+        "a_vendre": true,
+        "qte_vente": 1
     },
     "7bbb2a9349272191b38e5d13a8f7807a": {
         "id": "1427",
@@ -33323,8 +33323,8 @@
         "prix": "31€",
         "comment": "",
         "isNew": false,
-        "a_vendre": false,
-        "qte_vente": 0
+        "a_vendre": true,
+        "qte_vente": 1
     },
     "c7024253aaf52923d229e5e0a84703e7": {
         "id": "1449",
@@ -35531,8 +35531,8 @@
         "prix": "8€",
         "comment": "",
         "isNew": false,
-        "a_vendre": false,
-        "qte_vente": 0
+        "a_vendre": true,
+        "qte_vente": 1
     },
     "347ebe84ab251b332e0cb39b2e7eed2b": {
         "id": "1545",
@@ -36451,8 +36451,8 @@
         "prix": "8€",
         "comment": "",
         "isNew": false,
-        "a_vendre": false,
-        "qte_vente": 0
+        "a_vendre": true,
+        "qte_vente": 1
     },
     "13705a705960cb2684bd1add63aaa3e9": {
         "id": "1586",
@@ -36957,8 +36957,8 @@
         "prix": "4€",
         "comment": "",
         "isNew": false,
-        "a_vendre": false,
-        "qte_vente": 0
+        "a_vendre": true,
+        "qte_vente": 1
     },
     "45af9ff4736e394a14e251f880051b10": {
         "id": "1607",
@@ -37880,7 +37880,7 @@
         "a_vendre": false,
         "qte_vente": 0
     },
-    "f63b2f0532428723625e0b2682379896": {
+    "07bf3fb840669f9f95f5a57a41d67d36": {
         "id": "1647",
         "type": "SINGLE",
         "year": "1991",
@@ -37889,19 +37889,19 @@
         "artist": "LEE MARROW",
         "titleA": "To Go Crazy (In The 20th Century) (Mix Version)",
         "qte": 1,
+        "qte_vente": 1,
+        "a_vendre": true,
         "durationA": "05:56:00",
         "bpmA": "125",
         "titleB": "To Go Crazy (In The 20th Century) (Extended Version) / To Go Crazy (In The 20th Century) (Instrumental Version) / To Go Crazy (In The 20th Century) (City Version)",
         "durationB": "6:15 / 4:16 / 5:00",
         "bpmB": "125 / 125 / 125",
         "label": "World Of Music",
-        "url": "https://www.discogs.com/release/104996-Lee-Marrow-To-Go-Crazy-In-The-20th-Century",
+        "url": "https://www.discogs.com/fr/release/104996-Lee-Marrow-To-Go-Crazy-In-The-20th-Century",
         "pochette": "pochettes/104996.jpg",
         "prix": "18€",
         "comment": "",
-        "isNew": false,
-        "a_vendre": false,
-        "qte_vente": 0
+        "isNew": true
     },
     "f9d77e8219d22d55cc57de63d1f65817": {
         "id": "1648",
@@ -38291,8 +38291,8 @@
         "prix": "13€",
         "comment": "",
         "isNew": false,
-        "a_vendre": false,
-        "qte_vente": 0
+        "a_vendre": true,
+        "qte_vente": 1
     },
     "278484e36be33d847d37c6ea45f0e24a": {
         "id": "1665",
@@ -39418,8 +39418,8 @@
         "prix": "5€",
         "comment": "",
         "isNew": false,
-        "a_vendre": false,
-        "qte_vente": 0
+        "a_vendre": true,
+        "qte_vente": 1
     },
     "7f4e030687c75fddf6414153a37a253f": {
         "id": "1714",
@@ -39533,8 +39533,8 @@
         "prix": "20€",
         "comment": "",
         "isNew": false,
-        "a_vendre": false,
-        "qte_vente": 0
+        "a_vendre": true,
+        "qte_vente": 1
     },
     "43e26e99fb43bdb5d0eeb8501bf73cc2": {
         "id": "1719",
@@ -40223,8 +40223,8 @@
         "prix": "7€",
         "comment": "",
         "isNew": false,
-        "a_vendre": false,
-        "qte_vente": 0
+        "a_vendre": true,
+        "qte_vente": 1
     },
     "7577ca56f5fe8d62b72339152052e69d": {
         "id": "1749",
@@ -41741,8 +41741,8 @@
         "prix": "10€",
         "comment": "",
         "isNew": false,
-        "a_vendre": false,
-        "qte_vente": 0
+        "a_vendre": true,
+        "qte_vente": 1
     },
     "a4d9cb7cd0eccb9f2e1234289817369f": {
         "id": "1815",
@@ -41764,18 +41764,20 @@
         "prix": "4€",
         "comment": "",
         "isNew": false,
-        "a_vendre": false,
-        "qte_vente": 0
+        "a_vendre": true,
+        "qte_vente": 1
     },
-    "2e838dc92812a77d37dc390e9fe37830": {
+    "c6976ac3a48e377d6ca378c4f8680cb4": {
         "id": "1816",
         "type": "SINGLE",
         "year": "1983",
         "country": "France",
         "genre": "Hip Hop",
-        "artist": "MALCOM X",
+        "artist": "MALCOLM X",
         "titleA": "No Sell Out (Vocal)",
         "qte": 1,
+        "qte_vente": 1,
+        "a_vendre": true,
         "durationA": "05:35:00",
         "bpmA": "104",
         "titleB": "No Sell Out (Instrumental)",
@@ -41786,9 +41788,7 @@
         "pochette": "pochettes/1284182.jpg",
         "prix": "17€",
         "comment": "",
-        "isNew": false,
-        "a_vendre": false,
-        "qte_vente": 0
+        "isNew": true
     },
     "8cc0c12e269642c7b628014fa7fef637": {
         "id": "1817",
@@ -42293,8 +42293,8 @@
         "prix": "44€",
         "comment": "",
         "isNew": false,
-        "a_vendre": false,
-        "qte_vente": 0
+        "a_vendre": true,
+        "qte_vente": 1
     },
     "1f87343948a46804607e2fe95ddbc01f": {
         "id": "1839",
@@ -42638,8 +42638,8 @@
         "prix": "8€",
         "comment": "",
         "isNew": false,
-        "a_vendre": false,
-        "qte_vente": 0
+        "a_vendre": true,
+        "qte_vente": 1
     },
     "4c002772c05891e0339f958f50117b67": {
         "id": "1854",
@@ -42661,8 +42661,8 @@
         "prix": "8€",
         "comment": "",
         "isNew": false,
-        "a_vendre": false,
-        "qte_vente": 0
+        "a_vendre": true,
+        "qte_vente": 1
     },
     "0dcbfe235ff84e7c1c433caff0b3b014": {
         "id": "1855",
@@ -42753,8 +42753,8 @@
         "prix": "15€",
         "comment": "",
         "isNew": false,
-        "a_vendre": false,
-        "qte_vente": 0
+        "a_vendre": true,
+        "qte_vente": 1
     },
     "0164111d9632ede0c1985ada6ef8f321": {
         "id": "1859",
@@ -42799,8 +42799,8 @@
         "prix": "7€",
         "comment": "",
         "isNew": false,
-        "a_vendre": false,
-        "qte_vente": 0
+        "a_vendre": true,
+        "qte_vente": 1
     },
     "2ad47b58ecdb60648ad22eec905bf061": {
         "id": "1861",
@@ -43305,8 +43305,8 @@
         "prix": "15€",
         "comment": "",
         "isNew": false,
-        "a_vendre": false,
-        "qte_vente": 0
+        "a_vendre": true,
+        "qte_vente": 1
     },
     "972834a2dd222431ce303f0a2b9a31cf": {
         "id": "1883",
@@ -43535,8 +43535,8 @@
         "prix": "7€",
         "comment": "",
         "isNew": false,
-        "a_vendre": false,
-        "qte_vente": 0
+        "a_vendre": true,
+        "qte_vente": 2
     },
     "95b007aa014d9170d48641d73b25b5dc": {
         "id": "1893",
@@ -43558,8 +43558,8 @@
         "prix": "12€",
         "comment": "",
         "isNew": false,
-        "a_vendre": false,
-        "qte_vente": 0
+        "a_vendre": true,
+        "qte_vente": 1
     },
     "c836db14a0439aac7303852d3ec945c9": {
         "id": "1895",
@@ -45191,8 +45191,8 @@
         "prix": "40€",
         "comment": "",
         "isNew": false,
-        "a_vendre": false,
-        "qte_vente": 0
+        "a_vendre": true,
+        "qte_vente": 1
     },
     "676a4b78923d40ed9193014515d13aa7": {
         "id": "1965",
@@ -45214,8 +45214,8 @@
         "prix": "10€",
         "comment": "",
         "isNew": false,
-        "a_vendre": false,
-        "qte_vente": 0
+        "a_vendre": true,
+        "qte_vente": 1
     },
     "9e82c63d3180cf4abb8e9b973ee2cc46": {
         "id": "1966",
@@ -45237,8 +45237,8 @@
         "prix": "35€",
         "comment": "",
         "isNew": false,
-        "a_vendre": false,
-        "qte_vente": 0
+        "a_vendre": true,
+        "qte_vente": 1
     },
     "e31bd16af99750bca6624e05c53eced0": {
         "id": "1967",
@@ -45260,8 +45260,8 @@
         "prix": "13€",
         "comment": "",
         "isNew": false,
-        "a_vendre": false,
-        "qte_vente": 0
+        "a_vendre": true,
+        "qte_vente": 1
     },
     "b51374e392af4c9162dd37ce38ee80ca": {
         "id": "1968",
@@ -45283,8 +45283,8 @@
         "prix": "12€",
         "comment": "",
         "isNew": false,
-        "a_vendre": false,
-        "qte_vente": 0
+        "a_vendre": true,
+        "qte_vente": 1
     },
     "2ca2005c3e69069123dfc94b7d2d0b45": {
         "id": "1969",
@@ -45306,8 +45306,8 @@
         "prix": "24€",
         "comment": "",
         "isNew": false,
-        "a_vendre": false,
-        "qte_vente": 0
+        "a_vendre": true,
+        "qte_vente": 1
     },
     "cca5a977e356cc3b973aab2c629a912f": {
         "id": "1970",
@@ -45329,8 +45329,8 @@
         "prix": "19€",
         "comment": "",
         "isNew": false,
-        "a_vendre": false,
-        "qte_vente": 0
+        "a_vendre": true,
+        "qte_vente": 1
     },
     "d6f68db069fc7fac66459f29567d2943": {
         "id": "1971",
@@ -45352,8 +45352,8 @@
         "prix": "12€",
         "comment": "",
         "isNew": false,
-        "a_vendre": false,
-        "qte_vente": 0
+        "a_vendre": true,
+        "qte_vente": 1
     },
     "dae978d5ee8c06dbf5007da761d5c0c8": {
         "id": "1972",
@@ -45375,8 +45375,8 @@
         "prix": "10€",
         "comment": "",
         "isNew": false,
-        "a_vendre": false,
-        "qte_vente": 0
+        "a_vendre": true,
+        "qte_vente": 1
     },
     "bfa5b9f6fe712ce5c674a203774f3c8e": {
         "id": "1973",
@@ -45398,8 +45398,8 @@
         "prix": "10€",
         "comment": "",
         "isNew": false,
-        "a_vendre": false,
-        "qte_vente": 0
+        "a_vendre": true,
+        "qte_vente": 1
     },
     "beff7f216872d58653236a7eba2c434c": {
         "id": "1974",
@@ -50044,8 +50044,8 @@
         "prix": "9€",
         "comment": "",
         "isNew": false,
-        "a_vendre": false,
-        "qte_vente": 0
+        "a_vendre": true,
+        "qte_vente": 1
     },
     "70019f5152543377c68f2dfc30279b16": {
         "id": "2177",
@@ -58945,8 +58945,8 @@
         "prix": "6€",
         "comment": "",
         "isNew": false,
-        "a_vendre": false,
-        "qte_vente": 0
+        "a_vendre": true,
+        "qte_vente": 1
     },
     "c56c7f97df2cb670c609b52bc85f0e8a": {
         "id": "2565",
@@ -61475,8 +61475,8 @@
         "prix": "11€",
         "comment": "",
         "isNew": false,
-        "a_vendre": false,
-        "qte_vente": 0
+        "a_vendre": true,
+        "qte_vente": 1
     },
     "2662d58c390c205872335dd9543dad1a": {
         "id": "2675",
@@ -61636,8 +61636,8 @@
         "prix": "10€",
         "comment": "",
         "isNew": false,
-        "a_vendre": false,
-        "qte_vente": 0
+        "a_vendre": true,
+        "qte_vente": 1
     },
     "e51a9ef3c4ac2416c6475cd7b73ed0e4": {
         "id": "2682",
@@ -61705,8 +61705,8 @@
         "prix": "4€",
         "comment": "",
         "isNew": false,
-        "a_vendre": false,
-        "qte_vente": 0
+        "a_vendre": true,
+        "qte_vente": 1
     },
     "77c982f4660edbbf6d89eeb8edf00a54": {
         "id": "2685",
@@ -63671,7 +63671,7 @@
         "genre": "Pop / Rock",
         "artist": "TÉLÉPHONE",
         "titleA": "Un Autre Monde",
-        "qte": 1,
+        "qte": 0,
         "durationA": "nan",
         "bpmA": "LP",
         "titleB": "nan",
@@ -64143,8 +64143,8 @@
         "prix": "17€",
         "comment": "",
         "isNew": false,
-        "a_vendre": false,
-        "qte_vente": 0
+        "a_vendre": true,
+        "qte_vente": 1
     },
     "df0d47f07d2732a46851970c6bd28103": {
         "id": "2791",
@@ -64396,8 +64396,8 @@
         "prix": "10€",
         "comment": "",
         "isNew": false,
-        "a_vendre": false,
-        "qte_vente": 0
+        "a_vendre": true,
+        "qte_vente": 3
     },
     "4977bc9bbe5beea1ac142049f9be03dd": {
         "id": "2802",
@@ -66719,8 +66719,8 @@
         "prix": "32€",
         "comment": "",
         "isNew": false,
-        "a_vendre": false,
-        "qte_vente": 0
+        "a_vendre": true,
+        "qte_vente": 1
     },
     "26cba843c98d9377f6d2c1ccf6f134c9": {
         "id": "2903",
@@ -67340,8 +67340,8 @@
         "prix": "86€",
         "comment": "",
         "isNew": false,
-        "a_vendre": false,
-        "qte_vente": 0
+        "a_vendre": true,
+        "qte_vente": 1
     },
     "4503ad684bda8fb4f86e1d8091d9140f": {
         "id": "2930",
@@ -68306,8 +68306,8 @@
         "prix": "8€",
         "comment": "",
         "isNew": false,
-        "a_vendre": false,
-        "qte_vente": 0
+        "a_vendre": true,
+        "qte_vente": 1
     },
     "6af784724ba983e26b405f08a867620c": {
         "id": "2972",
@@ -68467,8 +68467,8 @@
         "prix": "12€",
         "comment": "",
         "isNew": false,
-        "a_vendre": false,
-        "qte_vente": 0
+        "a_vendre": true,
+        "qte_vente": 1
     },
     "1775ff12acf251cd7cef00ea5751443c": {
         "id": "2979",
@@ -69275,15 +69275,17 @@
         "a_vendre": false,
         "qte_vente": 0
     },
-    "8989cf9ec718fa17eebc39bf0a99d0c2": {
+    "358fc673213dd5203b75c5704221caa6": {
         "id": "3014",
         "type": "MEDLEY",
         "year": "1989",
         "country": "Spain",
         "genre": "Electronic",
         "artist": "TONI PERET & JOSÉ  Mª CASTELLS",
-        "titleA": "Max Mix 9 (Manque disque 2)",
+        "titleA": "Max Mix 9",
         "qte": 2,
+        "qte_vente": 0,
+        "a_vendre": false,
         "durationA": "nan",
         "bpmA": "Medley",
         "titleB": "nan",
@@ -69294,9 +69296,7 @@
         "pochette": "pochettes/1334850.jpg",
         "prix": "17€",
         "comment": "",
-        "isNew": false,
-        "a_vendre": false,
-        "qte_vente": 0
+        "isNew": true
     },
     "083f7b78e9a1fd0286abf07c344b4ffd": {
         "id": "3015",
@@ -70928,8 +70928,8 @@
         "prix": "21€",
         "comment": "",
         "isNew": false,
-        "a_vendre": false,
-        "qte_vente": 0
+        "a_vendre": true,
+        "qte_vente": 1
     },
     "97cd9776ac68022c5eb6568cdc17c2cf": {
         "id": "3086",
@@ -71184,15 +71184,17 @@
         "a_vendre": false,
         "qte_vente": 0
     },
-    "21654f458636e184178a4d07f9b38218": {
+    "c1c6135466bccbc4355f895d626b94c4": {
         "id": "3097",
         "type": "COMPILS",
         "year": "1989",
         "country": "Spain",
         "genre": "House",
-        "artist": "VARIOUS",
+        "artist": "BAT MIX",
         "titleA": "Bat Mix (Megamix Version)",
         "qte": 1,
+        "qte_vente": 1,
+        "a_vendre": true,
         "durationA": "16:22:00",
         "bpmA": "123-125",
         "titleB": "Bat Flower Power Version",
@@ -71203,9 +71205,7 @@
         "pochette": "pochettes/1652521.jpg",
         "prix": "8€",
         "comment": "",
-        "isNew": false,
-        "a_vendre": false,
-        "qte_vente": 0
+        "isNew": true
     },
     "4db95566fb3ca258336dbf527559efaf": {
         "id": "3098",
@@ -71437,15 +71437,17 @@
         "a_vendre": false,
         "qte_vente": 0
     },
-    "3ad20b6ed357eca6ceba06e3ff07a601": {
+    "9200b1d597c963da77db3ca20c9fb8cf": {
         "id": "3108",
         "type": "COMPILS",
         "year": "1989",
         "country": "France",
         "genre": "Funk",
-        "artist": "VARIOUS",
+        "artist": "ATOMIX",
         "titleA": "Mix 1 / Mix 2",
         "qte": 1,
+        "qte_vente": 1,
+        "a_vendre": true,
         "durationA": "10:50 / 5:27",
         "bpmA": "nan",
         "titleB": "Mix 3",
@@ -71456,9 +71458,7 @@
         "pochette": "pochettes/1168150.jpg",
         "prix": "10€",
         "comment": "",
-        "isNew": false,
-        "a_vendre": false,
-        "qte_vente": 0
+        "isNew": true
     },
     "c0a69ba9b0f8fdbcd700e232d3abcc5a": {
         "id": "3109",
@@ -71641,18 +71641,20 @@
         "prix": "15€",
         "comment": "",
         "isNew": false,
-        "a_vendre": false,
-        "qte_vente": 0
+        "a_vendre": true,
+        "qte_vente": 1
     },
-    "d6d442a09fb8482662aa286d46c5cafb": {
+    "e33df779680e5052b930b366e92293bf": {
         "id": "3117",
         "type": "COMPILS",
         "year": "1991",
         "country": "Belgium",
         "genre": "House",
-        "artist": "VARIOUS",
+        "artist": "MISTERMIXER",
         "titleA": "The Original - Dance Computer 4",
         "qte": 1,
+        "qte_vente": 1,
+        "a_vendre": true,
         "durationA": "06:30:00",
         "bpmA": "122-125",
         "titleB": "Beat Computer Four / Step On It",
@@ -71663,9 +71665,7 @@
         "pochette": "pochettes/191214.jpg",
         "prix": "10€",
         "comment": "",
-        "isNew": false,
-        "a_vendre": true,
-        "qte_vente": 1
+        "isNew": true
     },
     "2e51092eadccab65762a0097af860167": {
         "id": "3118",
@@ -72285,8 +72285,8 @@
         "prix": "12€",
         "comment": "",
         "isNew": false,
-        "a_vendre": false,
-        "qte_vente": 0
+        "a_vendre": true,
+        "qte_vente": 1
     },
     "f007f6dfda5f7cb3abf9fb28a7a80859": {
         "id": "3144",
@@ -72607,8 +72607,8 @@
         "prix": "4€",
         "comment": "",
         "isNew": false,
-        "a_vendre": false,
-        "qte_vente": 0
+        "a_vendre": true,
+        "qte_vente": 1
     },
     "c1aa852f57cdd2a77f9e0f53abcee399": {
         "id": "3159",
@@ -73987,8 +73987,8 @@
         "prix": "10€",
         "comment": "",
         "isNew": false,
-        "a_vendre": false,
-        "qte_vente": 0
+        "a_vendre": true,
+        "qte_vente": 1
     },
     "36a7b0d313e910d0c53043c3a4763a73": {
         "id": "3219",
