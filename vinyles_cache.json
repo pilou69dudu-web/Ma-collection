@@ -11220,8 +11220,8 @@
         "prix": "26€",
         "comment": "",
         "isNew": false,
-        "a_vendre": false,
-        "qte_vente": 0
+        "a_vendre": true,
+        "qte_vente": 1
     },
     "7f7e5153ba93cb9d9ff52d25d69fcd71": {
         "id": "488",
@@ -11473,8 +11473,8 @@
         "prix": "10€",
         "comment": "",
         "isNew": false,
-        "a_vendre": false,
-        "qte_vente": 0
+        "a_vendre": true,
+        "qte_vente": 1
     },
     "6d627cb0a2d9ca0396eccaab498b4e0a": {
         "id": "499",
@@ -14627,18 +14627,20 @@
         "a_vendre": false,
         "qte_vente": 0
     },
-    "b5655cc5307333949ec21f909882cb68": {
+    "e26ae388272ec944b1f181e3ff200b2c": {
         "id": "636",
         "type": "SINGLE",
         "year": "????",
         "country": "US",
         "genre": "Funk",
         "artist": "CUTTY / WAR",
-        "titleA": "Naughty Times",
+        "titleA": "Naughty Times(1984)",
         "qte": 1,
+        "qte_vente": 0,
+        "a_vendre": false,
         "durationA": "06:25:00",
         "bpmA": "117",
-        "titleB": "You Got The Power",
+        "titleB": "You Got The Power(1982)",
         "durationB": "05:41:00",
         "bpmB": "118",
         "label": "Groove Sound",
@@ -14646,9 +14648,7 @@
         "pochette": "pochettes/11253487.jpg",
         "prix": "12€",
         "comment": "",
-        "isNew": false,
-        "a_vendre": false,
-        "qte_vente": 0
+        "isNew": true
     },
     "502259311765183706b499d98ceea7c0": {
         "id": "637",
@@ -20538,15 +20538,17 @@
         "a_vendre": false,
         "qte_vente": 0
     },
-    "7fc6b2099ba2b655fb9e968bfe7c3e1a": {
+    "f6611902e0d41d651ca85074c912cd9f": {
         "id": "893",
         "type": "SINGLE",
-        "year": "1982",
+        "year": "1978",
         "country": "France",
-        "genre": "Disco",
+        "genre": "Funk",
         "artist": "EDDY GRANT",
-        "titleA": "Walking On Sunshine(1978)",
+        "titleA": "Walking On Sunshine",
         "qte": 1,
+        "qte_vente": 0,
+        "a_vendre": false,
         "durationA": "05:40:00",
         "bpmA": "115",
         "titleB": "Sunshine Jam",
@@ -20557,9 +20559,7 @@
         "pochette": "pochettes/3004910.jpg",
         "prix": "9€",
         "comment": "",
-        "isNew": false,
-        "a_vendre": false,
-        "qte_vente": 0
+        "isNew": true
     },
     "d197992cabd9c0c4bd9e9bc88ee1abec": {
         "id": "894",
@@ -22030,8 +22030,8 @@
         "prix": "12€",
         "comment": "",
         "isNew": false,
-        "a_vendre": false,
-        "qte_vente": 0
+        "a_vendre": true,
+        "qte_vente": 2
     },
     "eba0dcae4848d2d414665dae2c1416c9": {
         "id": "958",
@@ -26564,15 +26564,17 @@
         "a_vendre": false,
         "qte_vente": 0
     },
-    "5e063b61fcf498c9e67d347c1a8adf7a": {
+    "64db63f25d745651775d1f08ca00cc62": {
         "id": "1155",
         "type": "SINGLE",
         "year": "1989",
         "country": "Netherlands",
         "genre": "Ambiance",
-        "artist": "GIPSY KING",
+        "artist": "GIPSY KINGS",
         "titleA": "Bamboleo (Club Mix)",
         "qte": 1,
+        "qte_vente": 0,
+        "a_vendre": false,
         "durationA": "06:58:00",
         "bpmA": "120",
         "titleB": "Bamboleo (Latin Mix) / Bamboleo (Radio Edit)",
@@ -26583,9 +26585,7 @@
         "pochette": "pochettes/535350.jpg",
         "prix": "12€",
         "comment": "",
-        "isNew": false,
-        "a_vendre": false,
-        "qte_vente": 0
+        "isNew": true
     },
     "20dd575a604b40a3d64f1531f2b23dac": {
         "id": "1156",
@@ -39329,18 +39329,20 @@
         "a_vendre": false,
         "qte_vente": 0
     },
-    "61913456451f68c5814c865fa9f999e9": {
+    "50881c2628b93311bdc24d810e50d352": {
         "id": "1710",
         "type": "SINGLE",
         "year": "1986",
         "country": "Germany",
         "genre": "Funk",
         "artist": "LIPPS, INC; / TRANS-X",
-        "titleA": "Funkytown",
+        "titleA": "Funkytown(1979)",
         "qte": 1,
+        "qte_vente": 0,
+        "a_vendre": false,
         "durationA": "07:51:00",
         "bpmA": "121",
-        "titleB": "Living On Video",
+        "titleB": "Living On Video(1983)",
         "durationB": "05:55:00",
         "bpmB": "131",
         "label": "ZYX Records",
@@ -39348,9 +39350,7 @@
         "pochette": "pochettes/126381.jpg",
         "prix": "17€",
         "comment": "",
-        "isNew": false,
-        "a_vendre": false,
-        "qte_vente": 0
+        "isNew": true
     },
     "b31a80599dca71e8fd8439e15404a369": {
         "id": "1711",
@@ -49699,8 +49699,8 @@
         "prix": "20€",
         "comment": "",
         "isNew": false,
-        "a_vendre": false,
-        "qte_vente": 0
+        "a_vendre": true,
+        "qte_vente": 1
     },
     "30c4662c3dda11b76b598de5558915a7": {
         "id": "2162",
@@ -54808,15 +54808,17 @@
         "a_vendre": false,
         "qte_vente": 0
     },
-    "2fb2d7f727c2eebdda803eac623d1daa": {
+    "8867fca344a1ec80d5a04aea5955e28f": {
         "id": "2384",
         "type": "SINGLE",
         "year": "1982",
         "country": "France",
         "genre": "Disco",
-        "artist": "ROBERT SICCHI",
+        "artist": "ROBERT SACCHI",
         "titleA": "Jungle Queen",
         "qte": 1,
+        "qte_vente": 0,
+        "a_vendre": false,
         "durationA": "06:09:00",
         "bpmA": "103",
         "titleB": "Casablanca",
@@ -54827,9 +54829,7 @@
         "pochette": "pochettes/1281824.jpg",
         "prix": "7€",
         "comment": "",
-        "isNew": false,
-        "a_vendre": false,
-        "qte_vente": 0
+        "isNew": true
     },
     "5e2cbce4099bbae9907c105ac4af9423": {
         "id": "2385",
@@ -66400,18 +66400,20 @@
         "a_vendre": false,
         "qte_vente": 0
     },
-    "d4868340f9e44d43b9a82227e1e97bb3": {
+    "9c76eeb80e4f2238483369f6a841bc8e": {
         "id": "2889",
         "type": "SINGLE",
         "year": "????",
         "country": "France",
         "genre": "Funk",
         "artist": "THE NEXT MOVEMENT / HOT CUISINE",
-        "titleA": "Let's Work It Out",
+        "titleA": "Let's Work It Out(1982)",
         "qte": 1,
+        "qte_vente": 0,
+        "a_vendre": false,
         "durationA": "05:40:00",
         "bpmA": "121",
-        "titleB": "Who's Been Kissing You ?",
+        "titleB": "Who's Been Kissing You ?(1981)",
         "durationB": "05:30:00",
         "bpmB": "111",
         "label": "Prelude Records",
@@ -66419,9 +66421,7 @@
         "pochette": "pochettes/1787837.jpg",
         "prix": "19€",
         "comment": "",
-        "isNew": false,
-        "a_vendre": false,
-        "qte_vente": 0
+        "isNew": true
     },
     "5142d74f32bed4d8e4da2c775f7bec13": {
         "id": "2890",
@@ -70640,7 +70640,7 @@
         "genre": "Jingles",
         "artist": "UNKNOWN ARTIST",
         "titleA": "Jingels From U.S.A. Vol.1",
-        "qte": 1,
+        "qte": 3,
         "durationA": "nan",
         "bpmA": "Jingles",
         "titleB": "nan",
@@ -70663,7 +70663,7 @@
         "genre": "Jingles",
         "artist": "UNKNOWN ARTIST",
         "titleA": "Jingels From U.S.A. Vol.2",
-        "qte": 1,
+        "qte": 2,
         "durationA": "nan",
         "bpmA": "Jingles",
         "titleB": "nan",
@@ -70686,7 +70686,7 @@
         "genre": "Jingles",
         "artist": "UNKNOWN ARTIST",
         "titleA": "Jingels From U.S.A. Vol.3 - 70's",
-        "qte": 1,
+        "qte": 2,
         "durationA": "nan",
         "bpmA": "Jingles",
         "titleB": "nan",
@@ -70709,7 +70709,7 @@
         "genre": "Jingles",
         "artist": "UNKNOWN ARTIST",
         "titleA": "Jingels From U.S.A. Vol.4",
-        "qte": 1,
+        "qte": 2,
         "durationA": "nan",
         "bpmA": "Jingles",
         "titleB": "nan",
@@ -74885,7 +74885,7 @@
         "pochette": "pochettes/1259859.jpg",
         "prix": "15€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "c62542597b6a6e288908080728535d65": {
         "id": "3258",
@@ -74908,7 +74908,7 @@
         "pochette": "pochettes/551191.jpg",
         "prix": "25€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "e8becf98c7782b317977747760d28172": {
         "id": "3259",
@@ -74931,7 +74931,7 @@
         "pochette": "pochettes/557890.jpg",
         "prix": "20€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "c69c4fb157eabe07ef87cf83e07fdf17": {
         "id": "3260",
@@ -74954,7 +74954,7 @@
         "pochette": "pochettes/557912.jpg",
         "prix": "27€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "21050dec3414d18ad66b6b5d5075e5ba": {
         "id": "3261",
@@ -74977,7 +74977,7 @@
         "pochette": "pochettes/584241.jpg",
         "prix": "30€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "b67dbe2183623fdd7141abf923b12102": {
         "id": "3262",
@@ -75000,7 +75000,7 @@
         "pochette": "pochettes/1420842.jpg",
         "prix": "25€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "77620421b29047a983e633d3e9d49005": {
         "id": "3263",
@@ -75023,7 +75023,7 @@
         "pochette": "pochettes/622859.jpg",
         "prix": "15€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "0a1bf66ce86c1eab35b63463adedca6f": {
         "id": "3264",
@@ -75046,7 +75046,7 @@
         "pochette": "pochettes/1107303.jpg",
         "prix": "30€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "735bbe60aecbcbd36b6f370d121c335e": {
         "id": "3265",
@@ -75069,7 +75069,7 @@
         "pochette": "pochettes/792714.jpg",
         "prix": "13€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "f8d062ba8bc2862d0296d4eac2573c54": {
         "id": "3266",
@@ -75092,7 +75092,7 @@
         "pochette": "pochettes/231323.jpg",
         "prix": "24€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "10f6cc006bcf498119549bbb1e0c3b4c": {
         "id": "3267",
@@ -75115,7 +75115,7 @@
         "pochette": "pochettes/66625.jpg",
         "prix": "35€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "56311ff7c3ccef5294f6e65a51c8e87f": {
         "id": "3268",
@@ -75138,7 +75138,7 @@
         "pochette": "pochettes/214094.jpg",
         "prix": "18€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "ec9629a71997b514d18763b88631e2d6": {
         "id": "3269",
@@ -75161,7 +75161,7 @@
         "pochette": "pochettes/1154107.jpg",
         "prix": "20€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "5089d8f5fff9ec17de5651d46c6cc02e": {
         "id": "3270",
@@ -75184,7 +75184,7 @@
         "pochette": "pochettes/135692.jpg",
         "prix": "27€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "bba7f211f93f6a413f97433a0968d05b": {
         "id": "3271",
@@ -75207,7 +75207,7 @@
         "pochette": "pochettes/3732903.jpg",
         "prix": "10€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "23d9d69a746d6276e99e8574828cfa16": {
         "id": "3272",
@@ -75230,7 +75230,7 @@
         "pochette": "pochettes/63280.jpg",
         "prix": "20€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "112f92433fd0154b58ac6d1038c14b98": {
         "id": "3273",
@@ -75253,7 +75253,7 @@
         "pochette": "pochettes/1555175.jpg",
         "prix": "16€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "c569ac0ab9d962428d150417d1541811": {
         "id": "3274",
@@ -75276,7 +75276,7 @@
         "pochette": "pochettes/1433158.jpg",
         "prix": "17€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "088f9d29d339dc4c8418a401cdfae494": {
         "id": "3275",
@@ -75299,6 +75299,6 @@
         "pochette": "pochettes/3905811.jpg",
         "prix": "10€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     }
 }
