@@ -14648,7 +14648,7 @@
         "pochette": "pochettes/11253487.jpg",
         "prix": "12€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "502259311765183706b499d98ceea7c0": {
         "id": "637",
@@ -20559,7 +20559,7 @@
         "pochette": "pochettes/3004910.jpg",
         "prix": "9€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "d197992cabd9c0c4bd9e9bc88ee1abec": {
         "id": "894",
@@ -26585,7 +26585,7 @@
         "pochette": "pochettes/535350.jpg",
         "prix": "12€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "20dd575a604b40a3d64f1531f2b23dac": {
         "id": "1156",
@@ -39350,7 +39350,7 @@
         "pochette": "pochettes/126381.jpg",
         "prix": "17€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "b31a80599dca71e8fd8439e15404a369": {
         "id": "1711",
@@ -54829,7 +54829,7 @@
         "pochette": "pochettes/1281824.jpg",
         "prix": "7€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "5e2cbce4099bbae9907c105ac4af9423": {
         "id": "2385",
@@ -66421,7 +66421,7 @@
         "pochette": "pochettes/1787837.jpg",
         "prix": "19€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "5142d74f32bed4d8e4da2c775f7bec13": {
         "id": "2890",
