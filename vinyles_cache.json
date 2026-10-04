@@ -48020,8 +48020,8 @@
         "prix": "14€",
         "comment": "",
         "isNew": false,
-        "a_vendre": false,
-        "qte_vente": 0
+        "a_vendre": true,
+        "qte_vente": 1
     },
     "32e6ee1272300001627d52ed346cc679": {
         "id": "2089",
@@ -50803,8 +50803,8 @@
         "prix": "82€",
         "comment": "",
         "isNew": false,
-        "a_vendre": false,
-        "qte_vente": 0
+        "a_vendre": true,
+        "qte_vente": 1
     },
     "b106436862815eca8c7f7cdb2a35f41b": {
         "id": "2210",
@@ -53126,8 +53126,8 @@
         "prix": "21€",
         "comment": "",
         "isNew": false,
-        "a_vendre": false,
-        "qte_vente": 0
+        "a_vendre": true,
+        "qte_vente": 2
     },
     "a46d6441c1ef508ca901a2920856a62b": {
         "id": "2311",
