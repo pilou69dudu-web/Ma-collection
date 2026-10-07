@@ -29,8 +29,8 @@ import openpyxl
 # =====================================================================
 # CONFIGURATION
 # =====================================================================
-FICHIER_ORIGINAL = "00_Mes vinyles.xlsx"
-FICHIER_TMP = "00_Mes vinyles_TEMP.xlsx"
+FICHIER_ORIGINAL = "00_Mes vinyles.xlsm"
+FICHIER_TMP = "00_Mes vinyles_TEMP.xlsm"
 
 # Scraper simulant Chrome sous Windows
 scraper = cloudscraper.create_scraper(
@@ -214,7 +214,8 @@ def main():
   shutil.copyfile(FICHIER_ORIGINAL, FICHIER_TMP)
   print(f"💾 Copie de travail créée : {FICHIER_TMP}\n")
 
-  wb = openpyxl.load_workbook(FICHIER_TMP)
+  # AJOUT DE keep_vba=True OBLIGATOIRE POUR LES .XLSM
+  wb = openpyxl.load_workbook(FICHIER_TMP, keep_vba=True)
   ws = wb.active
 
   # Détection automatique de l'en-tête et des colonnes
