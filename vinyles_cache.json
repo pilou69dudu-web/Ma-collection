@@ -54196,8 +54196,8 @@
         "artist": "RICK ASTLEY",
         "titleA": "Never Gonna Give You Up (Cake Mix)",
         "qte": 3,
-        "qte_vente": 0,
-        "a_vendre": false,
+        "qte_vente": 1,
+        "a_vendre": true,
         "durationA": "05:48:00",
         "bpmA": "113",
         "titleB": "Never Gonna Give You Up (Instrumental) / Never Gonna Give You Up",
@@ -63502,13 +63502,13 @@
         "comment": "",
         "isNew": false
     },
-    "d484e19ec7c99af560b03211220fe902": {
+    "3075bdf7a287cc312e29bf616a0650bf": {
         "id": "2763",
         "type": "SINGLE",
         "year": "1990",
         "country": "France",
         "genre": "House",
-        "artist": "TECTHNOTRONIC",
+        "artist": "TECHNOTRONIC",
         "titleA": "This Beat Is Technotronic (My Favourite Club Mix) / This Beat Is Technotronic (Instrumental)",
         "qte": 1,
         "qte_vente": 0,
@@ -63523,7 +63523,7 @@
         "pochette": "pochettes/869597.jpg",
         "prix": "10€",
         "comment": "",
-        "isNew": false
+        "isNew": true
     },
     "f889376b87bc6823e457d9f0f27fb273": {
         "id": "2764",
@@ -67918,13 +67918,13 @@
         "comment": "",
         "isNew": false
     },
-    "21be3ebc1000b96a54d5b90818ecbfc7": {
+    "e858935208e8f9879eadf87233fa406b": {
         "id": "2955",
         "type": "SINGLE",
         "year": "1983",
         "country": "France",
-        "genre": "Electronic",
-        "artist": "THE WINGS",
+        "genre": "New Wave",
+        "artist": "THE TWINGS",
         "titleA": "Face To Face - Heart To Heart",
         "qte": 1,
         "qte_vente": 0,
@@ -67937,9 +67937,9 @@
         "label": "Carrere",
         "url": "https://www.discogs.com/release/813387-The-Twins-Face-To-Face-Heart-To-Heart",
         "pochette": "pochettes/813387.jpg",
-        "prix": "20€",
+        "prix": "19€",
         "comment": "",
-        "isNew": false
+        "isNew": true
     },
     "71ba38981ad7b57f7ed6f958c9218c5a": {
         "id": "2956",
@@ -73852,13 +73852,13 @@
         "comment": "",
         "isNew": false
     },
-    "c86a9dba2b126762f3f9e7a28d8d22a4": {
+    "6aca97337c91a311ef66793f9f034aa5": {
         "id": "3213",
         "type": "SINGLE",
         "year": "1984",
         "country": "France",
         "genre": "Hip Hop",
-        "artist": "WORDL'S FAMOUS SUPREME TEAM",
+        "artist": "WORLD'S FAMOUS SUPREME TEAM",
         "titleA": "Hey DJ (Extended Version)",
         "qte": 2,
         "qte_vente": 0,
@@ -73873,7 +73873,7 @@
         "pochette": "pochettes/2273857.jpg",
         "prix": "17€",
         "comment": "",
-        "isNew": false
+        "isNew": true
     },
     "90118890629474150b066a46f8f3b023": {
         "id": "3214",
