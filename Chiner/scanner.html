@@ -7,7 +7,7 @@
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
     body { background: #121212; color: #fff; padding: 15px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
-    h1 { color: #ffb74d; font-size: 1.4rem; margin-bottom: 15px; }
+    h1 { color: #ffb74d; font-size: 1.4rem; margin-bottom: 15px; text-align: center; }
     
     .card { background: #1e1e1e; border-radius: 12px; padding: 15px; width: 100%; max-width: 450px; box-shadow: 0 4px 12px rgba(0,0,0,0.5); margin-bottom: 15px; }
     
@@ -35,6 +35,8 @@
 
     #cart-list { margin-top: 10px; list-style: none; }
     .cart-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #333; font-size: 0.85rem; }
+
+    input[type="file"] { display: none; }
   </style>
 </head>
 <body>
@@ -48,7 +50,7 @@
       <button class="format-btn" id="fmt-7" onclick="setFormat('7&quot;')">7" / Single</button>
     </div>
 
-    <!-- Dictée Vocale pour ne rien taper au clavier sur le terrain -->
+    <!-- Dictée Vocale -->
     <button class="btn btn-mic" onclick="startVoice()">🎤 Dicter l'artiste ou le titre</button>
 
     <div class="input-group">
@@ -57,10 +59,11 @@
     
     <button class="btn btn-search" onclick="manualSearch()">🔎 Rechercher sur Discogs</button>
     
-    <!-- Bouton Recherche Visuelle -->
-    <button class="btn btn-lens" onclick="openGoogleLens()">📸 Reconnaissance Photo Visuelle</button>
+    <!-- Bouton Appareil Photo Natif (sans redirection web) -->
+    <input type="file" id="file-lens" accept="image/*" capture="environment" onchange="handlePhotoCapture(event)">
+    <button class="btn btn-lens" onclick="document.getElementById('file-lens').click()">📸 Prendre en photo la pochette</button>
 
-    <div id="status">Prêt pour les puces ! Appuyez sur le micro pour dicter.</div>
+    <div id="status">Prêt pour les puces ! Appuyez sur le micro ou prenez une photo.</div>
   </div>
 
   <!-- Résultat Discogs -->
@@ -78,7 +81,7 @@
 
   <!-- Caddie -->
   <div class="card">
-    <h3>🛒 Mon Caddie (<span id="cart-count">0</span>)</h3>
+    <h3>🛒 Mon bac (<span id="cart-count">0</span>)</h3>
     <ul id="cart-list"></ul>
   </div>
 
@@ -94,7 +97,6 @@
       document.getElementById('fmt-7').classList.toggle('active', fmt === '7"');
     }
 
-    // Dictée vocale : Dit le nom du disque à haute voix
     function startVoice() {
       if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
         alert("Dictée vocale non supportée par votre navigateur.");
@@ -120,9 +122,11 @@
       recognition.start();
     }
 
-    function openGoogleLens() {
-      // Ouvre Google Images / Lens directement sur le téléphone pour analyser la photo sans taper
-      window.open("https://lens.google.com/", "_blank");
+    function handlePhotoCapture(event) {
+      const file = event.target.files[0];
+      if (file) {
+        document.getElementById('status').innerText = "Photo enregistrée ! Utilisez le micro ou tapez le nom visible sur la pochette.";
+      }
     }
 
     function manualSearch() {
