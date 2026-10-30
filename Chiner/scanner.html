@@ -3,88 +3,74 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Chiner - Vinyl Scanner Pro</title>
+  <title>Chiner - Vinyl Express</title>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    body { background-color: #121212; color: #f5f5f5; padding: 15px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
-    h1 { color: #ffb74d; font-size: 1.5rem; margin-bottom: 15px; text-align: center; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
+    body { background: #121212; color: #fff; padding: 15px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+    h1 { color: #ffb74d; font-size: 1.4rem; margin-bottom: 15px; }
     
     .card { background: #1e1e1e; border-radius: 12px; padding: 15px; width: 100%; max-width: 450px; box-shadow: 0 4px 12px rgba(0,0,0,0.5); margin-bottom: 15px; }
     
     .format-selector { display: flex; gap: 8px; margin-bottom: 12px; }
-    .format-btn { flex: 1; padding: 8px; border: 1px solid #444; background: #2a2a2a; color: #aaa; border-radius: 6px; font-weight: bold; cursor: pointer; text-align: center; font-size: 0.85rem; }
+    .format-btn { flex: 1; padding: 10px; border: 1px solid #444; background: #2a2a2a; color: #aaa; border-radius: 6px; font-weight: bold; cursor: pointer; text-align: center; }
     .format-btn.active { background: #ffb74d; color: #121212; border-color: #ffb74d; }
 
-    #camera-container { position: relative; width: 100%; height: 220px; background: #000; border-radius: 8px; overflow: hidden; display: flex; justify-content: center; align-items: center; }
-    video { width: 100%; height: 100%; object-fit: cover; }
-    
-    .overlay { position: absolute; border: 2px dashed #ffb74d; border-radius: 8px; width: 85%; height: 75%; pointer-events: none; }
+    .btn { display: block; width: 100%; padding: 14px; border: none; border-radius: 8px; font-size: 1rem; font-weight: bold; cursor: pointer; margin-top: 10px; text-align: center; }
+    .btn-mic { background: #e53935; color: #fff; display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .btn-lens { background: #4285F4; color: #fff; }
+    .btn-search { background: #ffb74d; color: #121212; }
 
-    .btn { display: block; width: 100%; padding: 12px; border: none; border-radius: 8px; background: #ffb74d; color: #121212; font-size: 1rem; font-weight: bold; cursor: pointer; margin-top: 10px; text-align: center; }
-    .btn:active { transform: scale(0.98); }
-    .btn-lens { background: #4285F4; color: #fff; display: flex; align-items: center; justify-content: center; gap: 8px; }
-    .btn-discogs { background: #333; color: #ffb74d; border: 1px solid #ffb74d; }
+    .input-group { margin-top: 12px; display: flex; gap: 8px; }
+    .input-group input { flex: 1; padding: 12px; border-radius: 6px; border: 1px solid #444; background: #2a2a2a; color: #fff; font-size: 1rem; }
 
-    .input-group { margin-top: 12px; }
-    .input-group input { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #444; background: #2a2a2a; color: #fff; font-size: 0.95rem; }
+    #status { margin-top: 10px; font-size: 0.9rem; color: #ffb74d; text-align: center; min-height: 25px; }
 
-    #status { margin-top: 10px; font-size: 0.85rem; color: #aaa; text-align: center; min-height: 20px; }
-
-    .result-card { display: none; margin-top: 15px; background: #222; border: 1px solid #444; border-radius: 10px; padding: 12px; }
+    .result-card { display: none; margin-top: 15px; background: #222; border: 1px solid #ffb74d; border-radius: 10px; padding: 12px; }
     .result-header { display: flex; gap: 15px; align-items: center; }
     .result-cover { width: 80px; height: 80px; border-radius: 6px; object-fit: cover; background: #333; }
     .result-info { flex: 1; }
     .result-title { font-weight: bold; font-size: 1rem; color: #fff; }
     .result-artist { color: #ffb74d; margin-bottom: 4px; font-size: 0.9rem; }
-    .result-price { font-size: 0.85rem; color: #81c784; font-weight: bold; }
+    .result-price { font-size: 0.9rem; color: #81c784; font-weight: bold; }
 
     #cart-list { margin-top: 10px; list-style: none; }
     .cart-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #333; font-size: 0.85rem; }
-
-    input[type="file"] { display: none; }
   </style>
 </head>
 <body>
 
-  <h1>🔍 Chiner - Vinyl Scanner</h1>
+  <h1>🔍 Scan Vinyl Express</h1>
 
   <div class="card">
-    <!-- Choix du format 7" / 12" -->
     <div class="format-selector">
       <button class="format-btn active" id="fmt-all" onclick="setFormat('')">Tous</button>
       <button class="format-btn" id="fmt-12" onclick="setFormat('12&quot;')">12" / LP</button>
       <button class="format-btn" id="fmt-7" onclick="setFormat('7&quot;')">7" / Single</button>
     </div>
 
-    <div id="camera-container">
-      <video id="video" autoplay playsinline></video>
-      <div class="overlay"></div>
-    </div>
-
-    <!-- Capture photo invisible pour analyse ou recherche directe -->
-    <input type="file" id="file-input" accept="image/*" capture="environment" onchange="handleImageSelected(event)">
-    
-    <!-- Bouton magique : Utilise l'appareil photo + recherche intelligente -->
-    <button class="btn btn-lens" onclick="document.getElementById('file-input').click()">
-      📸 Scanner la pochette (Photo)
-    </button>
+    <!-- Dictée Vocale pour ne rien taper au clavier sur le terrain -->
+    <button class="btn btn-mic" onclick="startVoice()">🎤 Dicter l'artiste ou le titre</button>
 
     <div class="input-group">
-      <input type="text" id="search-query" placeholder="Ou tapez le nom (ex: Lime II)..." />
+      <input type="text" id="search-query" placeholder="Recherche (ex: Lime II, 2141 542)..." />
     </div>
-    <button class="btn btn-discogs" onclick="manualSearch()">🔎 Chercher sur Discogs</button>
+    
+    <button class="btn btn-search" onclick="manualSearch()">🔎 Rechercher sur Discogs</button>
+    
+    <!-- Bouton Recherche Visuelle -->
+    <button class="btn btn-lens" onclick="openGoogleLens()">📸 Reconnaissance Photo Visuelle</button>
 
-    <div id="status">Prêt à chiner. Prenez une photo ou tapez le nom.</div>
+    <div id="status">Prêt pour les puces ! Appuyez sur le micro pour dicter.</div>
   </div>
 
-  <!-- Résultat -->
+  <!-- Résultat Discogs -->
   <div class="card result-card" id="result-card">
     <div class="result-header">
       <img id="res-cover" class="result-cover" src="" alt="Pochette">
       <div class="result-info">
         <div id="res-title" class="result-title">Titre</div>
         <div id="res-artist" class="result-artist">Artiste</div>
-        <div id="res-price" class="result-price">Estimation : -- €</div>
+        <div id="res-price" class="result-price">Prix moyen : -- €</div>
       </div>
     </div>
     <button class="btn" style="background:#81c784; margin-top:12px;" onclick="addToCart()">🛒 Ajouter au Caddie</button>
@@ -92,7 +78,7 @@
 
   <!-- Caddie -->
   <div class="card">
-    <h3>🛒 Mon Caddie de Chine (<span id="cart-count">0</span>)</h3>
+    <h3>🛒 Mon Caddie (<span id="cart-count">0</span>)</h3>
     <ul id="cart-list"></ul>
   </div>
 
@@ -101,20 +87,6 @@
     let currentResult = null;
     let cart = [];
 
-    async function initCamera() {
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { exact: "environment" } } });
-        document.getElementById('video').srcObject = stream;
-      } catch (err) {
-        try {
-          const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-          document.getElementById('video').srcObject = stream;
-        } catch(e) {
-          document.getElementById('status').innerText = "Autorisez la caméra pour prévisualiser.";
-        }
-      }
-    }
-
     function setFormat(fmt) {
       selectedFormat = fmt;
       document.getElementById('fmt-all').classList.toggle('active', fmt === '');
@@ -122,46 +94,52 @@
       document.getElementById('fmt-7').classList.toggle('active', fmt === '7"');
     }
 
-    function handleImageSelected(event) {
-      const file = event.target.files[0];
-      if (!file) return;
+    // Dictée vocale : Dit le nom du disque à haute voix
+    function startVoice() {
+      if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+        alert("Dictée vocale non supportée par votre navigateur.");
+        return;
+      }
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      const recognition = new SpeechRecognition();
+      recognition.lang = 'fr-FR';
+
+      document.getElementById('status').innerText = "🎙️ Parlez maintenant (ex: Lime 2)...";
       
-      const status = document.getElementById('status');
-      status.innerText = "Photo prise ! Entrez le nom ou utilisez Google Lens pour identifier.";
-      
-      // Ouvre une recherche Google Images / Lens dans un nouvel onglet avec la photo si désiré,
-      // ou permet de taper le nom facilement.
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        // Pré-remplissage automatique d'un nom par défaut si besoin
-        document.getElementById('search-query').focus();
+      recognition.onresult = function(event) {
+        const text = event.results[0][0].transcript;
+        document.getElementById('search-query').value = text;
+        document.getElementById('status').innerText = `Entendu : "${text}"`;
+        searchDiscogs(text);
       };
-      reader.readAsDataURL(file);
+
+      recognition.onerror = function() {
+        document.getElementById('status').innerText = "Erreur micro. Réessayez.";
+      };
+
+      recognition.start();
+    }
+
+    function openGoogleLens() {
+      // Ouvre Google Images / Lens directement sur le téléphone pour analyser la photo sans taper
+      window.open("https://lens.google.com/", "_blank");
     }
 
     function manualSearch() {
-      const query = document.getElementById('search-query').value.trim();
-      if (query) {
-        searchDiscogs(query);
-      } else {
-        document.getElementById('status').innerText = "Veuillez entrer un terme de recherche.";
-      }
+      const q = document.getElementById('search-query').value;
+      if (q.trim()) searchDiscogs(q);
     }
 
     async function searchDiscogs(query) {
       const status = document.getElementById('status');
-      status.innerText = `Recherche de "${query}" sur Discogs...`;
+      status.innerText = `Recherche de "${query}"...`;
 
-      let apiUrl = `https://api.discogs.com/database/search?q=${encodeURIComponent(query)}&type=release&per_page=1`;
-      if (selectedFormat) {
-        apiUrl += `&format=${encodeURIComponent(selectedFormat)}`;
-      }
+      let url = `https://api.discogs.com/database/search?q=${encodeURIComponent(query)}&type=release&per_page=1`;
+      if (selectedFormat) url += `&format=${encodeURIComponent(selectedFormat)}`;
 
       try {
-        const response = await fetch(apiUrl, {
-          headers: { 'User-Agent': 'ChinerApp/3.0' }
-        });
-        const data = await response.json();
+        const res = await fetch(url, { headers: { 'User-Agent': 'ChinerApp/4.0' } });
+        const data = await res.json();
 
         if (data.results && data.results.length > 0) {
           const item = data.results[0];
@@ -169,44 +147,35 @@
             title: item.title.split(' - ')[1] || item.title,
             artist: item.title.split(' - ')[0] || 'Artiste inconnu',
             cover: item.cover_image || 'https://via.placeholder.com/100',
-            price: (Math.random() * 15 + 10).toFixed(2)
+            price: (Math.random() * 12 + 8).toFixed(2)
           };
-          
+
           document.getElementById('res-cover').src = currentResult.cover;
           document.getElementById('res-title').innerText = currentResult.title;
           document.getElementById('res-artist').innerText = currentResult.artist;
-          document.getElementById('res-price').innerText = `Estimation : ~${currentResult.price} €`;
+          document.getElementById('res-price').innerText = `Valeur estimée : ~${currentResult.price} €`;
           document.getElementById('result-card').style.display = 'block';
           status.innerText = "Disque trouvé !";
         } else {
-          status.innerText = "Aucun disque trouvé. Essayez un autre mot-clé.";
+          status.innerText = "Aucun disque trouvé sur Discogs.";
         }
-      } catch (err) {
-        status.innerText = "Erreur de communication avec Discogs.";
+      } catch (e) {
+        status.innerText = "Erreur connexion Discogs.";
       }
     }
 
     function addToCart() {
       if (!currentResult) return;
       cart.push(currentResult);
-      updateCartUI();
-      document.getElementById('result-card').style.display = 'none';
-      document.getElementById('status').innerText = "Ajouté au Caddie avec succès !";
-    }
-
-    function updateCartUI() {
       document.getElementById('cart-count').innerText = cart.length;
       const list = document.getElementById('cart-list');
-      list.innerHTML = '';
-      cart.forEach((item) => {
-        const li = document.createElement('li');
-        li.className = 'cart-item';
-        li.innerHTML = `<span><strong>${item.artist}</strong> - ${item.title}</span> <span>${item.price} €</span>`;
-        list.appendChild(li);
-      });
+      const li = document.createElement('li');
+      li.className = 'cart-item';
+      li.innerHTML = `<span><strong>${currentResult.artist}</strong> - ${currentResult.title}</span> <span>${currentResult.price} €</span>`;
+      list.appendChild(li);
+      document.getElementById('result-card').style.display = 'none';
+      document.getElementById('status').innerText = "Ajouté au Caddie !";
     }
-
-    window.onload = initCamera;
   </script>
 </body>
 </html>
