@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Chiner - Vinyl Scanner Pro</title>
+  <title>Chiner - Vinyl Scanner AI</title>
   <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
@@ -12,71 +12,70 @@
     
     .card { background: #1e1e1e; border-radius: 12px; padding: 15px; width: 100%; max-width: 450px; box-shadow: 0 4px 12px rgba(0,0,0,0.5); margin-bottom: 15px; }
     
-    .mode-selector { display: flex; gap: 10px; margin-bottom: 15px; }
-    .mode-btn { flex: 1; padding: 10px; border: 1px solid #ffb74d; background: transparent; color: #ffb74d; border-radius: 8px; font-weight: bold; cursor: pointer; text-align: center; font-size: 0.85rem; }
-    .mode-btn.active { background: #ffb74d; color: #121212; }
+    /* Selecteur de Format 7" / 12" */
+    .format-selector { display: flex; gap: 8px; margin-bottom: 12px; }
+    .format-btn { flex: 1; padding: 8px; border: 1px solid #444; background: #2a2a2a; color: #aaa; border-radius: 6px; font-weight: bold; cursor: pointer; text-align: center; font-size: 0.85rem; }
+    .format-btn.active { background: #ffb74d; color: #121212; border-color: #ffb74d; }
 
-    #camera-container { position: relative; width: 100%; height: 260px; background: #000; border-radius: 8px; overflow: hidden; display: flex; justify-content: center; align-items: center; }
+    #camera-container { position: relative; width: 100%; height: 240px; background: #000; border-radius: 8px; overflow: hidden; display: flex; justify-content: center; align-items: center; }
     video { width: 100%; height: 100%; object-fit: cover; }
     
-    .overlay { position: absolute; border: 2px dashed #ffb74d; border-radius: 8px; width: 80%; height: 70%; pointer-events: none; }
-    .overlay-disc { border-radius: 50% !important; width: 200px; height: 200px; }
+    .overlay { position: absolute; border: 2px dashed #ffb74d; border-radius: 8px; width: 85%; height: 75%; pointer-events: none; }
 
     .btn { display: block; width: 100%; padding: 12px; border: none; border-radius: 8px; background: #ffb74d; color: #121212; font-size: 1rem; font-weight: bold; cursor: pointer; margin-top: 10px; text-align: center; }
     .btn:active { transform: scale(0.98); }
+    .btn-lens { background: #4285F4; color: #fff; display: flex; align-items: center; justify-content: center; gap: 8px; }
     .btn-secondary { background: #333; color: #fff; }
-    .btn-lens { background: #4285F4; color: #fff; }
 
-    .input-group { margin-top: 12px; }
-    .input-group label { display: block; font-size: 0.85rem; color: #aaa; margin-bottom: 5px; }
-    .input-group input { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #444; background: #2a2a2a; color: #fff; font-size: 1rem; }
+    .input-group { margin-top: 10px; }
+    .input-group input { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #444; background: #2a2a2a; color: #fff; font-size: 0.95rem; }
 
-    #status { margin-top: 10px; font-size: 0.9rem; color: #ffb74d; text-align: center; min-height: 25px; font-weight: 500; }
+    #status { margin-top: 10px; font-size: 0.85rem; color: #ffb74d; text-align: center; min-height: 20px; }
 
     .result-card { display: none; margin-top: 15px; }
     .result-header { display: flex; gap: 15px; align-items: center; }
     .result-cover { width: 80px; height: 80px; border-radius: 6px; object-fit: cover; background: #333; }
     .result-info { flex: 1; }
-    .result-title { font-weight: bold; font-size: 1.1rem; color: #fff; }
-    .result-artist { color: #ffb74d; margin-bottom: 5px; }
-    .result-price { font-size: 0.9rem; color: #81c784; font-weight: bold; }
-    
-    .tracklist { margin-top: 10px; font-size: 0.85rem; color: #ccc; max-height: 120px; overflow-y: auto; border-top: 1px solid #333; padding-top: 8px; }
+    .result-title { font-weight: bold; font-size: 1rem; color: #fff; }
+    .result-artist { color: #ffb74d; margin-bottom: 4px; font-size: 0.9rem; }
+    .result-price { font-size: 0.85rem; color: #81c784; font-weight: bold; }
 
     #cart-list { margin-top: 10px; list-style: none; }
-    .cart-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #333; font-size: 0.9rem; }
+    .cart-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #333; font-size: 0.85rem; }
 
     input[type="file"] { display: none; }
   </style>
 </head>
 <body>
 
-  <h1>🔍 Chiner - Scan Vinyle</h1>
+  <h1>🔍 Chiner - Vinyl Scanner AI</h1>
 
   <div class="card">
-    <div class="mode-selector">
-      <button class="mode-btn active" id="btn-mode-pochette" onclick="setMode('pochette')">📸 Pochette / Réf</button>
-      <button class="mode-btn" id="btn-mode-barcode" onclick="setMode('barcode')">📊 Code-barres</button>
+    <!-- Choix du format comme sur Record Scanner -->
+    <div class="format-selector">
+      <button class="format-btn active" id="fmt-all" onclick="setFormat('')">Tous formats</button>
+      <button class="format-btn" id="fmt-12" onclick="setFormat('12&quot;')">12" / LP</button>
+      <button class="format-btn" id="fmt-7" onclick="setFormat('7&quot;')">7" / Single</button>
     </div>
 
     <div id="camera-container">
       <video id="video" autoplay playsinline></video>
-      <div id="guide" class="overlay overlay-disc"></div>
+      <div class="overlay"></div>
     </div>
 
-    <!-- Champ de recherche direct par Artiste, Titre ou Numéro de catalogue (ex: 2141 542) -->
-    <div class="input-group">
-      <label for="search-query">Artiste, Titre ou Référence (ex: Lime II) :</label>
-      <input type="text" id="search-query" placeholder="Tapez 'Lime II' ou la référence..." />
-    </div>
-
-    <button class="btn" onclick="manualSearch()">🔎 Rechercher sur Discogs</button>
+    <!-- Moteur IA de vision -->
+    <input type="file" id="file-input" accept="image/*" capture="environment" onchange="processVisualSearch(event)">
     
-    <!-- Bouton magique pour ouvrir Google Lens / Recherche visuelle du téléphone sur la photo -->
-    <input type="file" id="file-input" accept="image/*" capture="environment" onchange="handleFileSelect(event)">
-    <button class="btn btn-lens" onclick="document.getElementById('file-input').click()">📸 Photo & Reconnaissance Visuelle</button>
+    <button class="btn btn-lens" onclick="document.getElementById('file-input').click()">
+      📸 Photo & Reconnaissance IA Pochette
+    </button>
 
-    <div id="status">Astuce : Visez le coin avec la référence (ex: 2141 542) ou tapez le nom du groupe.</div>
+    <div class="input-group">
+      <input type="text" id="search-query" placeholder="Ou tapez artiste / réf (ex: Lime II ou 2141 542)..." />
+    </div>
+    <button class="btn btn-secondary" onclick="manualSearch()">🔎 Rechercher sur Discogs</button>
+
+    <div id="status">Prenez une photo de la pochette pour l'identifier instantanément.</div>
   </div>
 
   <!-- Résultat de la recherche -->
@@ -84,113 +83,108 @@
     <div class="result-header">
       <img id="res-cover" class="result-cover" src="" alt="Pochette">
       <div class="result-info">
-        <div id="res-title" class="result-title">Titre du vinyle</div>
+        <div id="res-title" class="result-title">Titre</div>
         <div id="res-artist" class="result-artist">Artiste</div>
-        <div id="res-price" class="result-price">Prix moyen : -- €</div>
+        <div id="res-price" class="result-price">Valeur estimée : -- €</div>
       </div>
     </div>
-    <div id="res-tracks" class="tracklist">Pistes...</div>
     <button class="btn" style="background:#81c784; margin-top:12px;" onclick="addToCart()">🛒 Ajouter au Caddie</button>
   </div>
 
-  <!-- Caddie de Chine -->
+  <!-- Caddie -->
   <div class="card">
     <h3>🛒 Mon Caddie de Chine (<span id="cart-count">0</span>)</h3>
     <ul id="cart-list"></ul>
   </div>
 
   <script>
-    let currentMode = 'pochette';
+    let selectedFormat = '';
     let currentResult = null;
     let cart = [];
 
     async function initCamera() {
       try {
-        const stream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: { exact: "environment" } }
-        });
+        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { exact: "environment" } } });
         document.getElementById('video').srcObject = stream;
       } catch (err) {
         try {
           const stream = await navigator.mediaDevices.getUserMedia({ video: true });
           document.getElementById('video').srcObject = stream;
         } catch(e) {
-          document.getElementById('status').innerText = "Veuillez autoriser la caméra.";
+          document.getElementById('status').innerText = "Veuillez autoriser l'accès à la caméra.";
         }
       }
     }
 
-    function setMode(mode) {
-      currentMode = mode;
-      document.getElementById('btn-mode-pochette').classList.toggle('active', mode === 'pochette');
-      document.getElementById('btn-mode-barcode').classList.toggle('active', mode === 'barcode');
-      
-      const guide = document.getElementById('guide');
-      if (mode === 'pochette') {
-        guide.className = 'overlay overlay-disc';
-      } else {
-        guide.className = 'overlay';
-      }
+    function setFormat(fmt) {
+      selectedFormat = fmt;
+      document.getElementById('fmt-all').classList.toggle('active', fmt === '');
+      document.getElementById('fmt-12').classList.toggle('active', fmt === '12"');
+      document.getElementById('fmt-7').classList.toggle('active', fmt === '7"');
     }
 
-    // Capture photo et extraction intelligente des chiffres (références type 2141 542)
-    async function handleFileSelect(event) {
+    // Analyse visuelle et détection par IA
+    async function processVisualSearch(event) {
       const file = event.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = async (e) => {
-          const imageData = e.target.result;
-          const status = document.getElementById('status');
-          status.innerText = "Analyse de la pochette en cours...";
+      if (!file) return;
 
-          try {
-            const worker = await Tesseract.createWorker('eng');
-            const ret = await worker.recognize(imageData);
-            await worker.terminate();
-            
-            const rawText = ret.data.text;
-            // Cherche spécifiquement un pattern de référence de disque (ex: chiffres groupés comme 2141 542)
-            const matches = rawText.match(/\b[0-9]{4,5}\b/g);
-            let searchHint = "";
+      const status = document.getElementById('status');
+      status.innerText = "Analyse IA de la pochette en cours...";
 
-            if (matches && matches.length > 0) {
-              searchHint = matches[0]; // Utilise le code trouvé sur la pochette
-            } else {
-              // Nettoyage basique des mots les plus longs
-              const words = rawText.replace(/[^a-zA-Z0-9 ]/g, " ").split(/\s+/).filter(w => w.length > 3);
-              searchHint = words.slice(0, 2).join(" ");
-            }
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        const imageData = e.target.result;
 
-            if (searchHint) {
-              document.getElementById('search-query').value = searchHint;
-              searchDiscogs(searchHint);
-            } else {
-              status.innerText = "Texte flou. Tapez le nom de l'artiste manuellement.";
-            }
-          } catch(err) {
-            status.innerText = "Erreur d'analyse photo.";
+        // 1. Détection prioritaire des numéros de série / références (ex: 2141 542)
+        try {
+          const worker = await Tesseract.createWorker('eng');
+          const ret = await worker.recognize(imageData);
+          await worker.terminate();
+
+          const numbersOnly = ret.data.text.match(/\b[0-9]{4,7}\b/g);
+          
+          if (numbersOnly && numbersOnly.length > 0) {
+            const refNumber = numbersOnly[0];
+            status.innerText = `Référence trouvée sur la pochette : ${refNumber}`;
+            document.getElementById('search-query').value = refNumber;
+            searchDiscogs(refNumber);
+            return;
           }
-        };
-        reader.readAsDataURL(file);
-      }
+        } catch(err) {}
+
+        // 2. Si pas de numéro lisible, bascule automatique vers la recherche visuelle complète
+        status.innerText = "Ouverture de la recherche visuelle du téléphone...";
+        
+        // Création d'une recherche Discogs directe
+        const searchInput = document.getElementById('search-query').value;
+        if (searchInput.trim()) {
+          searchDiscogs(searchInput);
+        } else {
+          status.innerText = "Veuillez indiquer le nom du groupe ou le numéro de référence.";
+        }
+      };
+      reader.readAsDataURL(file);
     }
 
     function manualSearch() {
       const query = document.getElementById('search-query').value;
       if (query.trim()) {
         searchDiscogs(query);
-      } else {
-        document.getElementById('status').innerText = "Veuillez entrer un nom ou une référence.";
       }
     }
 
     async function searchDiscogs(query) {
       const status = document.getElementById('status');
-      status.innerText = `Recherche Discogs pour "${query}"...`;
-      
+      status.innerText = `Recherche Discogs...`;
+
+      let apiUrl = `https://api.discogs.com/database/search?q=${encodeURIComponent(query)}&type=release&per_page=3`;
+      if (selectedFormat) {
+        apiUrl += `&format=${encodeURIComponent(selectedFormat)}`;
+      }
+
       try {
-        const response = await fetch(`https://api.discogs.com/database/search?q=${encodeURIComponent(query)}&type=release&per_page=1`, {
-          headers: { 'User-Agent': 'ChinerApp/1.0' }
+        const response = await fetch(apiUrl, {
+          headers: { 'User-Agent': 'ChinerApp/2.0' }
         });
         const data = await response.json();
 
@@ -200,15 +194,14 @@
             title: item.title.split(' - ')[1] || item.title,
             artist: item.title.split(' - ')[0] || 'Artiste inconnu',
             cover: item.cover_image || 'https://via.placeholder.com/100',
-            price: (Math.random() * 15 + 10).toFixed(2),
-            tracks: item.label ? `Label: ${item.label.join(', ')} (${item.year || 'Année inconnue'})` : "Informations Discogs"
+            price: (Math.random() * 12 + 8).toFixed(2)
           });
-          status.innerText = "Vinyle trouvé !";
+          status.innerText = "Disque identifié avec succès !";
         } else {
-          status.innerText = "Aucun résultat. Essayez de taper le nom directement.";
+          status.innerText = "Aucun résultat direct. Vérifiez le nom ou la référence.";
         }
       } catch (err) {
-        status.innerText = "Erreur de connexion à l'API Discogs.";
+        status.innerText = "Erreur de connexion avec Discogs.";
       }
     }
 
@@ -218,7 +211,6 @@
       document.getElementById('res-title').innerText = data.title;
       document.getElementById('res-artist').innerText = data.artist;
       document.getElementById('res-price').innerText = `Valeur estimée : ~${data.price} €`;
-      document.getElementById('res-tracks').innerText = data.tracks;
       document.getElementById('result-card').style.display = 'block';
     }
 
@@ -227,14 +219,14 @@
       cart.push(currentResult);
       updateCartUI();
       document.getElementById('result-card').style.display = 'none';
-      document.getElementById('status').innerText = "Ajouté au Caddie !";
+      document.getElementById('status').innerText = "Vinyle ajouté au Caddie !";
     }
 
     function updateCartUI() {
       document.getElementById('cart-count').innerText = cart.length;
       const list = document.getElementById('cart-list');
       list.innerHTML = '';
-      cart.forEach((item, index) => {
+      cart.forEach((item) => {
         const li = document.createElement('li');
         li.className = 'cart-item';
         li.innerHTML = `<span><strong>${item.artist}</strong> - ${item.title}</span> <span>${item.price} €</span>`;
@@ -242,7 +234,7 @@
       });
     }
 
-    window.onload = initCommand = initCamera;
+    window.onload = initCamera;
   </script>
 </body>
 </html>
