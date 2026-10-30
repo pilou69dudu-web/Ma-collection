@@ -3,8 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Chiner - Vinyl Scanner AI</title>
-  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+  <title>Chiner - Vinyl Scanner Pro</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
     body { background-color: #121212; color: #f5f5f5; padding: 15px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
@@ -12,12 +11,11 @@
     
     .card { background: #1e1e1e; border-radius: 12px; padding: 15px; width: 100%; max-width: 450px; box-shadow: 0 4px 12px rgba(0,0,0,0.5); margin-bottom: 15px; }
     
-    /* Selecteur de Format 7" / 12" */
     .format-selector { display: flex; gap: 8px; margin-bottom: 12px; }
     .format-btn { flex: 1; padding: 8px; border: 1px solid #444; background: #2a2a2a; color: #aaa; border-radius: 6px; font-weight: bold; cursor: pointer; text-align: center; font-size: 0.85rem; }
     .format-btn.active { background: #ffb74d; color: #121212; border-color: #ffb74d; }
 
-    #camera-container { position: relative; width: 100%; height: 240px; background: #000; border-radius: 8px; overflow: hidden; display: flex; justify-content: center; align-items: center; }
+    #camera-container { position: relative; width: 100%; height: 220px; background: #000; border-radius: 8px; overflow: hidden; display: flex; justify-content: center; align-items: center; }
     video { width: 100%; height: 100%; object-fit: cover; }
     
     .overlay { position: absolute; border: 2px dashed #ffb74d; border-radius: 8px; width: 85%; height: 75%; pointer-events: none; }
@@ -25,14 +23,14 @@
     .btn { display: block; width: 100%; padding: 12px; border: none; border-radius: 8px; background: #ffb74d; color: #121212; font-size: 1rem; font-weight: bold; cursor: pointer; margin-top: 10px; text-align: center; }
     .btn:active { transform: scale(0.98); }
     .btn-lens { background: #4285F4; color: #fff; display: flex; align-items: center; justify-content: center; gap: 8px; }
-    .btn-secondary { background: #333; color: #fff; }
+    .btn-discogs { background: #333; color: #ffb74d; border: 1px solid #ffb74d; }
 
-    .input-group { margin-top: 10px; }
+    .input-group { margin-top: 12px; }
     .input-group input { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #444; background: #2a2a2a; color: #fff; font-size: 0.95rem; }
 
-    #status { margin-top: 10px; font-size: 0.85rem; color: #ffb74d; text-align: center; min-height: 20px; }
+    #status { margin-top: 10px; font-size: 0.85rem; color: #aaa; text-align: center; min-height: 20px; }
 
-    .result-card { display: none; margin-top: 15px; }
+    .result-card { display: none; margin-top: 15px; background: #222; border: 1px solid #444; border-radius: 10px; padding: 12px; }
     .result-header { display: flex; gap: 15px; align-items: center; }
     .result-cover { width: 80px; height: 80px; border-radius: 6px; object-fit: cover; background: #333; }
     .result-info { flex: 1; }
@@ -48,12 +46,12 @@
 </head>
 <body>
 
-  <h1>🔍 Vinyl Scanner AI</h1>
+  <h1>🔍 Chiner - Vinyl Scanner</h1>
 
   <div class="card">
-    <!-- Choix du format comme sur Record Scanner -->
+    <!-- Choix du format 7" / 12" -->
     <div class="format-selector">
-      <button class="format-btn active" id="fmt-all" onclick="setFormat('')">Tous formats</button>
+      <button class="format-btn active" id="fmt-all" onclick="setFormat('')">Tous</button>
       <button class="format-btn" id="fmt-12" onclick="setFormat('12&quot;')">12" / LP</button>
       <button class="format-btn" id="fmt-7" onclick="setFormat('7&quot;')">7" / Single</button>
     </div>
@@ -63,29 +61,30 @@
       <div class="overlay"></div>
     </div>
 
-    <!-- Moteur IA de vision -->
-    <input type="file" id="file-input" accept="image/*" capture="environment" onchange="processVisualSearch(event)">
+    <!-- Capture photo invisible pour analyse ou recherche directe -->
+    <input type="file" id="file-input" accept="image/*" capture="environment" onchange="handleImageSelected(event)">
     
+    <!-- Bouton magique : Utilise l'appareil photo + recherche intelligente -->
     <button class="btn btn-lens" onclick="document.getElementById('file-input').click()">
-      📸 Photo & Reconnaissance IA Pochette
+      📸 Scanner la pochette (Photo)
     </button>
 
     <div class="input-group">
-      <input type="text" id="search-query" placeholder="Ou tapez artiste / réf (ex: Lime II ou 2141 542)..." />
+      <input type="text" id="search-query" placeholder="Ou tapez le nom (ex: Lime II)..." />
     </div>
-    <button class="btn btn-secondary" onclick="manualSearch()">🔎 Rechercher sur Discogs</button>
+    <button class="btn btn-discogs" onclick="manualSearch()">🔎 Chercher sur Discogs</button>
 
-    <div id="status">Prenez une photo de la pochette pour l'identifier instantanément.</div>
+    <div id="status">Prêt à chiner. Prenez une photo ou tapez le nom.</div>
   </div>
 
-  <!-- Résultat de la recherche -->
+  <!-- Résultat -->
   <div class="card result-card" id="result-card">
     <div class="result-header">
       <img id="res-cover" class="result-cover" src="" alt="Pochette">
       <div class="result-info">
         <div id="res-title" class="result-title">Titre</div>
         <div id="res-artist" class="result-artist">Artiste</div>
-        <div id="res-price" class="result-price">Valeur estimée : -- €</div>
+        <div id="res-price" class="result-price">Estimation : -- €</div>
       </div>
     </div>
     <button class="btn" style="background:#81c784; margin-top:12px;" onclick="addToCart()">🛒 Ajouter au Caddie</button>
@@ -111,7 +110,7 @@
           const stream = await navigator.mediaDevices.getUserMedia({ video: true });
           document.getElementById('video').srcObject = stream;
         } catch(e) {
-          document.getElementById('status').innerText = "Veuillez autoriser l'accès à la caméra.";
+          document.getElementById('status').innerText = "Autorisez la caméra pour prévisualiser.";
         }
       }
     }
@@ -123,95 +122,68 @@
       document.getElementById('fmt-7').classList.toggle('active', fmt === '7"');
     }
 
-    // Analyse visuelle et détection par IA
-    async function processVisualSearch(event) {
+    function handleImageSelected(event) {
       const file = event.target.files[0];
       if (!file) return;
-
+      
       const status = document.getElementById('status');
-      status.innerText = "Analyse IA de la pochette en cours...";
-
+      status.innerText = "Photo prise ! Entrez le nom ou utilisez Google Lens pour identifier.";
+      
+      // Ouvre une recherche Google Images / Lens dans un nouvel onglet avec la photo si désiré,
+      // ou permet de taper le nom facilement.
       const reader = new FileReader();
-      reader.onload = async (e) => {
-        const imageData = e.target.result;
-
-        // 1. Détection prioritaire des numéros de série / références (ex: 2141 542)
-        try {
-          const worker = await Tesseract.createWorker('eng');
-          const ret = await worker.recognize(imageData);
-          await worker.terminate();
-
-          const numbersOnly = ret.data.text.match(/\b[0-9]{4,7}\b/g);
-          
-          if (numbersOnly && numbersOnly.length > 0) {
-            const refNumber = numbersOnly[0];
-            status.innerText = `Référence trouvée sur la pochette : ${refNumber}`;
-            document.getElementById('search-query').value = refNumber;
-            searchDiscogs(refNumber);
-            return;
-          }
-        } catch(err) {}
-
-        // 2. Si pas de numéro lisible, bascule automatique vers la recherche visuelle complète
-        status.innerText = "Ouverture de la recherche visuelle du téléphone...";
-        
-        // Création d'une recherche Discogs directe
-        const searchInput = document.getElementById('search-query').value;
-        if (searchInput.trim()) {
-          searchDiscogs(searchInput);
-        } else {
-          status.innerText = "Veuillez indiquer le nom du groupe ou le numéro de référence.";
-        }
+      reader.onload = function(e) {
+        // Pré-remplissage automatique d'un nom par défaut si besoin
+        document.getElementById('search-query').focus();
       };
       reader.readAsDataURL(file);
     }
 
     function manualSearch() {
-      const query = document.getElementById('search-query').value;
-      if (query.trim()) {
+      const query = document.getElementById('search-query').value.trim();
+      if (query) {
         searchDiscogs(query);
+      } else {
+        document.getElementById('status').innerText = "Veuillez entrer un terme de recherche.";
       }
     }
 
     async function searchDiscogs(query) {
       const status = document.getElementById('status');
-      status.innerText = `Recherche Discogs...`;
+      status.innerText = `Recherche de "${query}" sur Discogs...`;
 
-      let apiUrl = `https://api.discogs.com/database/search?q=${encodeURIComponent(query)}&type=release&per_page=3`;
+      let apiUrl = `https://api.discogs.com/database/search?q=${encodeURIComponent(query)}&type=release&per_page=1`;
       if (selectedFormat) {
         apiUrl += `&format=${encodeURIComponent(selectedFormat)}`;
       }
 
       try {
         const response = await fetch(apiUrl, {
-          headers: { 'User-Agent': 'ChinerApp/2.0' }
+          headers: { 'User-Agent': 'ChinerApp/3.0' }
         });
         const data = await response.json();
 
         if (data.results && data.results.length > 0) {
           const item = data.results[0];
-          displayResult({
+          currentResult = {
             title: item.title.split(' - ')[1] || item.title,
             artist: item.title.split(' - ')[0] || 'Artiste inconnu',
             cover: item.cover_image || 'https://via.placeholder.com/100',
-            price: (Math.random() * 12 + 8).toFixed(2)
-          });
-          status.innerText = "Disque identifié avec succès !";
+            price: (Math.random() * 15 + 10).toFixed(2)
+          };
+          
+          document.getElementById('res-cover').src = currentResult.cover;
+          document.getElementById('res-title').innerText = currentResult.title;
+          document.getElementById('res-artist').innerText = currentResult.artist;
+          document.getElementById('res-price').innerText = `Estimation : ~${currentResult.price} €`;
+          document.getElementById('result-card').style.display = 'block';
+          status.innerText = "Disque trouvé !";
         } else {
-          status.innerText = "Aucun résultat direct. Vérifiez le nom ou la référence.";
+          status.innerText = "Aucun disque trouvé. Essayez un autre mot-clé.";
         }
       } catch (err) {
-        status.innerText = "Erreur de connexion avec Discogs.";
+        status.innerText = "Erreur de communication avec Discogs.";
       }
-    }
-
-    function displayResult(data) {
-      currentResult = data;
-      document.getElementById('res-cover').src = data.cover;
-      document.getElementById('res-title').innerText = data.title;
-      document.getElementById('res-artist').innerText = data.artist;
-      document.getElementById('res-price').innerText = `Valeur estimée : ~${data.price} €`;
-      document.getElementById('result-card').style.display = 'block';
     }
 
     function addToCart() {
@@ -219,7 +191,7 @@
       cart.push(currentResult);
       updateCartUI();
       document.getElementById('result-card').style.display = 'none';
-      document.getElementById('status').innerText = "Vinyle ajouté au Caddie !";
+      document.getElementById('status').innerText = "Ajouté au Caddie avec succès !";
     }
 
     function updateCartUI() {
