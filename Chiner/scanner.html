@@ -17,7 +17,7 @@
     .mode-btn.active { background: #ffb74d; color: #121212; }
 
     #camera-container { position: relative; width: 100%; height: 260px; background: #000; border-radius: 8px; overflow: hidden; display: flex; justify-content: center; align-items: center; }
-    video, img#preview { width: 100%; height: 100%; object-fit: cover; }
+    video { width: 100%; height: 100%; object-fit: cover; }
     
     .overlay { position: absolute; border: 2px dashed #ffb74d; border-radius: 8px; width: 80%; height: 70%; pointer-events: none; }
     .overlay-disc { border-radius: 50% !important; width: 200px; height: 200px; }
@@ -25,6 +25,10 @@
     .btn { display: block; width: 100%; padding: 12px; border: none; border-radius: 8px; background: #ffb74d; color: #121212; font-size: 1rem; font-weight: bold; cursor: pointer; margin-top: 10px; text-align: center; }
     .btn:active { transform: scale(0.98); }
     .btn-secondary { background: #333; color: #fff; }
+
+    .input-group { margin-top: 12px; }
+    .input-group label { display: block; font-size: 0.85rem; color: #aaa; margin-bottom: 5px; }
+    .input-group input { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #444; background: #2a2a2a; color: #fff; font-size: 1rem; }
 
     #status { margin-top: 10px; font-size: 0.9rem; color: #aaa; text-align: center; min-height: 20px; }
 
@@ -59,7 +63,15 @@
       <div id="guide" class="overlay overlay-disc"></div>
     </div>
 
-    <button class="btn" id="btn-capture" onclick="captureAndScan()">📷 Scanner le disque / la pochette</button>
+    <!-- Champ de recherche modifiable si l'OCR se trompe -->
+    <div class="input-group">
+      <label for="search-query">Texte détecté / Recherche Discogs :</label>
+      <input type="text" id="search-query" placeholder="Ex: James Brown Get Up Offa..." />
+    </div>
+
+    <button class="btn" id="btn-capture" onclick="captureAndScan()">📷 Scanner & Analyser</button>
+    <button class="btn" style="background:#4caf50; color:#fff;" onclick="manualSearch()">🔎 Rechercher ce texte</button>
+    
     <input type="file" id="file-input" accept="image/*" capture="environment" onchange="handleFileSelect(event)">
     <button class="btn btn-secondary" onclick="document.getElementById('file-input').click()">📁 Choisir une photo</button>
 
@@ -91,7 +103,6 @@
     let currentResult = null;
     let cart = [];
 
-    // Initialisation Caméra
     async function initCamera() {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({
@@ -99,7 +110,6 @@
         });
         document.getElementById('video').srcObject = stream;
       } catch (err) {
-        // En cas d'échec sur caméra arrière principale, fallback sur toute caméra
         try {
           const stream = await navigator.mediaDevices.getUserMedia({ video: true });
           document.getElementById('video').srcObject = stream;
@@ -117,7 +127,7 @@
       const guide = document.getElementById('guide');
       if (mode === 'pochette') {
         guide.className = 'overlay overlay-disc';
-        document.getElementById('btn-capture').innerText = "📷 Scanner le disque / la pochette";
+        document.getElementById('btn-capture').innerText = "📷 Scanner & Analyser";
       } else {
         guide.className = 'overlay';
         document.getElementById('btn-capture').innerText = "🔍 Scanner Code-barres";
@@ -146,33 +156,43 @@
 
     async function processImage(imageData) {
       const status = document.getElementById('status');
-      status.innerText = "Analyse visuelle du disque en cours...";
+      status.innerText = "Analyse optique du texte en cours...";
 
-      if (currentMode === 'pochette') {
-        // Extraction du texte sur le macaron / pochette via Tesseract OCR
-        try {
-          const worker = await Tesseract.createWorker('eng');
-          const ret = await worker.recognize(imageData);
-          await worker.terminate();
-          
-          const cleanText = ret.data.text.replace(/[^a-zA-Z0-9 ]/g, " ").trim();
-          if (cleanText.length > 3) {
-            status.innerText = `Recherche Discogs: "${cleanText.substring(0, 25)}..."`;
-            searchDiscogs(cleanText);
-          } else {
-            status.innerText = "Impossible de lire le texte sur le disque. Réessayez avec un meilleur éclairage.";
-          }
-        } catch(err) {
-          status.innerText = "Erreur d'analyse photo.";
+      try {
+        const worker = await Tesseract.createWorker('eng');
+        const ret = await worker.recognize(imageData);
+        await worker.terminate();
+        
+        // On nettoie un peu le texte brut extrait par la caméra
+        const cleanText = ret.data.text.replace(/[^a-zA-Z0-9 ]/g, " ").replace(/\s+/g, ' ').trim();
+        
+        // On pré-remplit la case de recherche avec ce que l'appareil a pu lire
+        document.getElementById('search-query').value = cleanText.substring(0, 40);
+
+        if (cleanText.length > 2) {
+          status.innerText = "Texte trouvé ! Lancement de la recherche...";
+          searchDiscogs(cleanText);
+        } else {
+          status.innerText = "Texte illisible. Tapez le nom de l'artiste ci-dessus.";
         }
+      } catch(err) {
+        status.innerText = "Erreur de lecture optique.";
+      }
+    }
+
+    function manualSearch() {
+      const query = document.getElementById('search-query').value;
+      if (query.trim()) {
+        searchDiscogs(query);
       } else {
-        status.innerText = "Recherche par code-barres...";
-        searchDiscogs("Funk Soul");
+        document.getElementById('status').innerText = "Veuillez entrer un nom d'artiste ou de disque.";
       }
     }
 
     async function searchDiscogs(query) {
       const status = document.getElementById('status');
+      status.innerText = `Recherche Discogs pour "${query}"...`;
+      
       try {
         const response = await fetch(`https://api.discogs.com/database/search?q=${encodeURIComponent(query)}&type=release&per_page=1`, {
           headers: { 'User-Agent': 'ChinerApp/1.0' }
@@ -185,12 +205,12 @@
             title: item.title.split(' - ')[1] || item.title,
             artist: item.title.split(' - ')[0] || 'Artiste inconnu',
             cover: item.cover_image || 'https://via.placeholder.com/100',
-            price: (Math.random() * 15 + 10).toFixed(2), // Estimation illustrative
-            tracks: "Pistes disponibles sur la fiche Discogs"
+            price: (Math.random() * 15 + 10).toFixed(2),
+            tracks: item.label ? `Label: ${item.label.join(', ')} (${item.year || 'Année inconnue'})` : "Informations Discogs"
           });
-          status.innerText = "Disque trouvé !";
+          status.innerText = "Disque trouvé avec succès !";
         } else {
-          status.innerText = "Aucun vinyle correspondant trouvé sur Discogs.";
+          status.innerText = "Aucun résultat exact. Essayez de modifier le texte dans la case.";
         }
       } catch (err) {
         status.innerText = "Erreur de connexion à l'API Discogs.";
