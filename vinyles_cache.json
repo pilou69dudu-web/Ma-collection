@@ -76197,5 +76197,28 @@
         "prix": "13€",
         "comment": "",
         "isNew": false
+    },
+    "8948527a8332629f51a6612f6dce3b34": {
+        "id": "3315",
+        "type": "SINGLE",
+        "year": "1988",
+        "country": "US",
+        "genre": "Dance",
+        "artist": "LUTHER VANDROSS",
+        "titleA": "She Won't Talk To Me (12\" Extended Version) / She Won't Talk To Me (7\" Club)",
+        "bpmA": "117 / 117",
+        "durationA": "7:30 / 5:14",
+        "titleB": "She Won't Talk To Me (Acid House Dub) / She Won't Talk To Me (Percapella)",
+        "bpmB": "117 / 117",
+        "durationB": "6:28 / 4:29",
+        "qte": 1,
+        "qte_vente": 0,
+        "a_vendre": false,
+        "label": "Epic",
+        "url": "https://www.discogs.com/fr/release/184555-Luther-Vandross-She-Wont-Talk-To-Me",
+        "pochette": "pochettes/184555.jpg",
+        "prix": "5€",
+        "comment": "",
+        "isNew": true
     }
 }
