@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>Liste Wanted - Recherche de Vinyles</title>
     <style>
-        :root { --discogs-black: #111111; --discogs-yellow: #f5c518; --light-bg: #f8f9fa; --border-color: #e5e7eb; --text-muted: #6b7280; }
+        :root { --discogs-black: #111111; --discogs-yellow: #f5c518; --purple-main: #8b5cf6; --light-bg: #f8f9fa; --border-color: #e5e7eb; --text-muted: #6b7280; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
         body { background-color: var(--light-bg); color: var(--discogs-black); padding-bottom: 50px; }
         header { background-color: var(--discogs-black); color: white; padding: 20px; border-bottom: 4px solid var(--discogs-yellow); position: relative; display: flex; align-items: center; justify-content: center; }
@@ -23,6 +23,8 @@
         
         .back-btn { background-color: var(--discogs-black); color: white; border: 2px solid var(--discogs-black); padding: 11px 24px; font-size: 15px; font-weight: bold; border-radius: 6px; cursor: pointer; text-decoration: none; text-align: center; white-space: nowrap; transition: all 0.2s ease; }
         .back-btn:hover { background-color: var(--discogs-yellow); color: var(--discogs-black); }
+        .mixtape-btn { background-color: var(--purple-main); color: white; border: 2px solid var(--purple-main); padding: 11px 20px; font-size: 15px; font-weight: bold; border-radius: 6px; cursor: pointer; text-decoration: none; text-align: center; white-space: nowrap; transition: all 0.2s ease; }
+        .mixtape-btn:hover { background-color: #7c3aed; border-color: #7c3aed; }
         
         .wanted-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; margin-top: 20px; }
         .wanted-card { background: white; border: 1px solid var(--border-color); border-radius: 6px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 3px 5px rgba(0,0,0,0.02); }
@@ -35,7 +37,7 @@
         .discogs-link { display: block; width: 100%; text-align: center; background-color: var(--discogs-black); color: white; text-decoration: none; padding: 6px; font-size: 11px; font-weight: 600; border-radius: 4px; }
         .discogs-link:hover { background-color: var(--discogs-yellow); color: var(--discogs-black); }
         
-        @media (max-width: 768px) { .search-row-wrapper { flex-direction: column; gap: 10px; } .back-btn { width: 100%; } }
+        @media (max-width: 768px) { .search-row-wrapper { flex-direction: column; gap: 10px; } .back-btn, .mixtape-btn { width: 100%; } }
     </style>
 </head>
 <body>
@@ -47,6 +49,7 @@
             <div class="search-container">
                 <div class="search-row-wrapper">
                     <a href="index.html" class="back-btn">⬅ Retour à la collection</a>
+                    <a href="Mixtape.html" class="mixtape-btn">🎧 Mixtapes ➔</a>
                     <div class="search-box-container">
                         <input type="text" id="searchBox" class="search-box" placeholder="Rechercher dans la liste wanted...">
                         <button id="clearSearch" class="clear-search-btn" title="Effacer la recherche">✖</button>
