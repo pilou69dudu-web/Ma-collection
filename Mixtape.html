@@ -173,33 +173,34 @@
         }
 
         function ajouterMorceau(vinylId, face) {
-            const item = vinylData.find(v => v.id === vinylId);
-            if (!item) return;
+        // On cherche le disque exact par son ID unique
+        const item = vinylData.find(v => v.id.toString() === vinylId.toString());
+        if (!item) return;
 
-            const isA = (face === 'A');
-            const titre = isA ? item.titleA : item.titleB;
-            const bpm = isA ? item.bpmA : item.bpmB;
-            const duree = isA ? item.durationA : item.durationB;
+        const isA = (face === 'A');
+        const titre = isA ? item.titleA : item.titleB;
+        const bpm = isA ? item.bpmA : item.bpmB;
+        const duree = isA ? item.durationA : item.durationB;
 
-            if (!titre) return alert("Morceau non disponible sur cette face.");
+        if (!titre) return alert("Morceau non disponible sur cette face.");
 
-            const trackObj = {
-                id: item.id + "_" + face + "_" + Date.now(),
-                vinylId: item.id,
-                artist: item.artist,
-                title: titre,
-                face: face,
-                bpm: bpm,
-                duration: duree,
-                pochette: item.pochette,
-                year: item.year,
-                genre: item.genre
-            };
+        const trackObj = {
+            id: item.id + "_" + face + "_" + Date.now(),
+            vinylId: item.id,
+            artist: item.artist,
+            title: titre,
+            face: face,
+            bpm: bpm,
+            duration: duree,
+            pochette: item.pochette,
+            year: item.year,
+            genre: item.genre
+        };
 
-            mixtapes[currentMixtapeKey].push(trackObj);
+        mixtapes[currentMixtapeKey].push(trackObj);
             sauvegarderMixtapes();
             renderMixtapePanel();
-        }
+    }
 
         function retirerMorceau(trackUniqueId) {
             mixtapes[currentMixtapeKey] = mixtapes[currentMixtapeKey].filter(t => t.id !== trackUniqueId);
@@ -297,41 +298,41 @@
             document.getElementById('recordCount').textContent = filtered.length;
 
             const grid = document.getElementById('vinylGrid');
-            grid.innerHTML = filtered.map(item => {
-                const imgTag = (item.pochette && item.pochette !== "pochettes/placeholder.png")
-                    ? `<img class="cover-image" src="${item.pochette}" alt="Cover">`
-                    : `<div style="color:#777; font-size:10px; text-align:center; padding:10px;">💿 NO COVER</div>`;
+            grid.innerHTML = filtered.map((item, index) => {
+        const imgTag = (item.pochette && item.pochette !== "pochettes/placeholder.png")
+            ? `<img class="cover-image" src="${item.pochette}" alt="Cover">`
+            : `<div style="color:#777; font-size:10px; text-align:center; padding:10px;">💿 NO COVER</div>`;
 
-                return `
-                    <div class="vinyl-card">
-                        <div class="cover-wrapper">${imgTag}</div>
-                        <div class="vinyl-details">
+        return `
+            <div class="vinyl-card">
+                <div class="cover-wrapper">${imgTag}</div>
+                <div class="vinyl-details">
+                    <div>
+                        <div class="vinyl-artist">${item.artist}</div>
+                        <div class="meta-info">${item.year || ''} ${item.genre ? '• ' + item.genre : ''}</div>
+
+                        <div class="track-item">
                             <div>
-                                <div class="vinyl-artist">${item.artist}</div>
-                                <div class="meta-info">${item.year || ''} ${item.genre ? '• ' + item.genre : ''}</div>
-
-                                <div class="track-item">
-                                    <div>
-                                        <strong>A:</strong> ${item.titleA || 'N/C'} 
-                                        ${item.bpmA ? `<span style="color:#0369a1; font-weight:bold;">(${item.bpmA} BPM)</span>` : ''}
-                                    </div>
-                                    <button class="btn-add-track" onclick="ajouterMorceau('${item.id}', 'A')">+ Mixtape</button>
-                                </div>
-
-                                ${item.titleB ? `
-                                <div class="track-item">
-                                    <div>
-                                        <strong>B:</strong> ${item.titleB} 
-                                        ${item.bpmB ? `<span style="color:#0369a1; font-weight:bold;">(${item.bpmB} BPM)</span>` : ''}
-                                    </div>
-                                    <button class="btn-add-track" onclick="ajouterMorceau('${item.id}', 'B')">+ Mixtape</button>
-                                </div>
-                                ` : ''}
+                                <strong>A:</strong> ${item.titleA || 'N/C'} 
+                                ${item.bpmA ? `<span style="color:#0369a1; font-weight:bold;">(${item.bpmA} BPM)</span>` : ''}
                             </div>
+                            <button class="btn-add-track" onclick="ajouterMorceau('${item.id}', 'A', '${item.artist.replace(/'/g, "\'")}')">+ Mixtape</button>
                         </div>
+
+                        ${item.titleB ? `
+                        <div class="track-item">
+                            <div>
+                                <strong>B:</strong> ${item.titleB} 
+                                ${item.bpmB ? `<span style="color:#0369a1; font-weight:bold;">(${item.bpmB} BPM)</span>` : ''}
+                            </div>
+                            <button class="btn-add-track" onclick="ajouterMorceau('${item.id}', 'B', '${item.artist.replace(/'/g, "\'")}')">+ Mixtape</button>
+                        </div>
+                        ` : ''}
                     </div>
-                `;
-            }).join('');
+                </div>
+            </div>
+        `;
+    }).join('');
         }
 
         ['filterText', 'filterGenre', 'filterYear', 'filterBpmMin', 'filterBpmMax'].forEach(id => {
