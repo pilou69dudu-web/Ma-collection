@@ -11,18 +11,20 @@ echo =====================================================================
 echo.
 echo [1] Générer la Page Web et envoyer sur GitHub
 echo [2] Mise a jour des prix haut (Discogs API - Excel)
-echo [3] Quitter
+echo [3] Mettre à jour et envoyer la page Mixtape sur GitHub
+echo [4] Quitter
 echo.
 echo =====================================================================
 echo.
 
-set /p choix="Votre choix [1-3] : "
+set /p choix="Votre choix [1-4] : "
 
 if "%choix%"=="1" goto option1
 if "%choix%"=="2" goto option2
-if "%choix%"=="3" goto quitter
+if "%choix%"=="3" goto option3
+if "%choix%"=="4" goto quitter
 
-:: Si l'utilisateur tape autre chose que 1, 2 ou 3
+:: Si l'utilisateur tape autre chose
 echo ❌ Choix invalide, veuillez recommencer...
 timeout /t 2 > nul
 goto menu
@@ -40,9 +42,8 @@ python generateur.py
 echo.
 echo 2. Envoi des mises à jour sur GitHub...
 echo --------------------------------------------------
-:: Ajoute les fichiers modifiés et les nouvelles pochettes
 git add .
-git commit -m "Mise a jour automatique de la collection et de la page Wanted"
+git commit -m "Mise a jour automatique de la collection"
 git push origin main
 
 echo.
@@ -61,6 +62,30 @@ echo.
 python update_prices.py
 echo.
 echo Fin de l'exécution.
+pause
+goto menu
+
+:option3
+cls
+echo =====================================================================
+echo              MISE À JOUR DE LA PAGE MIXTAPE ET ENVOI GITHUB
+echo =====================================================================
+echo.
+echo 1. Regénération des pages via generateur.py...
+echo --------------------------------------------------
+python generateur.py
+
+echo.
+echo 2. Envoi de la page Mixtape (et modifications) sur GitHub...
+echo --------------------------------------------------
+git add Mixtape.html index.html Vente.html Wanted.html
+git commit -m "Mise a jour de la page Mixtape"
+git push origin main
+
+echo.
+echo --------------------------------------------------
+echo Terminé ! La page Mixtape est à jour sur votre site.
+echo --------------------------------------------------
 pause
 goto menu
 

@@ -1599,7 +1599,7 @@
         "a_vendre": false,
         "durationA": "07:30:00",
         "bpmA": "161",
-        "titleB": " Cold Dresses (7\" Version) / The Answers - The Solutions",
+        "titleB": "Cold Dresses (7\" Version) / The Answers - The Solutions",
         "durationB": "4:10 / 3:06",
         "bpmB": "161 / 161",
         "label": "Mercury",
@@ -2795,7 +2795,7 @@
         "a_vendre": false,
         "durationA": "06:50:00",
         "bpmA": "126",
-        "titleB": " Sugar Sugar (7\" Mix) / Sugar Sugar (Instrumental)",
+        "titleB": "Sugar Sugar (7\" Mix) / Sugar Sugar (Instrumental)",
         "durationB": "3:47 / 7:00",
         "bpmB": "126 / 126",
         "label": "Phonogram",
@@ -3033,7 +3033,7 @@
         "pochette": "pochettes/31979096.jpg",
         "prix": "16€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "4eab5ee75918fb25f6409e8f1da50f2e": {
         "id": "131",
@@ -3140,7 +3140,7 @@
         "a_vendre": false,
         "durationA": "05:52:00",
         "bpmA": "130",
-        "titleB": "Es El Rithmo Latino (Latino Mix) ",
+        "titleB": "Es El Rithmo Latino (Latino Mix)",
         "durationB": "05:52:00",
         "bpmB": "130",
         "label": "Urban Roots",
@@ -3392,7 +3392,7 @@
         "qte_vente": 1,
         "a_vendre": true,
         "durationA": "10:50 / 5:27",
-        "bpmA": "nan",
+        "bpmA": "10:50 / 5:27",
         "titleB": "Mix 3",
         "durationB": "13:50:00",
         "bpmB": "nan",
@@ -5095,7 +5095,7 @@
         "a_vendre": false,
         "durationA": "5:20 / 4:40",
         "bpmA": "123 / 118",
-        "titleB": " Qu'est Ce Qu'on Fait Maintenant ? (Club Mix) / Qu'est Ce Qu'on Fait Maintenant ? (Acapella) / Qu'est Ce Qu'on Fait Maintenant ? (Hip Hop Mix)",
+        "titleB": "Qu'est Ce Qu'on Fait Maintenant ? (Club Mix) / Qu'est Ce Qu'on Fait Maintenant ? (Acapella) / Qu'est Ce Qu'on Fait Maintenant ? (Hip Hop Mix)",
         "durationB": "6:01 / 1:12 / 3:42",
         "bpmB": "124 / 124 / 124",
         "label": "On The Beat",
@@ -8576,7 +8576,7 @@
         "pochette": "pochettes/1084689.jpg",
         "prix": "5€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "002b98c492ad4a2c4ec3377fb397abde": {
         "id": "369",
@@ -9028,7 +9028,7 @@
         "a_vendre": false,
         "durationA": "07:42:00",
         "bpmA": "127",
-        "titleB": "Stubborn Kind Of Fella ",
+        "titleB": "Stubborn Kind Of Fella",
         "durationB": "07:10:00",
         "bpmB": "131",
         "label": "RCA Victor",
@@ -9096,7 +9096,7 @@
         "qte_vente": 0,
         "a_vendre": false,
         "durationA": "7:18 / 7:17\n7:01 / 7:15",
-        "bpmA": "127 / 126\n126 / 126\n",
+        "bpmA": "127 / 126\n126 / 126",
         "titleB": "B: Get Up (Narcotic Mix) / Get Up (Rhythm Masters Dub Mix) Dub)\nD: Get Up (Peppermint Jam Allstar Mix) / Get Up (Peppermint Jam Allstar",
         "durationB": "\n9:08 / 6:50",
         "bpmB": "126 / 127\n126 / 126",
@@ -11957,7 +11957,7 @@
         "pochette": "pochettes/9557261.jpg",
         "prix": "40€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "a1f8d2195afbdce09b7e91a4066e75d4": {
         "id": "514",
@@ -12685,7 +12685,7 @@
         "a_vendre": false,
         "durationA": "06:02:00",
         "bpmA": "115",
-        "titleB": " If Anybody Asks You / On The Beach (Special Remix)",
+        "titleB": "If Anybody Asks You / On The Beach (Special Remix)",
         "durationB": "5:00 / 4:20",
         "bpmB": "120 / 115",
         "label": "Magnet",
@@ -14320,7 +14320,7 @@
         "bpmA": "109 / 113",
         "titleB": "You've Lost That Lovin' Feelin / Gimme Your Love",
         "durationB": "4:44 / 8:14",
-        "bpmB": "92 / 103 ",
+        "bpmB": "92 / 103",
         "label": "Dancefloor",
         "url": "https://www.discogs.com/release/1159064-Creme-DCocoa-Doin-The-Dog-Nasty-Street-Youve-Lost-That-Lovin-Feelin-Gimme-Your-Love",
         "pochette": "pochettes/1159064.jpg",
@@ -14855,7 +14855,7 @@
         "pochette": "pochettes/1056393.jpg",
         "prix": "5€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "9340fd03629a695a5e597303810255b2": {
         "id": "639",
@@ -23848,7 +23848,7 @@
         "pochette": "pochettes/2395986.jpg",
         "prix": "30€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "e735f864aa5df11945a0e10786fb5e91": {
         "id": "1026",
@@ -24624,7 +24624,7 @@
         "bpmA": "120",
         "titleB": "I Dub U / We Got The Jazz",
         "durationB": "7:37 / 4:00",
-        "bpmB": "119 / 115",
+        "bpmB": "120 / 115",
         "label": "Virgin",
         "url": "https://www.discogs.com/release/3177066-Freeez-IOU-Megamix",
         "pochette": "pochettes/3177066.jpg",
@@ -25289,7 +25289,7 @@
         "a_vendre": false,
         "durationA": "10:35:00",
         "bpmA": "109",
-        "titleB": " The Crown (Instrumental)",
+        "titleB": "The Crown (Instrumental)",
         "durationB": "10:40:00",
         "bpmB": "109",
         "label": "Motown",
@@ -25380,7 +25380,7 @@
         "qte_vente": 0,
         "a_vendre": false,
         "durationA": "07:02:00",
-        "bpmA": "126 ",
+        "bpmA": "126",
         "titleB": "Party Hardy",
         "durationB": "09:20:00",
         "bpmB": "124",
@@ -25389,7 +25389,7 @@
         "pochette": "pochettes/390673.jpg",
         "prix": "6€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "0176760c8bb4d102d3365085acbd6fef": {
         "id": "1092",
@@ -25541,7 +25541,7 @@
         "qte_vente": 0,
         "a_vendre": false,
         "durationA": "06:00:00",
-        "bpmA": " 108",
+        "bpmA": "108",
         "titleB": "I'm Warning You (Instrumental)",
         "durationB": "06:00:00",
         "bpmB": "108",
@@ -26263,7 +26263,7 @@
         "pochette": "pochettes/736016.jpg",
         "prix": "11€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "9c850930e9b0f6052cf89f91ba181bd8": {
         "id": "1129",
@@ -29569,7 +29569,7 @@
         "bpmA": "137",
         "titleB": "Hey Little Girl / Can´t Help Myself (US Club Mix)",
         "durationB": "3:40 / 5:58",
-        "bpmB": "136 / 142",
+        "bpmB": "137 / 142",
         "label": "Chrysalis",
         "url": "https://www.discogs.com/release/3850781-Icehouse-Hey-Little-Girl-Special-Club-Mix",
         "pochette": "pochettes/3850781.jpg",
@@ -29912,7 +29912,7 @@
         "a_vendre": true,
         "durationA": "06:15:00",
         "bpmA": "112",
-        "titleB": "Last Days Of Summer (Radio Version) / Shoo Be Doo Da Dabba Doobee ",
+        "titleB": "Last Days Of Summer (Radio Version) / Shoo Be Doo Da Dabba Doobee",
         "durationB": "4:00 / 4:05",
         "bpmB": "112 / 120",
         "label": "Ariola",
@@ -30256,7 +30256,7 @@
         "qte_vente": 0,
         "a_vendre": false,
         "durationA": "5:40 / 3:08",
-        "bpmA": "111 / 111 ",
+        "bpmA": "111 / 111",
         "titleB": "D.J. Delight / Telephone Ringing (Sound Effect) / Screeching Tires (Sound Effect) / Flushing Toilet (Sound Effect)",
         "durationB": "6:08 / 022 / 0:06 / 0:37",
         "bpmB": "111",
@@ -32519,7 +32519,7 @@
         "pochette": "pochettes/224373.jpg",
         "prix": "60€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "b92d6c291e7d496d3fa9eeb410f14738": {
         "id": "1386",
@@ -33040,7 +33040,7 @@
         "a_vendre": false,
         "durationA": "05:46:00",
         "bpmA": "125",
-        "titleB": " We Don't Have To Take Our Clothes Off / Brilliance",
+        "titleB": "We Don't Have To Take Our Clothes Off / Brilliance",
         "durationB": "4:05 / 4:43",
         "bpmB": "124 / Slow",
         "label": "10 Records",
@@ -34819,7 +34819,7 @@
         "pochette": "pochettes/188517.jpg",
         "prix": "12€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "a933222a30ae98c2d35200844f85454a": {
         "id": "1484",
@@ -39709,7 +39709,7 @@
         "qte_vente": 0,
         "a_vendre": false,
         "durationA": "5:13 / 1:44",
-        "bpmA": "nan",
+        "bpmA": "5:13 / 1:44",
         "titleB": "Class / Style (I've Got It) (Original Mix) / Class / Style (I've Got It) (Original Dup Mix)",
         "durationB": "8:50 / 4:13",
         "bpmB": "nan",
@@ -41085,14 +41085,14 @@
         "genre": "Dance",
         "artist": "LUTHER VANDROSS",
         "titleA": "She Won't Talk To Me (12\" Extended Version) / She Won't Talk To Me (7\" Club)",
+        "bpmA": "117 / 117",
+        "durationA": "7:30 / 5:14",
+        "titleB": "She Won't Talk To Me (Acid House Dub) / She Won't Talk To Me (Percapella)",
+        "bpmB": "117 / 117",
+        "durationB": "6:28 / 4:29",
         "qte": 1,
         "qte_vente": 0,
         "a_vendre": false,
-        "durationA": "7:30 / 5:14",
-        "bpmA": "117 / 117",
-        "titleB": "She Won't Talk To Me (Acid House Dub) / She Won't Talk To Me (Percapella)",
-        "durationB": "6:28 / 4:29",
-        "bpmB": "117 / 117",
         "label": "Epic",
         "url": "https://www.discogs.com/fr/release/184555-Luther-Vandross-She-Wont-Talk-To-Me",
         "pochette": "pochettes/184555.jpg",
@@ -44335,7 +44335,7 @@
         "bpmA": "122",
         "titleB": "Respectable (7\" Version) / Respectable (Extra Beats Version)",
         "durationB": "3:22 / 8:08",
-        "bpmB": "122 / 118 ",
+        "bpmB": "122 / 118",
         "label": "Polydor",
         "url": "https://www.discogs.com/release/224820-Mel-Kim-Respectable",
         "pochette": "pochettes/224820.jpg",
@@ -44841,7 +44841,7 @@
         "bpmA": "125",
         "titleB": "Conga (Instrumental) / Mucho Money",
         "durationB": "4:43 / 4:44",
-        "bpmB": "124 / 119",
+        "bpmB": "125 / 119",
         "label": "Epic",
         "url": "https://www.discogs.com/release/446511-Miami-Sound-Machine-Conga-Dance-Mix",
         "pochette": "pochettes/446511.jpg",
@@ -47147,7 +47147,7 @@
         "pochette": "pochettes/197866.jpg",
         "prix": "6€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "b21148abdb548f9e48e87aa6891c7a8a": {
         "id": "2013",
@@ -50476,7 +50476,7 @@
         "bpmA": "118",
         "titleB": "So Wrong (Instrumental) / If You Want A Little Love",
         "durationB": "3:47 / 3:28",
-        "bpmB": "118 / 121 ",
+        "bpmB": "118 / 121",
         "label": "Elektra",
         "url": "https://www.discogs.com/release/1263240-Patrick-Simmons-So-Wrong",
         "pochette": "pochettes/1263240.jpg",
@@ -51255,7 +51255,7 @@
         "qte_vente": 0,
         "a_vendre": false,
         "durationA": "7:51 / 6:39",
-        "bpmA": "129 / 123 ",
+        "bpmA": "129 / 123",
         "titleB": "West End Girls (Sasha Remix) / West End Girls (Sasha Dub)",
         "durationB": "7:48 / 8:17",
         "bpmB": "116 / 114",
@@ -53096,7 +53096,7 @@
         "a_vendre": false,
         "durationA": "05:26:00",
         "bpmA": "109",
-        "titleB": "I Want To Taste Your Love / Monkey Shop (Short Version) ",
+        "titleB": "I Want To Taste Your Love / Monkey Shop (Short Version)",
         "durationB": "5:22 / 4:09",
         "bpmB": "90 / 109",
         "label": "Camion Records",
@@ -55235,7 +55235,7 @@
         "a_vendre": false,
         "durationA": "07:34:00",
         "bpmA": "115",
-        "titleB": " Whenever You Need Somebody (Instrumental) / Just Good Friends",
+        "titleB": "Whenever You Need Somebody (Instrumental) / Just Good Friends",
         "durationB": "3:50 / 3:45",
         "bpmB": "115 / 110",
         "label": "RCA",
@@ -55258,7 +55258,7 @@
         "a_vendre": false,
         "durationA": "07:34:00",
         "bpmA": "115",
-        "titleB": " Whenever You Need Somebody (Instrumental) / Just Good Friends",
+        "titleB": "Whenever You Need Somebody (Instrumental) / Just Good Friends",
         "durationB": "3:50 / 3:45",
         "bpmB": "115 / 110",
         "label": "RCA",
@@ -56554,7 +56554,7 @@
         "pochette": "pochettes/774792.jpg",
         "prix": "7€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "9ce51e1a5dae6d675ede107e2145f999": {
         "id": "2420",
@@ -59029,7 +59029,7 @@
         "qte_vente": 0,
         "a_vendre": false,
         "durationA": "05:30:00",
-        "bpmA": "162",
+        "bpmA": "160",
         "titleB": "You're The One For Me",
         "durationB": "05:00:00",
         "bpmB": "80",
@@ -59130,7 +59130,7 @@
         "pochette": "pochettes/720290.jpg",
         "prix": "10€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "d42a4d827a11d2a42bb2ce5ea07f0936": {
         "id": "2572",
@@ -59153,7 +59153,7 @@
         "pochette": "pochettes/1070846.jpg",
         "prix": "6€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "605b6827b9725d7411f97de0e027dfad": {
         "id": "2531",
@@ -59222,7 +59222,7 @@
         "pochette": "pochettes/2247716.jpg",
         "prix": "10€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "6c5658f10f3b27fb7690b858b27c2f2a": {
         "id": "2533",
@@ -61223,7 +61223,7 @@
         "pochette": "pochettes/535885.jpg",
         "prix": "10€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "24d70de2ae25508eeb88e4458cbcd544": {
         "id": "2620",
@@ -61821,7 +61821,7 @@
         "pochette": "pochettes/5583071.jpg",
         "prix": "18€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "bde7c6e92a656702706a664b013b2c5b": {
         "id": "2690",
@@ -61844,7 +61844,7 @@
         "pochette": "pochettes/623793.jpg",
         "prix": "25€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "298d4467665561ccdf3ac30582c466a4": {
         "id": "2645",
@@ -62180,8 +62180,8 @@
         "qte_vente": 0,
         "a_vendre": false,
         "durationA": "15:30:00",
-        "bpmA": "nan",
-        "titleB": "Untitled Medley 1 / Untitled Medley 2 / Untitled Medley 3 ",
+        "bpmA": "15:30:00",
+        "titleB": "Untitled Medley 1 / Untitled Medley 2 / Untitled Medley 3",
         "durationB": "nan",
         "bpmB": "8:02 / 4:36 / 4:31",
         "label": "Carrere",
@@ -62390,7 +62390,7 @@
         "bpmA": "115 / 112",
         "titleB": "Dancin' In The Key Of Life The Megamix / Dancin' In The Key Of Life (Instrumental Remix)",
         "durationB": "10:26 / ???",
-        "bpmB": "Megamix",
+        "bpmB": "115 / 115",
         "label": "Atlantic",
         "url": "https://www.discogs.com/fr/release/160853-Steve-Arrington-Dancin-In-The-Key-Of-Life-Megamix",
         "pochette": "pochettes/160853.jpg",
@@ -64305,7 +64305,7 @@
         "pochette": "pochettes/597956.jpg",
         "prix": "15€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "fbfcca6487b4118636c4e5a57e5451c2": {
         "id": "2752",
@@ -65633,7 +65633,7 @@
         "bpmA": "131 / 117",
         "titleB": "Moskow Diskow(1979) / Baby I Need Your Loving(1982)",
         "durationB": "5:22 / 6:40",
-        "bpmB": "130 / ",
+        "bpmB": "130 /",
         "label": "Classic Disco Dance",
         "url": "https://www.discogs.com/fr/release/3342231-Various-Classic-Disco-Dance",
         "pochette": "pochettes/3342231.jpg",
@@ -65800,7 +65800,7 @@
         "pochette": "pochettes/196610.jpg",
         "prix": "25€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "df5346acce64c31ab1532e2d3913dfda": {
         "id": "2816",
@@ -66369,7 +66369,7 @@
         "bpmA": "122",
         "titleB": "Early In The Morning",
         "durationB": "07:33:00",
-        "bpmB": "121",
+        "bpmB": "122",
         "label": "Mercury",
         "url": "https://www.discogs.com/release/3631932-The-Gap-Band-Early-In-The-Morning",
         "pochette": "pochettes/3631932.jpg",
@@ -67525,7 +67525,7 @@
         "pochette": "pochettes/1425701.jpg",
         "prix": "16€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "9c76eeb80e4f2238483369f6a841bc8e": {
         "id": "2889",
@@ -68575,7 +68575,7 @@
         "a_vendre": false,
         "durationA": "07:11:00",
         "bpmA": "139",
-        "titleB": " Fiesta De Los Tamborileros (Forrest Dream Mix) / Fiesta De Los Tamborileros (Vince's Distorted Duck Mix)",
+        "titleB": "Fiesta De Los Tamborileros (Forrest Dream Mix) / Fiesta De Los Tamborileros (Vince's Distorted Duck Mix)",
         "durationB": "8:54 / 6:25",
         "bpmB": "133 / 140",
         "label": "Dance Pool",
@@ -70952,7 +70952,7 @@
         "pochette": "pochettes/841641.jpg",
         "prix": "",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "fc4d3f866b0ec98be668b7ecc0f462c9": {
         "id": "3035",
