@@ -78,8 +78,8 @@ python generateur.py
 echo.
 echo 2. Envoi de la page Mixtape (et modifications) sur GitHub...
 echo --------------------------------------------------
-git add Mixtape.html index.html Vente.html Wanted.html
-git commit -m "Mise a jour de la page Mixtape"
+git add index.html Vente.html Wanted.html Mixtape.html vinyles_cache.json mixtapes.json
+git commit -m "Mise a jour des pages"
 git push origin main
 
 echo.

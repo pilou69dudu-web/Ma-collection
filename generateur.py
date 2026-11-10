@@ -901,13 +901,15 @@ html_mixtape = """<!DOCTYPE html>
         }
 
         function exporterMixtapeActive() {
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(mixtapes[currentMixtapeKey], null, 2));
+            // On sauvegarde l'ensemble des mixtapes et pas seulement la courante
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(mixtapes, null, 2));
             const downloadAnchor = document.createElement('a');
             downloadAnchor.setAttribute("href", dataStr);
-            downloadAnchor.setAttribute("download", currentMixtapeKey.replace(/\s+/g, '_') + ".json");
+            downloadAnchor.setAttribute("download", "mixtapes.json");
             document.body.appendChild(downloadAnchor);
             downloadAnchor.click();
             downloadAnchor.remove();
+            alert("Fichier 'mixtapes.json' généré ! Pense à le placer dans ton dossier principal sur le PC avant de lancer ton .bat.");
         }
 
         function importerMixtapeFichier(event) {
