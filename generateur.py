@@ -945,7 +945,11 @@ html_mixtape = """<!DOCTYPE html>
             
             const fsContainer = document.getElementById('fsMixtapeList');
             fsContainer.innerHTML = currentList.map((track, idx) => `
-                <div class="fs-track-card">
+                <div class="fs-track-card" style="display: flex; align-items: center; gap: 12px;">
+                    <div style="display: flex; flex-direction: column; gap: 2px;">
+                        <button class="btn-secondary" style="padding: 4px 8px; font-size: 11px;" onclick="deplacerMorceauPleinEcran(${idx}, -1)" ${idx === 0 ? 'disabled style="opacity:0.3;"' : ''}>▲</button>
+                        <button class="btn-secondary" style="padding: 4px 8px; font-size: 11px;" onclick="deplacerMorceauPleinEcran(${idx}, 1)" ${idx === currentList.length - 1 ? 'disabled style="opacity:0.3;"' : ''}>▼</button>
+                    </div>
                     <img class="fs-track-thumb" src="${track.pochette || 'pochettes/placeholder.png'}" alt="Cover">
                     <div style="flex-grow:1; overflow:hidden;">
                         <div style="font-size:14px; font-weight:bold; text-transform:uppercase;">${idx + 1}. ${track.artist} - ${track.title}</div>
