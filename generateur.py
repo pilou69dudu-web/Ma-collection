@@ -1027,12 +1027,11 @@ window.addEventListener('DOMContentLoaded', () => {
         .then(data => {
             if (data && Object.keys(data).length > 0) {
                 const newDataStr = JSON.stringify(data);
-                const oldDataStr = localStorage.getItem('my_mixtapes');
+                const oldDataStr = localStorage.getItem('user_mixtapes');
                 
-                // Si les données distantes sont différentes de celles en cache, on met à jour et on recharge
                 if (oldDataStr !== newDataStr) {
                     mixtapes = data;
-                    localStorage.setItem('my_mixtapes', newDataStr);
+                    localStorage.setItem('user_mixtapes', newDataStr);
                     location.reload();
                 }
             }

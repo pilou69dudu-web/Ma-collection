@@ -10,10 +10,9 @@ import hashlib
 # =====================================================================
 # CONFIGURATION AUTOMATIQUE
 # =====================================================================
-# Détection automatique du fichier Excel (supporte .xlsm et .xlsx)
 nom_fichier_excel = "00_Mes vinyles.xlsm" if os.path.exists("00_Mes vinyles.xlsm") else "00_Mes vinyles.xlsx"
 nom_fichier_wanted = "01_Liste achat.xlsx"
-fichier_cache = "vinyles_cache.json"  # Fichier mémoire pour accélérer le script
+fichier_cache = "vinyles_cache.json"
 
 CONSUMER_KEY = "pTrgAPVrGOUYZbQrFbbh"
 CONSUMER_SECRET = "XnsdSqnEoZQHJLjtEhVwffLFSYNJTYmV"
@@ -22,7 +21,6 @@ CONSUMER_SECRET = "XnsdSqnEoZQHJLjtEhVwffLFSYNJTYmV"
 if not os.path.exists("pochettes"):
     os.makedirs("pochettes")
 
-# Chargement du cache s'il existe
 cache_donnees = {}
 cache_existe = os.path.exists(fichier_cache)
 
@@ -127,9 +125,13 @@ except Exception as e:
     exit()
 
 colonne_type = next((c for c in df.columns if any(k in str(c).lower() for k in ['album', 'compil', 'sing'])), df.columns[2])
-colonne_titre_a = next((c for c in df.columns if 'titre' in str(c).lower() and any(k in str(c).lower() for k in ['face a', 'album'])), None)
-if not colonne_titre_a:
-    colonne_titre_a = next((c for c in df.columns if 'titre' in str(c).lower() or 'album' in str(c).lower()), df.columns[1])
+
+# Identification des colonnes J (Titre A), L (BPM A), M (Titre B), O (BPM B)
+colonne_titre_a = df.columns[9] if len(df.columns) > 9 else next((c for c in df.columns if 'titre' in str(c).lower()), df.columns[1])
+colonne_bpm_a   = df.columns[11] if len(df.columns) > 11 else next((c for c in df.columns if 'bpm a' in str(c).lower()), 'Bpm A')
+colonne_titre_b = df.columns[12] if len(df.columns) > 12 else next((c for c in df.columns if 'titre' in str(c).lower() and 'b' in str(c).lower()), 'Titre Face B')
+colonne_bpm_b   = df.columns[14] if len(df.columns) > 14 else next((c for c in df.columns if 'bpm b' in str(c).lower()), 'Bpm B')
+
 colonne_lien = next((c for c in df.columns if 'lien' in str(c).lower()), 'Lien')
 
 colonne_genre = next((c for c in df.columns if 'genre' in str(c).lower()), None)
@@ -137,12 +139,9 @@ if not colonne_genre and len(df.columns) > 6:
     colonne_genre = df.columns[6]
 
 colonne_a_vendre = next((c for c in df.columns if 'vendre' in str(c).lower() and 'qt' not in str(c).lower()), None)
-
-# Identification de la Colonne T (Qté à vendre)
 colonne_qte_vente = next((c for c in df.columns if 'qt' in str(c).lower() and 'vendre' in str(c).lower()), 'Qté à vendre')
 
 def generer_hash_ligne(row):
-    """Génère un identifiant unique basé sur les données du disque (Artiste + Titre + Lien)."""
     artiste = str(row.get('ARTISTE', '')).strip().lower()
     titre = str(row.get(colonne_titre_a, '')).strip().lower() if colonne_titre_a else ""
     lien = str(row.get(colonne_lien, '')).strip().lower() if colonne_lien else ""
@@ -165,21 +164,28 @@ for index, row in df.iterrows():
         
     hash_ligne = generer_hash_ligne(row)
     
-    # Récupération statut Vente (Colonne S : À vendre)
     val_a_vendre = str(row.get(colonne_a_vendre, '')).strip().lower() if colonne_a_vendre else str(row.get('À vendre', '')).strip().lower()
     est_a_vendre = (val_a_vendre == 'oui')
 
-    # Récupération Quantité (Colonne E : Qté)
     quantite = row.get('Qté', 1)
     try: quantite = int(quantite) if not pd.isna(quantite) else 1
     except: quantite = 1
     
-    # Récupération directe de la Colonne T (Qté à vendre)
     qte_a_vendre_val = row.get(colonne_qte_vente, 0)
-    try:
-        qte_vente = int(qte_a_vendre_val) if not pd.isna(qte_a_vendre_val) else 0
-    except:
-        qte_vente = 0
+    try: qte_vente = int(qte_a_vendre_val) if not pd.isna(qte_a_vendre_val) else 0
+    except: qte_vente = 0
+
+    titre_a = str(row.get(colonne_titre_a, '')).strip() if colonne_titre_a in row else ""
+    if titre_a == 'nan': titre_a = ""
+    
+    titre_b = str(row.get(colonne_titre_b, '')).strip() if colonne_titre_b in row else ""
+    if titre_b == 'nan': titre_b = ""
+
+    bpm_a = str(row.get(colonne_bpm_a, '')).strip() if colonne_bpm_a in row else ""
+    if bpm_a == 'nan': bpm_a = ""
+
+    bpm_b = str(row.get(colonne_bpm_b, '')).strip() if colonne_bpm_b in row else ""
+    if bpm_b == 'nan': bpm_b = ""
 
     if not cache_existe:
         est_nouveaute = False
@@ -192,6 +198,11 @@ for index, row in df.iterrows():
         viny_data["a_vendre"] = est_a_vendre
         viny_data["qte_vente"] = qte_vente
         viny_data["qte"] = quantite
+        viny_data["titleA"] = titre_a or viny_data.get("titleA", "")
+        viny_data["titleB"] = titre_b or viny_data.get("titleB", "")
+        viny_data["bpmA"] = bpm_a or viny_data.get("bpmA", "")
+        viny_data["bpmB"] = bpm_b or viny_data.get("bpmB", "")
+        
         nouveau_cache[hash_ligne] = viny_data
         collection.append(viny_data)
         
@@ -200,9 +211,6 @@ for index, row in df.iterrows():
         continue
 
     compteur_api += 1
-    titre_a = str(row.get(colonne_titre_a, '')).strip() if colonne_titre_a else ""
-    if titre_a == 'nan': titre_a = ""
-        
     lien_discogs = row.get(colonne_lien, '#')
     id_discogs = extraire_id_discogs(lien_discogs)
     
@@ -212,27 +220,24 @@ for index, row in df.iterrows():
     if not prix_affiche or prix_affiche == "":
         valeur_prix_excel = str(row.get('Prix Haut', '')).strip()
         chiffres = re.findall(r"\d+", valeur_prix_excel)
-        if chiffres:
-            prix_affiche = f"{chiffres[0]}€"
-        else:
-            prix_affiche = ""
+        prix_affiche = f"{chiffres[0]}€" if chiffres else ""
 
     valeur_type = str(row.get(colonne_type, 'SINGLE')).strip().upper()
     if 'MEDLEY' in valeur_type: valeur_type = 'MEDLEY'
     elif 'JINGLE' in valeur_type: valeur_type = 'JINGLE'
     elif 'COMPIL' in valeur_type: valeur_type = 'COMPILS'
-    elif valeur_type == 'NAN' or valeur_type == '': valeur_type = 'SINGLE'
+    elif valeur_type in ['NAN', '']: valeur_type = 'SINGLE'
     
-    if valeur_type:
-        liste_types_uniques.add(valeur_type)
+    if valeur_type: liste_types_uniques.add(valeur_type)
         
     genre_vinyl = str(row.get(colonne_genre, '')).strip()
-    if genre_vinyl == 'nan' or genre_vinyl == '': 
+    if genre_vinyl in ['nan', '']: 
         genre_vinyl = "N/C"
     else:
         liste_genres_uniques.add(genre_vinyl.upper())
 
     annee_str = str(row.get('Année', '')).strip()
+    if annee_str == 'nan': annee_str = ""
 
     viny_data = {
         "id": str(row.get('N°', index)),
@@ -242,14 +247,14 @@ for index, row in df.iterrows():
         "genre": genre_vinyl,
         "artist": artiste,
         "titleA": titre_a,
+        "bpmA": bpm_a,
+        "durationA": str(row.get('Durée A', '')),
+        "titleB": titre_b,
+        "bpmB": bpm_b,
+        "durationB": str(row.get('Durée B', '')),
         "qte": quantite,
         "qte_vente": qte_vente,
         "a_vendre": est_a_vendre,
-        "durationA": str(row.get('Durée A', '')),
-        "bpmA": str(row.get('Bpm A', '')),
-        "titleB": str(row.get('Titre Face B', '')),
-        "durationB": str(row.get('Durée B', '')),
-        "bpmB": str(row.get('Bpm B', '')),
         "label": str(row.get('Préssage / Labels', '')),
         "url": str(lien_discogs),
         "pochette": chemin_pochette,
@@ -318,7 +323,7 @@ json_wanted_data = json.dumps(wanted_collection, ensure_ascii=False)
 
 
 # =====================================================================
-# SQUELETTE HTML : PAGE PRINCIPALE (COLLECTION)
+# SQUELETTE HTML : PAGE PRINCIPALE (INDEX.HTML)
 # =====================================================================
 html_debut = """<!DOCTYPE html>
 <html lang="fr">
@@ -326,7 +331,7 @@ html_debut = """<!DOCTYPE html>
     <meta charset="UTF-8">
     <title>Ma Collection de Vinyles - Discogs Style</title>
     <style>
-        :root { --discogs-black: #111111; --discogs-yellow: #f5c518; --light-bg: #f8f9fa; --border-color: #e5e7eb; --text-muted: #6b7280; }
+        :root { --discogs-black: #111111; --discogs-yellow: #f5c518; --purple-main: #8b5cf6; --light-bg: #f8f9fa; --border-color: #e5e7eb; --text-muted: #6b7280; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
         body { background-color: var(--light-bg); color: var(--discogs-black); padding-bottom: 50px; }
         header { background-color: var(--discogs-black); color: white; padding: 20px; border-bottom: 4px solid var(--discogs-yellow); position: relative; display: flex; align-items: center; justify-content: center; }
@@ -345,10 +350,12 @@ html_debut = """<!DOCTYPE html>
         .clear-search-btn { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; font-size: 16px; color: #aaa; cursor: pointer; display: none; }
         .clear-search-btn:hover { color: #555; }
         
+        .mixtape-btn { background-color: var(--purple-main); color: white; border: 2px solid var(--purple-main); padding: 11px 20px; font-size: 15px; font-weight: bold; border-radius: 6px; cursor: pointer; text-decoration: none; text-align: center; white-space: nowrap; transition: all 0.2s ease; }
+        .mixtape-btn:hover { background-color: #7c3aed; border-color: #7c3aed; }
         .wanted-btn { background-color: var(--discogs-black); color: var(--discogs-yellow); border: 2px solid var(--discogs-black); padding: 11px 20px; font-size: 15px; font-weight: bold; border-radius: 6px; cursor: pointer; text-decoration: none; text-align: center; white-space: nowrap; transition: all 0.2s ease; }
         .wanted-btn:hover { background-color: var(--discogs-yellow); color: var(--discogs-black); }
         .sale-btn { background-color: #e11d48; color: white; border: 2px solid #e11d48; padding: 11px 20px; font-size: 15px; font-weight: bold; border-radius: 6px; cursor: pointer; text-decoration: none; text-align: center; white-space: nowrap; transition: all 0.2s ease; }
-        .sale-btn:hover { background-color: #be123c; color: white; border-color: #be123c; }
+        .sale-btn:hover { background-color: #be123c; border-color: #be123c; }
 
         .navigation-filters { display: flex; flex-direction: column; gap: 12px; padding-top: 10px; border-top: 1px dashed var(--border-color); margin-top: 15px; }
         .filter-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
@@ -375,7 +382,6 @@ html_debut = """<!DOCTYPE html>
         
         .badge-qte { position: absolute; top: 8px; left: 8px; background: linear-gradient(135deg, #ffe600, #ffb300); color: #111111; font-size: 13px; font-weight: 800; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid #ffffff; box-shadow: 0 4px 8px rgba(0,0,0,0.3); z-index: 10; }
         .badge-prix { position: absolute; top: 8px; right: 8px; background: #e11d48; color: #ffffff; font-size: 11px; font-weight: 800; padding: 4px 8px; border-radius: 12px; border: 2px solid #ffffff; box-shadow: 0 4px 8px rgba(0,0,0,0.3); z-index: 10; }
-        
         .badge-vinyl-new { position: absolute; bottom: 8px; right: 8px; background: #111111; color: #ffffff; font-size: 9px; font-weight: 900; letter-spacing: 0.5px; width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px dashed rgba(255,255,255,0.3); box-shadow: 0 4px 8px rgba(0,0,0,0.4), inset 0 0 0 4px #111111, inset 0 0 0 5px #f5c518; z-index: 10; text-shadow: 1px 1px 2px rgba(0,0,0,0.8); }
 
         .cover-wrapper { aspect-ratio: 1; background: #222; display: flex; align-items: center; justify-content: center; position: relative; border-bottom: 1px solid var(--border-color); overflow: hidden; }
@@ -388,12 +394,13 @@ html_debut = """<!DOCTYPE html>
         .tracks-block { border-top: 1px solid var(--border-color); margin-top: 6px; padding-top: 6px; }
         .track-a { font-size: 11px; color: #111111; margin-bottom: 3px; line-height: 1.2; }
         .track-b { font-size: 11px; color: #111111; line-height: 1.2; }
+        .bpm-tag { background: #e0f2fe; color: #0369a1; padding: 1px 4px; border-radius: 3px; font-size: 10px; font-weight: bold; }
         .discogs-link { display: inline-block; margin-top: 10px; width: 100%; text-align: center; background-color: var(--discogs-black); color: white; text-decoration: none; padding: 6px; font-size: 11px; font-weight: 600; border-radius: 4px; }
         .discogs-link:hover { background-color: var(--discogs-yellow); color: var(--discogs-black); transform: scale(1.02); }
         .scroll-to-top { position: fixed; bottom: 25px; right: 25px; background-color: var(--discogs-black); color: white; border: 2px solid var(--discogs-yellow); width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3); z-index: 1000; opacity: 0; visibility: hidden; transition: all 0.3s ease; }
         .scroll-to-top.visible { opacity: 1; visibility: visible; }
         .scroll-to-top:hover { background-color: var(--discogs-yellow); color: var(--discogs-black); transform: scale(1.1); }
-        @media (max-width: 768px) { header { flex-direction: column; gap: 10px; text-align: center; } .global-counter { position: static; margin-bottom: 5px; } .search-row-wrapper { flex-direction: column; gap: 10px; } .wanted-btn, .sale-btn { width: 100%; } }
+        @media (max-width: 768px) { header { flex-direction: column; gap: 10px; text-align: center; } .global-counter { position: static; margin-bottom: 5px; } .search-row-wrapper { flex-direction: column; gap: 10px; } .mixtape-btn, .wanted-btn, .sale-btn { width: 100%; } }
     </style>
 </head>
 <body>
@@ -406,9 +413,10 @@ html_debut = """<!DOCTYPE html>
             <div class="search-container">
                 <div class="search-row-wrapper">
                     <div class="search-box-container">
-                        <input type="text" id="searchBox" class="search-box" placeholder="Rechercher un artiste, un titre, un pays...">
+                        <input type="text" id="searchBox" class="search-box" placeholder="Rechercher un artiste, un titre, un BPM...">
                         <button id="clearSearch" class="clear-search-btn" title="Effacer la recherche">✖</button>
                     </div>
+                    <a href="Mixtape.html" class="mixtape-btn">🎧 Mixtapes ➔</a>
                     <a href="Vente.html" class="sale-btn">🏷️ À vendre ➔</a>
                     <a href="Wanted.html" class="wanted-btn">Wanted ➔</a>
                 </div>
@@ -515,6 +523,8 @@ html_fin = f"""
                     (item.artist && item.artist.toLowerCase().includes(currentSearch)) ||
                     (item.titleA && item.titleA.toLowerCase().includes(currentSearch)) ||
                     (item.titleB && item.titleB.toLowerCase().includes(currentSearch)) ||
+                    (item.bpmA && item.bpmA.toString().includes(currentSearch)) ||
+                    (item.bpmB && item.bpmB.toString().includes(currentSearch)) ||
                     (item.country && item.country.toLowerCase().includes(currentSearch)) ||
                     (item.label && item.label.toLowerCase().includes(currentSearch)) ||
                     (item.year && item.year.toString().includes(currentSearch));
@@ -538,6 +548,9 @@ html_fin = f"""
                     ? `<a href="${{item.url}}" target="_blank" class="discogs-link">VOIR SUR DISCOGS</a>`
                     : '';
 
+                const bpmAStr = item.bpmA ? `<span class="bpm-tag">${{item.bpmA}} BPM</span>` : '';
+                const bpmBStr = item.bpmB ? `<span class="bpm-tag">${{item.bpmB}} BPM</span>` : '';
+
                 return `
                     <div class="vinyl-card">
                         ${{badgeQte}}
@@ -554,8 +567,8 @@ html_fin = f"""
                                 <div class="meta-info" style="font-style:italic; color:#4b5563;">${{item.label || ''}}</div>
                                 
                                 <div class="tracks-block">
-                                    <div class="track-a"><strong>A:</strong> ${{item.titleA || 'N/C'}} ${{item.durationA ? '['+item.durationA+']' : ''}}</div>
-                                    ${{item.titleB ? `<div class="track-b"><strong>B:</strong> ${{item.titleB}} ${{item.durationB ? '['+item.durationB+']' : ''}}</div>` : ''}}
+                                    <div class="track-a"><strong>A:</strong> ${{item.titleA || 'N/C'}} ${{item.durationA ? '['+item.durationA+']' : ''}} ${{bpmAStr}}</div>
+                                    ${{item.titleB ? `<div class="track-b"><strong>B:</strong> ${{item.titleB}} ${{item.durationB ? '['+item.durationB+']' : ''}} ${{bpmBStr}}</div>` : ''}}
                                 </div>
                             </div>
                             ${{linkTag}}
@@ -565,7 +578,6 @@ html_fin = f"""
             }}).join('');
         }}
 
-        // --- ÉVÉNEMENTS & INITIALISATION ---
         document.getElementById('searchBox').addEventListener('input', (e) => {{
             currentSearch = e.target.value.toLowerCase().trim();
             document.getElementById('clearSearch').style.display = currentSearch ? 'block' : 'none';
@@ -648,13 +660,398 @@ html_fin = f"""
 </html>
 """
 
-# Écriture du fichier HTML principal
 try:
     with open("index.html", "w", encoding="utf-8") as f:
         f.write(html_debut + html_fin)
     print("✅ Page web principale générée avec succès : index.html")
 except Exception as e:
     print(f"❌ Erreur lors de la création de index.html : {e}")
+
+
+# =====================================================================
+# GENERATION DE LA PAGE MIXTAPE.HTML (STUDIO DE SELECTION & PREPARATION)
+# =====================================================================
+html_mixtape = """<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Studio Mixtape - Préparation de Playlist</title>
+    <style>
+        :root { --discogs-black: #111111; --discogs-yellow: #f5c518; --purple-main: #8b5cf6; --light-bg: #f8f9fa; --border-color: #e5e7eb; --text-muted: #6b7280; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
+        body { background-color: var(--light-bg); color: var(--discogs-black); padding-bottom: 50px; }
+        
+        header { background-color: var(--discogs-black); color: white; padding: 20px; border-bottom: 4px solid var(--purple-main); position: relative; display: flex; align-items: center; justify-content: center; }
+        header h1 { font-size: 24px; color: #ffffff; }
+        
+        .sticky-wrapper { position: -webkit-sticky; position: sticky; top: 0; z-index: 100; background-color: var(--light-bg); padding-top: 15px; padding-bottom: 10px; border-bottom: 1px solid var(--border-color); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+        .container { max-width: 1400px; margin: 0 auto; padding: 0 15px; }
+        
+        .top-row { display: flex; gap: 10px; align-items: center; margin-bottom: 15px; flex-wrap: wrap; }
+        .back-btn { background-color: var(--discogs-black); color: white; border: 2px solid var(--discogs-black); padding: 10px 18px; font-size: 14px; font-weight: bold; border-radius: 6px; cursor: pointer; text-decoration: none; text-align: center; white-space: nowrap; }
+        .back-btn:hover { background-color: var(--discogs-yellow); color: var(--discogs-black); }
+        
+        .mixtape-controls { background: white; padding: 15px; border-radius: 8px; border: 1px solid var(--border-color); flex-grow: 1; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+        .select-mixtape { padding: 9px 12px; font-size: 14px; border: 1px solid var(--border-color); border-radius: 6px; outline: none; font-weight: bold; min-width: 180px; }
+        .input-new-mixtape { padding: 9px 12px; font-size: 14px; border: 1px solid var(--border-color); border-radius: 6px; outline: none; width: 180px; }
+        .btn-action { background: var(--purple-main); color: white; border: none; padding: 9px 16px; font-size: 14px; font-weight: bold; border-radius: 6px; cursor: pointer; }
+        .btn-action:hover { background: #7c3aed; }
+        .btn-secondary { background: #4b5563; color: white; border: none; padding: 9px 14px; font-size: 13px; font-weight: bold; border-radius: 6px; cursor: pointer; }
+        .btn-secondary:hover { background: #374151; }
+        .btn-danger { background: #ef4444; color: white; border: none; padding: 9px 14px; font-size: 14px; font-weight: bold; border-radius: 6px; cursor: pointer; }
+        .btn-danger:hover { background: #dc2626; }
+
+        .search-grid-filter { background: white; padding: 15px; border-radius: 8px; border: 1px solid var(--border-color); display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 10px; }
+        .filter-input { padding: 8px 12px; font-size: 13px; border: 1px solid var(--border-color); border-radius: 4px; outline: none; }
+        .filter-input.bpm { width: 90px; }
+
+        .main-layout { display: grid; grid-template-columns: 1fr 380px; gap: 20px; margin-top: 20px; }
+        
+        .vinyl-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 15px; }
+        .vinyl-card { background: white; border: 1px solid var(--border-color); border-radius: 6px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 2px 4px rgba(0,0,0,0.02); position: relative; }
+        .cover-wrapper { aspect-ratio: 1; background: #222; position: relative; overflow: hidden; border-bottom: 1px solid var(--border-color); }
+        .cover-image { width: 100%; height: 100%; object-fit: cover; }
+        .vinyl-details { padding: 10px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
+        .vinyl-artist { font-size: 13px; font-weight: 700; text-transform: uppercase; margin-bottom: 4px; }
+        .meta-info { font-size: 11px; color: var(--text-muted); margin-bottom: 4px; }
+        
+        .track-item { background: #f9fafb; border: 1px solid var(--border-color); padding: 6px 8px; border-radius: 4px; margin-top: 4px; display: flex; justify-content: space-between; align-items: center; font-size: 11px; }
+        .track-item strong { font-size: 11px; color: #111; }
+        .btn-add-track { background: #10b981; color: white; border: none; padding: 4px 8px; font-size: 10px; font-weight: bold; border-radius: 3px; cursor: pointer; margin-left: 4px; }
+        .btn-add-track:hover { background: #059669; }
+        
+        .mixtape-panel { background: white; border: 2px solid var(--purple-main); border-radius: 8px; padding: 15px; position: -webkit-sticky; position: sticky; top: 160px; height: calc(100vh - 180px); display: flex; flex-direction: column; }
+        .mixtape-panel h2 { font-size: 16px; margin-bottom: 5px; color: var(--purple-main); border-bottom: 2px solid var(--purple-main); padding-bottom: 6px; display: flex; justify-content: space-between; }
+        .mixtape-count { font-size: 13px; color: var(--text-muted); font-weight: normal; }
+        .mixtape-list { flex-grow: 1; overflow-y: auto; margin-top: 10px; padding-right: 5px; display: flex; flex-direction: column; gap: 8px; }
+        
+        .playlist-card { background: #f3f4f6; border: 1px solid var(--border-color); border-radius: 6px; padding: 8px; display: flex; gap: 10px; align-items: center; position: relative; }
+        .playlist-thumb { width: 42px; height: 42px; object-fit: cover; border-radius: 4px; flex-shrink: 0; background: #222; }
+        .playlist-info { flex-grow: 1; overflow: hidden; }
+        .playlist-artist { font-size: 11px; font-weight: bold; text-transform: uppercase; white-space: nowrap; text-overflow: ellipsis; overflow: hidden; }
+        .playlist-title { font-size: 11px; color: #374151; white-space: nowrap; text-overflow: ellipsis; overflow: hidden; }
+        .playlist-bpm { font-size: 10px; background: #e0f2fe; color: #0369a1; font-weight: bold; padding: 1px 4px; border-radius: 3px; display: inline-block; margin-top: 2px; }
+        .btn-remove-track { background: none; border: none; color: #ef4444; font-weight: bold; font-size: 14px; cursor: pointer; padding: 2px 6px; }
+
+        .panel-footer-actions { margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border-color); display: flex; gap: 8px; flex-wrap: wrap; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🎧 Studio Mixtape & Playlists</h1>
+    </header>
+
+    <div class="sticky-wrapper">
+        <div class="container">
+            <div class="top-row">
+                <a href="index.html" class="back-btn">⬅ Retour à la collection</a>
+                <div class="mixtape-controls">
+                    <label style="font-size:13px; font-weight:bold;">Mixtape :</label>
+                    <select id="mixtapeSelect" class="select-mixtape" onchange="changerMixtapeActive()"></select>
+                    
+                    <input type="text" id="newMixtapeInput" class="input-new-mixtape" placeholder="Nom Ex: Disco 1">
+                    <button class="btn-action" onclick="creerNouvelleMixtape()">+ Créer</button>
+                    <button class="btn-danger" onclick="supprimerMixtapeActive()" title="Supprimer la mixtape active">🗑️</button>
+                </div>
+            </div>
+
+            <div class="search-grid-filter">
+                <span style="font-size:12px; font-weight:bold; color:var(--text-muted); text-transform:uppercase;">Trier / Filtrer :</span>
+                <input type="text" id="filterText" class="filter-input" placeholder="🔍 Artiste, Titre..." style="flex-grow:1;">
+                <input type="text" id="filterGenre" class="filter-input" placeholder="Genre..." style="width:130px;">
+                <input type="number" id="filterYear" class="filter-input" placeholder="Année" style="width:90px;">
+                <input type="number" id="filterBpmMin" class="filter-input bpm" placeholder="BPM Min">
+                <input type="number" id="filterBpmMax" class="filter-input bpm" placeholder="BPM Max">
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="main-layout">
+            <div>
+                <div style="margin-bottom:10px; font-size:13px; color:var(--text-muted);">Disques trouvés : <span id="recordCount">0</span></div>
+                <div class="vinyl-grid" id="vinylGrid"></div>
+            </div>
+
+            <div class="mixtape-panel">
+                <h2><span id="mixtapeTitleDisplay">Mixtape</span> <span class="mixtape-count" id="mixtapeCountDisplay">(0 morceau)</span></h2>
+                <div class="mixtape-list" id="mixtapeList"></div>
+                
+                <div class="panel-footer-actions">
+                    <button class="btn-secondary" onclick="exporterMixtapeActive()" style="flex-grow:1;">📥 Exporter Fichier</button>
+                    <button class="btn-secondary" onclick="document.getElementById('importFileInput').click()">📤 Importer</button>
+                    <input type="file" id="importFileInput" style="display:none;" accept=".json" onchange="importerMixtapeFichier(event)">
+                    <button class="btn-secondary" onclick="copierMixtapePressePapier()" title="Copier tout sous forme de texte">📋 Copier</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const vinylData = """ + json_data + """;
+        
+        let mixtapes = JSON.parse(localStorage.getItem('user_mixtapes')) || {
+            "Mixtape Disco 1": []
+        };
+        let currentMixtapeKey = Object.keys(mixtapes)[0] || "Mixtape Disco 1";
+        if (!mixtapes[currentMixtapeKey]) mixtapes[currentMixtapeKey] = [];
+
+        function sauvegarderMixtapes() {
+            localStorage.setItem('user_mixtapes', JSON.stringify(mixtapes));
+        }
+
+        function rafraichirSelecteur() {
+            const select = document.getElementById('mixtapeSelect');
+            select.innerHTML = "";
+            Object.keys(mixtapes).forEach(key => {
+                const opt = document.createElement('option');
+                opt.value = key;
+                opt.textContent = key;
+                if (key === currentMixtapeKey) opt.selected = true;
+                select.appendChild(opt);
+            });
+        }
+
+        function changerMixtapeActive() {
+            const select = document.getElementById('mixtapeSelect');
+            currentMixtapeKey = select.value;
+            renderMixtapePanel();
+        }
+
+        function creerNouvelleMixtape() {
+            const input = document.getElementById('newMixtapeInput');
+            const nomPerso = input.value.trim();
+            if (!nomPerso) return alert("Veuillez saisir un nom pour votre mixtape !");
+            
+            const fullKey = "Mixtape " + nomPerso;
+            if (mixtapes[fullKey]) return alert("Cette mixtape existe déjà !");
+            
+            mixtapes[fullKey] = [];
+            currentMixtapeKey = fullKey;
+            input.value = "";
+            sauvegarderMixtapes();
+            rafraichirSelecteur();
+            renderMixtapePanel();
+        }
+
+        function supprimerMixtapeActive() {
+            if (Object.keys(mixtapes).length <= 1) return alert("Vous devez conserver au moins une mixtape.");
+            if (confirm(`Supprimer définitivement "${currentMixtapeKey}" ?`)) {
+                delete mixtapes[currentMixtapeKey];
+                currentMixtapeKey = Object.keys(mixtapes)[0];
+                sauvegarderMixtapes();
+                rafraichirSelecteur();
+                renderMixtapePanel();
+            }
+        }
+
+        function ajouterMorceau(vinylId, face) {
+        // On cherche le disque exact par son ID unique
+        const item = vinylData.find(v => v.id.toString() === vinylId.toString());
+        if (!item) return;
+
+        const isA = (face === 'A');
+        const titre = isA ? item.titleA : item.titleB;
+        const bpm = isA ? item.bpmA : item.bpmB;
+        const duree = isA ? item.durationA : item.durationB;
+
+        if (!titre) return alert("Morceau non disponible sur cette face.");
+
+        const trackObj = {
+            id: item.id + "_" + face + "_" + Date.now(),
+            vinylId: item.id,
+            artist: item.artist,
+            title: titre,
+            face: face,
+            bpm: bpm,
+            duration: duree,
+            pochette: item.pochette,
+            year: item.year,
+            genre: item.genre
+        };
+
+        mixtapes[currentMixtapeKey].push(trackObj);
+            sauvegarderMixtapes();
+            renderMixtapePanel();
+    }
+
+        function retirerMorceau(trackUniqueId) {
+            mixtapes[currentMixtapeKey] = mixtapes[currentMixtapeKey].filter(t => t.id !== trackUniqueId);
+            sauvegarderMixtapes();
+            renderMixtapePanel();
+        }
+
+        function renderMixtapePanel() {
+            document.getElementById('mixtapeTitleDisplay').textContent = currentMixtapeKey;
+            const currentList = mixtapes[currentMixtapeKey] || [];
+            document.getElementById('mixtapeCountDisplay').textContent = `(${currentList.length} morceaux)`;
+
+            const container = document.getElementById('mixtapeList');
+            container.innerHTML = currentList.map((track, idx) => `
+                <div class="playlist-card">
+                    <img class="playlist-thumb" src="${track.pochette || 'pochettes/placeholder.png'}" alt="Cover">
+                    <div class="playlist-info">
+                        <div class="playlist-artist">${idx + 1}. ${track.artist}</div>
+                        <div class="playlist-title">Face ${track.face} : ${track.title}</div>
+                        ${track.bpm ? `<span class="playlist-bpm">${track.bpm} BPM</span>` : ''}
+                    </div>
+                    <button class="btn-remove-track" onclick="retirerMorceau('${track.id}')" title="Retirer">✖</button>
+                </div>
+            `).join('');
+        }
+
+        function exporterMixtapeActive() {
+            // On sauvegarde l'ensemble des mixtapes et pas seulement la courante
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(mixtapes, null, 2));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", "mixtapes.json");
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+            alert("Fichier 'mixtapes.json' généré ! Pense à le placer dans ton dossier principal sur le PC avant de lancer ton .bat.");
+        }
+
+        function importerMixtapeFichier(event) {
+            const fileReader = new FileReader();
+            fileReader.onload = function(e) {
+                try {
+                    const importedList = JSON.parse(e.target.result);
+                    if (Array.isArray(importedList)) {
+                        const nomPerso = prompt("Nom pour la mixtape importée :", "Imported Mixtape");
+                        if (nomPerso) {
+                            const fullKey = "Mixtape " + nomPerso;
+                            mixtapes[fullKey] = importedList;
+                            currentMixtapeKey = fullKey;
+                            sauvegarderMixtapes();
+                            rafraichirSelecteur();
+                            renderMixtapePanel();
+                            alert("Mixtape importée avec succès !");
+                        }
+                    } else {
+                        alert("Format de fichier non valide.");
+                    }
+                } catch(err) {
+                    alert("Erreur lors de la lecture du fichier JSON.");
+                }
+            };
+            fileReader.readAsText(event.target.files[0]);
+        }
+
+        function copierMixtapePressePapier() {
+            const textToCopy = JSON.stringify(mixtapes, null, 2);
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                alert("Toutes vos mixtapes ont été copiées dans le presse-papier !");
+            }).catch(err => {
+                alert("Impossible de copier dans le presse-papier.");
+            });
+        }
+
+        function renderCollectionGrid() {
+            const textSearch = document.getElementById('filterText').value.toLowerCase().trim();
+            const genreSearch = document.getElementById('filterGenre').value.toLowerCase().trim();
+            const yearSearch = document.getElementById('filterYear').value.trim();
+            const bpmMin = parseInt(document.getElementById('filterBpmMin').value) || 0;
+            const bpmMax = parseInt(document.getElementById('filterBpmMax').value) || 999;
+
+            const filtered = vinylData.filter(item => {
+                const matchText = !textSearch || 
+                    item.artist.toLowerCase().includes(textSearch) || 
+                    item.titleA.toLowerCase().includes(textSearch) || 
+                    item.titleB.toLowerCase().includes(textSearch);
+
+                const matchGenre = !genreSearch || (item.genre && item.genre.toLowerCase().includes(genreSearch));
+                const matchYear = !yearSearch || (item.year && item.year.toString().includes(yearSearch));
+
+                const bpA = parseInt(item.bpmA) || 0;
+                const bpB = parseInt(item.bpmB) || 0;
+                const matchBpm = (bpA >= bpmMin && bpA <= bpmMax) || (bpB >= bpmMin && bpB <= bpmMax) || (bpmMin === 0 && bpmMax === 999);
+
+                return matchText && matchGenre && matchYear && matchBpm;
+            });
+
+            document.getElementById('recordCount').textContent = filtered.length;
+
+            const grid = document.getElementById('vinylGrid');
+            grid.innerHTML = filtered.map((item, index) => {
+        const imgTag = (item.pochette && item.pochette !== "pochettes/placeholder.png")
+            ? `<img class="cover-image" src="${item.pochette}" alt="Cover">`
+            : `<div style="color:#777; font-size:10px; text-align:center; padding:10px;">💿 NO COVER</div>`;
+
+        return `
+            <div class="vinyl-card">
+                <div class="cover-wrapper">${imgTag}</div>
+                <div class="vinyl-details">
+                    <div>
+                        <div class="vinyl-artist">${item.artist}</div>
+                        <div class="meta-info">${item.year || ''} ${item.genre ? '• ' + item.genre : ''}</div>
+
+                        <div class="track-item">
+                            <div>
+                                <strong>A:</strong> ${item.titleA || 'N/C'} 
+                                ${item.bpmA ? `<span style="color:#0369a1; font-weight:bold;">(${item.bpmA} BPM)</span>` : ''}
+                            </div>
+                            <button class="btn-add-track" onclick="ajouterMorceau('${item.id}', 'A', '${item.artist.replace(/'/g, "\\'")}')">+ Mixtape</button>
+                        </div>
+
+                        ${item.titleB ? `
+                        <div class="track-item">
+                            <div>
+                                <strong>B:</strong> ${item.titleB} 
+                                ${item.bpmB ? `<span style="color:#0369a1; font-weight:bold;">(${item.bpmB} BPM)</span>` : ''}
+                            </div>
+                            <button class="btn-add-track" onclick="ajouterMorceau('${item.id}', 'B', '${item.artist.replace(/'/g, "\\'")}')">+ Mixtape</button>
+                        </div>
+                        ` : ''}
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
+        }
+
+        ['filterText', 'filterGenre', 'filterYear', 'filterBpmMin', 'filterBpmMax'].forEach(id => {
+            document.getElementById(id).addEventListener('input', renderCollectionGrid);
+        });
+
+        rafraichirSelecteur();
+        renderMixtapePanel();
+        renderCollectionGrid();
+        // Au chargement de la page Mixtape, on récupère le fichier JSON distant
+window.addEventListener('DOMContentLoaded', () => {
+    fetch('mixtapes.json?v=' + new Date().getTime(), { cache: 'no-store' })
+        .then(response => {
+            if (!response.ok) throw new Error("Fichier mixtapes.json introuvable");
+            return response.json();
+        })
+        .then(data => {
+            if (data && Object.keys(data).length > 0) {
+                const newDataStr = JSON.stringify(data);
+                const oldDataStr = localStorage.getItem('my_mixtapes');
+                
+                // Si les données distantes sont différentes de celles en cache, on met à jour et on recharge
+                if (oldDataStr !== newDataStr) {
+                    mixtapes = data;
+                    localStorage.setItem('my_mixtapes', newDataStr);
+                    location.reload();
+                }
+            }
+        })
+        .catch(err => {
+            console.log("Utilisation du cache local :", err);
+        });
+});
+    </script>
+</body>
+</html>
+"""
+
+try:
+    with open("Mixtape.html", "w", encoding="utf-8") as f:
+        f.write(html_mixtape)
+    print("✅ Page web Mixtape générée avec succès : Mixtape.html")
+except Exception as e:
+    print(f"❌ Erreur lors de la création de Mixtape.html : {e}")
 
 
 # =====================================================================
@@ -666,7 +1063,7 @@ html_vente = f"""<!DOCTYPE html>
     <meta charset="UTF-8">
     <title>Disques à Vendre</title>
     <style>
-        :root {{ --discogs-black: #111111; --discogs-yellow: #f5c518; --light-bg: #f8f9fa; --border-color: #e5e7eb; --text-muted: #6b7280; }}
+        :root {{ --discogs-black: #111111; --discogs-yellow: #f5c518; --purple-main: #8b5cf6; --light-bg: #f8f9fa; --border-color: #e5e7eb; --text-muted: #6b7280; }}
         * {{ box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }}
         body {{ background-color: var(--light-bg); color: var(--discogs-black); padding-bottom: 50px; }}
         header {{ background-color: var(--discogs-black); color: white; padding: 20px; border-bottom: 4px solid #e11d48; position: relative; display: flex; align-items: center; justify-content: center; }}
@@ -688,6 +1085,8 @@ html_vente = f"""<!DOCTYPE html>
         
         .back-btn {{ background-color: var(--discogs-black); color: white; border: 2px solid var(--discogs-black); padding: 11px 24px; font-size: 15px; font-weight: bold; border-radius: 6px; cursor: pointer; text-decoration: none; text-align: center; white-space: nowrap; transition: all 0.2s ease; }}
         .back-btn:hover {{ background-color: var(--discogs-yellow); color: var(--discogs-black); }}
+        .mixtape-btn {{ background-color: var(--purple-main); color: white; border: 2px solid var(--purple-main); padding: 11px 20px; font-size: 15px; font-weight: bold; border-radius: 6px; cursor: pointer; text-decoration: none; text-align: center; white-space: nowrap; transition: all 0.2s ease; }}
+        .mixtape-btn:hover {{ background-color: #7c3aed; border-color: #7c3aed; }}
         
         .navigation-filters {{ display: flex; flex-direction: column; gap: 12px; padding-top: 10px; border-top: 1px dashed var(--border-color); margin-top: 15px; }}
         .filter-row {{ display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }}
@@ -718,7 +1117,7 @@ html_vente = f"""<!DOCTYPE html>
         .scroll-to-top.visible {{ opacity: 1; visibility: visible; }}
         .scroll-to-top:hover {{ background-color: #e11d48; color: white; transform: scale(1.1); }}
         
-        @media (max-width: 768px) {{ header {{ flex-direction: column; gap: 10px; text-align: center; }} .global-counter {{ position: static; margin-bottom: 5px; }} .search-row-wrapper {{ flex-direction: column; gap: 10px; }} .back-btn {{ width: 100%; }} }}
+        @media (max-width: 768px) {{ header {{ flex-direction: column; gap: 10px; text-align: center; }} .global-counter {{ position: static; margin-bottom: 5px; }} .search-row-wrapper {{ flex-direction: column; gap: 10px; }} .back-btn, .mixtape-btn {{ width: 100%; }} }}
     </style>
 </head>
 <body>
@@ -731,6 +1130,7 @@ html_vente = f"""<!DOCTYPE html>
             <div class="search-container">
                 <div class="search-row-wrapper">
                     <a href="index.html" class="back-btn">⬅ Retour à la collection</a>
+                    <a href="Mixtape.html" class="mixtape-btn">🎧 Mixtapes ➔</a>
                     <div class="search-box-container">
                         <input type="text" id="searchBox" class="search-box" placeholder="Rechercher un disque à vendre...">
                         <button id="clearSearch" class="clear-search-btn" title="Effacer la recherche">✖</button>
@@ -881,7 +1281,7 @@ html_wanted = f"""<!DOCTYPE html>
     <meta charset="UTF-8">
     <title>Liste Wanted - Recherche de Vinyles</title>
     <style>
-        :root {{ --discogs-black: #111111; --discogs-yellow: #f5c518; --light-bg: #f8f9fa; --border-color: #e5e7eb; --text-muted: #6b7280; }}
+        :root {{ --discogs-black: #111111; --discogs-yellow: #f5c518; --purple-main: #8b5cf6; --light-bg: #f8f9fa; --border-color: #e5e7eb; --text-muted: #6b7280; }}
         * {{ box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }}
         body {{ background-color: var(--light-bg); color: var(--discogs-black); padding-bottom: 50px; }}
         header {{ background-color: var(--discogs-black); color: white; padding: 20px; border-bottom: 4px solid var(--discogs-yellow); position: relative; display: flex; align-items: center; justify-content: center; }}
@@ -900,6 +1300,8 @@ html_wanted = f"""<!DOCTYPE html>
         
         .back-btn {{ background-color: var(--discogs-black); color: white; border: 2px solid var(--discogs-black); padding: 11px 24px; font-size: 15px; font-weight: bold; border-radius: 6px; cursor: pointer; text-decoration: none; text-align: center; white-space: nowrap; transition: all 0.2s ease; }}
         .back-btn:hover {{ background-color: var(--discogs-yellow); color: var(--discogs-black); }}
+        .mixtape-btn {{ background-color: var(--purple-main); color: white; border: 2px solid var(--purple-main); padding: 11px 20px; font-size: 15px; font-weight: bold; border-radius: 6px; cursor: pointer; text-decoration: none; text-align: center; white-space: nowrap; transition: all 0.2s ease; }}
+        .mixtape-btn:hover {{ background-color: #7c3aed; border-color: #7c3aed; }}
         
         .wanted-grid {{ display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; margin-top: 20px; }}
         .wanted-card {{ background: white; border: 1px solid var(--border-color); border-radius: 6px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 3px 5px rgba(0,0,0,0.02); }}
@@ -912,7 +1314,7 @@ html_wanted = f"""<!DOCTYPE html>
         .discogs-link {{ display: block; width: 100%; text-align: center; background-color: var(--discogs-black); color: white; text-decoration: none; padding: 6px; font-size: 11px; font-weight: 600; border-radius: 4px; }}
         .discogs-link:hover {{ background-color: var(--discogs-yellow); color: var(--discogs-black); }}
         
-        @media (max-width: 768px) {{ .search-row-wrapper {{ flex-direction: column; gap: 10px; }} .back-btn {{ width: 100%; }} }}
+        @media (max-width: 768px) {{ .search-row-wrapper {{ flex-direction: column; gap: 10px; }} .back-btn, .mixtape-btn {{ width: 100%; }} }}
     </style>
 </head>
 <body>
@@ -924,6 +1326,7 @@ html_wanted = f"""<!DOCTYPE html>
             <div class="search-container">
                 <div class="search-row-wrapper">
                     <a href="index.html" class="back-btn">⬅ Retour à la collection</a>
+                    <a href="Mixtape.html" class="mixtape-btn">🎧 Mixtapes ➔</a>
                     <div class="search-box-container">
                         <input type="text" id="searchBox" class="search-box" placeholder="Rechercher dans la liste wanted...">
                         <button id="clearSearch" class="clear-search-btn" title="Effacer la recherche">✖</button>
