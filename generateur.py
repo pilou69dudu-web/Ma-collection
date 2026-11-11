@@ -1017,6 +1017,25 @@ html_mixtape = """<!DOCTYPE html>
         rafraichirSelecteur();
         renderMixtapePanel();
         renderCollectionGrid();
+        // Au chargement de la page Mixtape, on récupère le fichier JSON distant
+window.addEventListener('DOMContentLoaded', () => {
+    fetch('mixtapes.json?v=' + new Date().getTime(), { cache: 'no-store' })
+        .then(response => {
+            if (!response.ok) throw new Error("Fichier mixtapes.json introuvable");
+            return response.json();
+        })
+        .then(data => {
+            if (data && Object.keys(data).length > 0) {
+                mixtapes = data;
+                localStorage.setItem('my_mixtapes', JSON.stringify(mixtapes));
+                if (typeof afficherMixtapeActive === 'function') afficherMixtapeActive();
+                if (typeof rendreListeMixtapes === 'function') rendreListeMixtapes();
+            }
+        })
+        .catch(err => {
+            console.log("Utilisation du cache local :", err);
+        });
+});
     </script>
 </body>
 </html>
