@@ -721,7 +721,7 @@ html_mixtape = """<!DOCTYPE html>
         .btn-add-track:hover { background: #059669; }
         
         .mixtape-panel { background: white; border: 2px solid var(--purple-main); border-radius: 8px; padding: 15px; position: -webkit-sticky; position: sticky; top: 160px; height: calc(100vh - 180px); display: flex; flex-direction: column; }
-        .mixtape-panel h2 { font-size: 16px; margin-bottom: 5px; color: var(--purple-main); border-bottom: 2px solid var(--purple-main); padding-bottom: 6px; display: flex; justify-content: space-between; }
+        .mixtape-panel h2 { font-size: 16px; margin-bottom: 5px; color: var(--purple-main); border-bottom: 2px solid var(--purple-main); padding-bottom: 6px; display: flex; justify-content: space-between; align-items: center; }
         .mixtape-count { font-size: 13px; color: var(--text-muted); font-weight: normal; }
         .mixtape-list { flex-grow: 1; overflow-y: auto; margin-top: 10px; padding-right: 5px; display: flex; flex-direction: column; gap: 8px; }
         
@@ -734,6 +734,13 @@ html_mixtape = """<!DOCTYPE html>
         .btn-remove-track { background: none; border: none; color: #ef4444; font-weight: bold; font-size: 14px; cursor: pointer; padding: 2px 6px; }
 
         .panel-footer-actions { margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border-color); display: flex; gap: 8px; flex-wrap: wrap; }
+
+        /* Styles pour la vue plein écran mobile */
+        .fullscreen-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #ffffff; z-index: 99999; padding: 20px; overflow-y: auto; }
+        .fullscreen-content { max-width: 800px; margin: 0 auto; }
+        .fullscreen-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid var(--purple-main); padding-bottom: 12px; margin-bottom: 20px; }
+        .fs-track-card { display: flex; align-items: center; gap: 15px; background: #f9fafb; border: 1px solid var(--border-color); padding: 12px 15px; border-radius: 8px; margin-bottom: 8px; }
+        .fs-track-thumb { width: 55px; height: 55px; object-fit: cover; border-radius: 6px; background: #222; flex-shrink: 0; }
     </style>
 </head>
 <body>
@@ -774,7 +781,11 @@ html_mixtape = """<!DOCTYPE html>
             </div>
 
             <div class="mixtape-panel">
-                <h2><span id="mixtapeTitleDisplay">Mixtape</span> <span class="mixtape-count" id="mixtapeCountDisplay">(0 morceau)</span></h2>
+                <h2>
+                    <span id="mixtapeTitleDisplay" style="cursor:pointer; text-decoration:underline dashed;" onclick="ouvrirVuePleinEcran()" title="Cliquer pour voir en plein écran">Mixtape</span> 
+                    <span class="mixtape-count" id="mixtapeCountDisplay">(0 morceau)</span>
+                    <button class="btn-secondary" style="padding:4px 8px; font-size:11px;" onclick="ouvrirVuePleinEcran()">📺 Vue Liste</button>
+                </h2>
                 <div class="mixtape-list" id="mixtapeList"></div>
                 
                 <div class="panel-footer-actions">
@@ -784,6 +795,17 @@ html_mixtape = """<!DOCTYPE html>
                     <button class="btn-secondary" onclick="copierMixtapePressePapier()" title="Copier tout sous forme de texte">📋 Copier</button>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- Modale Plein Écran pour Mobile -->
+    <div id="mixtapeFullscreenModal" class="fullscreen-modal">
+        <div class="fullscreen-content">
+            <div class="fullscreen-header">
+                <h2 id="fsMixtapeTitle" style="font-size:20px; color:var(--purple-main);">Titre Mixtape</h2>
+                <button class="btn-danger" onclick="fermerVuePleinEcran()" style="padding:8px 16px;">Fermer ✖</button>
+            </div>
+            <div id="fsMixtapeList"></div>
         </div>
     </div>
 
@@ -846,55 +868,52 @@ html_mixtape = """<!DOCTYPE html>
         }
 
         function ajouterMorceau(vinylId, face) {
-        // On cherche le disque exact par son ID unique
-        const item = vinylData.find(v => v.id.toString() === vinylId.toString());
-        if (!item) return;
+            const item = vinylData.find(v => v.id.toString() === vinylId.toString());
+            if (!item) return;
 
-        const isA = (face === 'A');
-        const titre = isA ? item.titleA : item.titleB;
-        const bpm = isA ? item.bpmA : item.bpmB;
-        const duree = isA ? item.durationA : item.durationB;
+            const isA = (face === 'A');
+            const titre = isA ? item.titleA : item.titleB;
+            const bpm = isA ? item.bpmA : item.bpmB;
+            const duree = isA ? item.durationA : item.durationB;
 
-        if (!titre) return alert("Morceau non disponible sur cette face.");
+            if (!titre) return alert("Morceau non disponible sur cette face.");
 
-        const trackObj = {
-            id: item.id + "_" + face + "_" + Date.now(),
-            vinylId: item.id,
-            artist: item.artist,
-            title: titre,
-            face: face,
-            bpm: bpm,
-            duration: duree,
-            pochette: item.pochette,
-            year: item.year,
-            genre: item.genre
-        };
+            const trackObj = {
+                id: item.id + "_" + face + "_" + Date.now(),
+                vinylId: item.id,
+                artist: item.artist,
+                title: titre,
+                face: face,
+                bpm: bpm,
+                duration: duree,
+                pochette: item.pochette,
+                year: item.year,
+                genre: item.genre
+            };
 
-        mixtapes[currentMixtapeKey].push(trackObj);
+            mixtapes[currentMixtapeKey].push(trackObj);
             sauvegarderMixtapes();
             renderMixtapePanel();
-    }
+        }
 
         function retirerMorceau(trackUniqueId) {
             mixtapes[currentMixtapeKey] = mixtapes[currentMixtapeKey].filter(t => t.id !== trackUniqueId);
             sauvegarderMixtapes();
             renderMixtapePanel();
-    }
+        }
         
         function deplacerMorceau(index, direction) {
             const currentList = mixtapes[currentMixtapeKey];
             const newIndex = index + direction;
             
-            // Vérifie que la nouvelle position est valide
             if (newIndex < 0 || newIndex >= currentList.length) return;
             
-            // Échange les éléments dans le tableau
             const item = currentList.splice(index, 1)[0];
             currentList.splice(newIndex, 0, item);
             
             sauvegarderMixtapes();
             renderMixtapePanel();
-    }
+        }
 
         function renderMixtapePanel() {
             document.getElementById('mixtapeTitleDisplay').textContent = currentMixtapeKey;
@@ -919,8 +938,39 @@ html_mixtape = """<!DOCTYPE html>
             `).join('');
         }
 
+        function ouvrirVuePleinEcran() {
+            const modal = document.getElementById('mixtapeFullscreenModal');
+            document.getElementById('fsMixtapeTitle').textContent = currentMixtapeKey;
+            const currentList = mixtapes[currentMixtapeKey] || [];
+            
+            const fsContainer = document.getElementById('fsMixtapeList');
+            fsContainer.innerHTML = currentList.map((track, idx) => `
+                <div class="fs-track-card" style="display: flex; align-items: center; gap: 12px;">
+                    <div style="display: flex; flex-direction: column; gap: 2px;">
+                        <button class="btn-secondary" style="padding: 4px 8px; font-size: 11px;" onclick="deplacerMorceauPleinEcran(${idx}, -1)" ${idx === 0 ? 'disabled style="opacity:0.3;"' : ''}>▲</button>
+                        <button class="btn-secondary" style="padding: 4px 8px; font-size: 11px;" onclick="deplacerMorceauPleinEcran(${idx}, 1)" ${idx === currentList.length - 1 ? 'disabled style="opacity:0.3;"' : ''}>▼</button>
+                    </div>
+                    <img class="fs-track-thumb" src="${track.pochette || 'pochettes/placeholder.png'}" alt="Cover">
+                    <div style="flex-grow:1; overflow:hidden;">
+                        <div style="font-size:14px; font-weight:bold; text-transform:uppercase;">${idx + 1}. ${track.artist} - ${track.title}</div>
+                        <div style="font-size:12px; color:var(--text-muted); margin-top:3px;">
+                            Face ${track.face} 
+                            ${track.duration ? '• ' + track.duration : ''} 
+                            ${track.bpm ? '• ' + track.bpm + ' BPM' : ''} 
+                            ${track.year ? '• ' + track.year : ''}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            
+            modal.style.display = 'block';
+        }
+
+        function fermerVuePleinEcran() {
+            document.getElementById('mixtapeFullscreenModal').style.display = 'none';
+        }
+
         function exporterMixtapeActive() {
-            // On sauvegarde l'ensemble des mixtapes et pas seulement la courante
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(mixtapes, null, 2));
             const downloadAnchor = document.createElement('a');
             downloadAnchor.setAttribute("href", dataStr);
@@ -993,40 +1043,40 @@ html_mixtape = """<!DOCTYPE html>
 
             const grid = document.getElementById('vinylGrid');
             grid.innerHTML = filtered.map((item, index) => {
-        const imgTag = (item.pochette && item.pochette !== "pochettes/placeholder.png")
-            ? `<img class="cover-image" src="${item.pochette}" alt="Cover">`
-            : `<div style="color:#777; font-size:10px; text-align:center; padding:10px;">💿 NO COVER</div>`;
+                const imgTag = (item.pochette && item.pochette !== "pochettes/placeholder.png")
+                    ? `<img class="cover-image" src="${item.pochette}" alt="Cover">`
+                    : `<div style="color:#777; font-size:10px; text-align:center; padding:10px;">💿 NO COVER</div>`;
 
-        return `
-            <div class="vinyl-card">
-                <div class="cover-wrapper">${imgTag}</div>
-                <div class="vinyl-details">
-                    <div>
-                        <div class="vinyl-artist">${item.artist}</div>
-                        <div class="meta-info">${item.year || ''} ${item.genre ? '• ' + item.genre : ''}</div>
-
-                        <div class="track-item">
+                return `
+                    <div class="vinyl-card">
+                        <div class="cover-wrapper">${imgTag}</div>
+                        <div class="vinyl-details">
                             <div>
-                                <strong>A:</strong> ${item.titleA || 'N/C'} 
-                                ${item.bpmA ? `<span style="color:#0369a1; font-weight:bold;">(${item.bpmA} BPM)</span>` : ''}
-                            </div>
-                            <button class="btn-add-track" onclick="ajouterMorceau('${item.id}', 'A', '${item.artist.replace(/'/g, "\\'")}')">+ Mixtape</button>
-                        </div>
+                                <div class="vinyl-artist">${item.artist}</div>
+                                <div class="meta-info">${item.year || ''} ${item.genre ? '• ' + item.genre : ''}</div>
 
-                        ${item.titleB ? `
-                        <div class="track-item">
-                            <div>
-                                <strong>B:</strong> ${item.titleB} 
-                                ${item.bpmB ? `<span style="color:#0369a1; font-weight:bold;">(${item.bpmB} BPM)</span>` : ''}
+                                <div class="track-item">
+                                    <div>
+                                        <strong>A:</strong> ${item.titleA || 'N/C'} 
+                                        ${item.bpmA ? `<span style="color:#0369a1; font-weight:bold;">(${item.bpmA} BPM)</span>` : ''}
+                                    </div>
+                                    <button class="btn-add-track" onclick="ajouterMorceau('${item.id}', 'A')">+ Mixtape</button>
+                                </div>
+
+                                ${item.titleB ? `
+                                <div class="track-item">
+                                    <div>
+                                        <strong>B:</strong> ${item.titleB} 
+                                        ${item.bpmB ? `<span style="color:#0369a1; font-weight:bold;">(${item.bpmB} BPM)</span>` : ''}
+                                    </div>
+                                    <button class="btn-add-track" onclick="ajouterMorceau('${item.id}', 'B')">+ Mixtape</button>
+                                </div>
+                                ` : ''}
                             </div>
-                            <button class="btn-add-track" onclick="ajouterMorceau('${item.id}', 'B', '${item.artist.replace(/'/g, "\\'")}')">+ Mixtape</button>
                         </div>
-                        ` : ''}
                     </div>
-                </div>
-            </div>
-        `;
-    }).join('');
+                `;
+            }).join('');
         }
 
         ['filterText', 'filterGenre', 'filterYear', 'filterBpmMin', 'filterBpmMax'].forEach(id => {
@@ -1036,29 +1086,29 @@ html_mixtape = """<!DOCTYPE html>
         rafraichirSelecteur();
         renderMixtapePanel();
         renderCollectionGrid();
-        // Au chargement de la page Mixtape, on récupère le fichier JSON distant
-window.addEventListener('DOMContentLoaded', () => {
-    fetch('mixtapes.json?v=' + new Date().getTime(), { cache: 'no-store' })
-        .then(response => {
-            if (!response.ok) throw new Error("Fichier mixtapes.json introuvable");
-            return response.json();
-        })
-        .then(data => {
-            if (data && Object.keys(data).length > 0) {
-                const newDataStr = JSON.stringify(data);
-                const oldDataStr = localStorage.getItem('user_mixtapes');
-                
-                if (oldDataStr !== newDataStr) {
-                    mixtapes = data;
-                    localStorage.setItem('user_mixtapes', newDataStr);
-                    location.reload();
-                }
-            }
-        })
-        .catch(err => {
-            console.log("Utilisation du cache local :", err);
+
+        window.addEventListener('DOMContentLoaded', () => {
+            fetch('mixtapes.json?v=' + new Date().getTime(), { cache: 'no-store' })
+                .then(response => {
+                    if (!response.ok) throw new Error("Fichier mixtapes.json introuvable");
+                    return response.json();
+                })
+                .then(data => {
+                    if (data && Object.keys(data).length > 0) {
+                        const newDataStr = JSON.stringify(data);
+                        const oldDataStr = localStorage.getItem('user_mixtapes');
+                        
+                        if (oldDataStr !== newDataStr) {
+                            mixtapes = data;
+                            localStorage.setItem('user_mixtapes', newDataStr);
+                            location.reload();
+                        }
+                    }
+                })
+                .catch(err => {
+                    console.log("Utilisation du cache local :", err);
+                });
         });
-});
     </script>
 </body>
 </html>
