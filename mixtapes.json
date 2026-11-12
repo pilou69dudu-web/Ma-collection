@@ -518,6 +518,78 @@
       "pochette": "pochettes/107807.jpg",
       "year": "1979",
       "genre": "Disco"
+    },
+    {
+      "id": "430_A_1794498645761",
+      "vinylId": "430",
+      "artist": "CAROL JIANI",
+      "title": "Hit 'N Run Lover",
+      "face": "A",
+      "bpm": "122",
+      "duration": "08:10:00",
+      "pochette": "pochettes/719609.jpg",
+      "year": "1981",
+      "genre": "Disco"
+    },
+    {
+      "id": "473_A_1794498856748",
+      "vinylId": "473",
+      "artist": "CERRONE",
+      "title": "Freak Connection / Standing In The Shadows Of Love",
+      "face": "A",
+      "bpm": "118",
+      "duration": "09:18:00",
+      "pochette": "pochettes/919963.jpg",
+      "year": "1983",
+      "genre": "Disco"
+    },
+    {
+      "id": "667_A_1794499348890",
+      "vinylId": "667",
+      "artist": "DAN HARTMAN",
+      "title": "Instant Replay",
+      "face": "A",
+      "bpm": "130",
+      "duration": "08:15:00",
+      "pochette": "pochettes/208796.jpg",
+      "year": "1978",
+      "genre": "Disco"
+    },
+    {
+      "id": "751_A_1794499568282",
+      "vinylId": "751",
+      "artist": "DENISE LASALLE",
+      "title": "I'm So Hot",
+      "face": "A",
+      "bpm": "114",
+      "duration": "04:57:00",
+      "pochette": "pochettes/1398979.jpg",
+      "year": "1980",
+      "genre": "Funk"
+    },
+    {
+      "id": "768_A_1794499587618",
+      "vinylId": "768",
+      "artist": "DESTINATION",
+      "title": "Move On Up (Suite) (A Special R.E.M.I.X.E.D. Version)",
+      "face": "A",
+      "bpm": "136",
+      "duration": "07:35:00",
+      "pochette": "pochettes/107807.jpg",
+      "year": "1979",
+      "genre": "Disco"
+    },
+    {
+      "id": "877_B_1794499940770",
+      "vinylId": "877",
+      "artist": "EARTH, WIND & FIRE",
+      "title": "September(1978)",
+      "face": "B",
+      "bpm": "125",
+      "duration": "03:38:00",
+      "pochette": "pochettes/57246.jpg",
+      "year": "2000",
+      "genre": "Disco"
     }
   ]
 }
