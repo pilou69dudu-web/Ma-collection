@@ -43789,7 +43789,7 @@
         "pochette": "pochettes/placeholder.png",
         "prix": "2€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "6df2a53fec000bb4d5a560b27f9f058e": {
         "id": "1870",
@@ -54714,7 +54714,7 @@
         "pochette": "pochettes/525352.jpg",
         "prix": "11€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "b522886417c4baa3de6ffa2aacae0fef": {
         "id": "2342",
