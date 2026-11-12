@@ -590,6 +590,42 @@
       "pochette": "pochettes/57246.jpg",
       "year": "2000",
       "genre": "Disco"
+    },
+    {
+      "id": "1057_A_1794501783845",
+      "vinylId": "1057",
+      "artist": "FREDDIE JAMES",
+      "title": "Get Up And Boogie",
+      "face": "A",
+      "bpm": "130",
+      "duration": "07:02:00",
+      "pochette": "pochettes/2411292.jpg",
+      "year": "1979",
+      "genre": "Disco"
+    },
+    {
+      "id": "3277_A_1794502082320",
+      "vinylId": "3277",
+      "artist": "GLADYS KNIGHT AND THE PIPS",
+      "title": "Taste Of Bitter Love",
+      "face": "A",
+      "bpm": "108",
+      "duration": "04:37:00",
+      "pochette": "pochettes/496385.jpg",
+      "year": "1980",
+      "genre": "Funk"
+    },
+    {
+      "id": "1166_A_1794502275115",
+      "vinylId": "1166",
+      "artist": "GLORIA GAYNOR",
+      "title": "I Will Survive (Full Length Mix)",
+      "face": "A",
+      "bpm": "116",
+      "duration": "08:02:00",
+      "pochette": "pochettes/1434627.jpg",
+      "year": "1978",
+      "genre": "Disco"
     }
   ]
 }
