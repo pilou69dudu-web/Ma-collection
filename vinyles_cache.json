@@ -57085,28 +57085,28 @@
         "comment": "",
         "isNew": false
     },
-    "5d96338af5bd4590ab3d3d70e98aacb9": {
-        "id": "2445",
+    "4b6738168aa0ba695acbb8b3e3ea5e7f": {
+        "id": "2483",
         "type": "SINGLE",
         "year": "1997",
         "country": "France",
         "genre": "Hip Hop",
-        "artist": "RUM DMC Vs JASON NEVINS",
+        "artist": "RUN-DMC Vs JASON NEVINS",
         "titleA": "It's Like That (Jason's Battle Blaster) / It's Like That (Acappella Break)",
+        "bpmA": "129 / 129",
+        "durationA": "8:21 / 1:28",
+        "titleB": "It's Like That (Battle Beat Dub) / It's Like That (Drop The Break)",
+        "bpmB": "129 / 129",
+        "durationB": "4:48 / 8:20",
         "qte": 1,
         "qte_vente": 0,
         "a_vendre": false,
-        "durationA": "8:21 / 1:28",
-        "bpmA": "129 / 129",
-        "titleB": "It's Like That (Battle Beat Dub) / It's Like That (Drop The Break)",
-        "durationB": "4:48 / 8:20",
-        "bpmB": "129 / 129",
         "label": "Mascotte Music",
         "url": "https://www.discogs.com/release/1325221-Run-DMC-vs-Jason-Nevins-Its-Like-That",
         "pochette": "pochettes/1325221.jpg",
         "prix": "50€",
         "comment": "",
-        "isNew": false
+        "isNew": true
     },
     "63c13308db95cbfdec7efa5b3f12b34c": {
         "id": "2446",

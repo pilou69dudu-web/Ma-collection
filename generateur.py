@@ -83,6 +83,9 @@ def telecharger_pochette(release_id, artiste, titre):
         print(f"⚠️ Impossible de vérifier l'ID {release_id} ({artiste}) : {e}")
         
     return "pochettes/placeholder.png"
+
+def recuperer_prix_haut(release_id):
+    if not release_id:
         return None
     try:
         url_api = f"https://api.discogs.com/marketplace/price_suggestions/{release_id}"
