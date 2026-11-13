@@ -43786,10 +43786,10 @@
         "a_vendre": false,
         "label": "10 Records",
         "url": "https://www.discogs.com/release/3774102-Maxi-Priest-And-The-Select-Committee-Some-Guys-Have-All-The-Luck",
-        "pochette": "pochettes/placeholder.png",
+        "pochette": "pochettes/3774102.jpg",
         "prix": "2€",
         "comment": "",
-        "isNew": false
+        "isNew": true
     },
     "6df2a53fec000bb4d5a560b27f9f058e": {
         "id": "1870",
@@ -50347,27 +50347,27 @@
         "isNew": false
     },
     "3a9f1681a724409a6233c309ece44c4e": {
-        "id": "2152",
+        "id": "2190",
         "type": "ALBUM",
         "year": "1979",
         "country": "France",
         "genre": "Disco",
         "artist": "PATRICK JUVET",
         "titleA": "Lady Night",
+        "bpmA": "LP",
+        "durationA": "nan",
+        "titleB": "",
+        "bpmB": "LP",
+        "durationB": "nan",
         "qte": 1,
         "qte_vente": 0,
         "a_vendre": false,
-        "durationA": "nan",
-        "bpmA": "LP",
-        "titleB": "nan",
-        "durationB": "nan",
-        "bpmB": "LP",
         "label": "Barclay",
         "url": "https://www.discogs.com/fr/master/138465-Patrick-Juvet-Lady-Night",
         "pochette": "pochettes/placeholder.png",
         "prix": "25€",
         "comment": "",
-        "isNew": false
+        "isNew": true
     },
     "af5d65e2dd4e0f3f3336c9e0d939088e": {
         "id": "2153",
