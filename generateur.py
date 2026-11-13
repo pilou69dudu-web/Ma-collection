@@ -40,14 +40,16 @@ def extraire_id_discogs(url):
     return match.group(1) if match else None
 
 def telecharger_pochette(release_id, artiste, titre):
+    # 1. On vérifie d'abord si une pochette personnalisée existe déjà dans le dossier pour cet ID
+    if release_id:
+        chemin_image = f"pochettes/{release_id}.jpg"
+        if os.path.exists(chemin_image) and os.path.getsize(chemin_image) > 0:
+            return chemin_image
+
     if not release_id:
         return "pochettes/placeholder.png"
     
-    chemin_image = f"pochettes/{release_id}.jpg"
-    
-    if os.path.exists(chemin_image) and os.path.getsize(chemin_image) > 0:
-        return chemin_image
-        
+    # 2. Sinon, on essaie de la récupérer via l'API Discogs
     try:
         url_api = f"https://api.discogs.com/releases/{release_id}"
         headers = {
@@ -81,9 +83,6 @@ def telecharger_pochette(release_id, artiste, titre):
         print(f"⚠️ Impossible de vérifier l'ID {release_id} ({artiste}) : {e}")
         
     return "pochettes/placeholder.png"
-
-def recuperer_prix_haut(release_id):
-    if not release_id:
         return None
     try:
         url_api = f"https://api.discogs.com/marketplace/price_suggestions/{release_id}"
