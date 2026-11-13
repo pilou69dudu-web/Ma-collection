@@ -43789,7 +43789,7 @@
         "pochette": "pochettes/3774102.jpg",
         "prix": "2€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "6df2a53fec000bb4d5a560b27f9f058e": {
         "id": "1870",
@@ -50364,10 +50364,10 @@
         "a_vendre": false,
         "label": "Barclay",
         "url": "https://www.discogs.com/fr/master/138465-Patrick-Juvet-Lady-Night",
-        "pochette": "pochettes/placeholder.png",
+        "pochette": "pochettes/138465.jpg",
         "prix": "25€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "af5d65e2dd4e0f3f3336c9e0d939088e": {
         "id": "2153",
