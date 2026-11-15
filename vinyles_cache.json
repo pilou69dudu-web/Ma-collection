@@ -10924,29 +10924,6 @@
         "comment": "",
         "isNew": false
     },
-    "8cd764b89bee8b274f924d2bab024f82": {
-        "id": "474",
-        "type": "ALBUM",
-        "year": "1978",
-        "country": "France",
-        "genre": "Disco",
-        "artist": "CERRONE",
-        "titleA": "Je Suis Music",
-        "qte": 2,
-        "qte_vente": 0,
-        "a_vendre": false,
-        "durationA": "07:48:00",
-        "bpmA": "129",
-        "titleB": "Look for love",
-        "durationB": "10:10:00",
-        "bpmB": "119",
-        "label": "Malligator",
-        "url": "https://www.discogs.com/release/1673230-Cerrone-Cerrone-IV-The-Golden-Touch",
-        "pochette": "pochettes/1673230.jpg",
-        "prix": "28€",
-        "comment": "",
-        "isNew": false
-    },
     "a9cd0c84e899bfa80c8b5a901d6a65ab": {
         "id": "476",
         "type": "ALBUM",
@@ -10968,7 +10945,7 @@
         "pochette": "pochettes/1673277.jpg",
         "prix": "19€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "045d883e9546ebd479d62b05ee94b401": {
         "id": "477",
@@ -10983,7 +10960,7 @@
         "titleB": "Look For Love / Music Of Life",
         "bpmB": "119 / 091",
         "durationB": "10:10 / 6:30",
-        "qte": 1,
+        "qte": 2,
         "qte_vente": 0,
         "a_vendre": false,
         "label": "Malligator",
@@ -10991,7 +10968,7 @@
         "pochette": "pochettes/1673230.jpg",
         "prix": "25€",
         "comment": "",
-        "isNew": true
+        "isNew": false
     },
     "7148423557bff4c3a19a6aa88cf0f85d": {
         "id": "470",
