@@ -707,6 +707,9 @@ html_mixtape = """<!DOCTYPE html>
         .filter-input { padding: 8px 12px; font-size: 13px; border: 1px solid var(--border-color); border-radius: 4px; outline: none; }
         .filter-input.bpm { width: 90px; }
 
+        .nav-btn { background: white; border: 1px solid var(--border-color); padding: 6px 12px; font-size: 13px; font-weight: 600; border-radius: 4px; cursor: pointer; text-transform: capitalize; }
+        .nav-btn.active { background: var(--discogs-yellow); color: var(--discogs-black); border-color: var(--discogs-yellow); }
+
         .main-layout { display: grid; grid-template-columns: 1fr 380px; gap: 20px; margin-top: 20px; }
         
         .vinyl-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 15px; }
@@ -767,10 +770,14 @@ html_mixtape = """<!DOCTYPE html>
             <div class="search-grid-filter">
                 <span style="font-size:12px; font-weight:bold; color:var(--text-muted); text-transform:uppercase;">Trier / Filtrer :</span>
                 <input type="text" id="filterText" class="filter-input" placeholder="🔍 Artiste, Titre..." style="flex-grow:1;">
-                <input type="text" id="filterGenre" class="filter-input" placeholder="Genre..." style="width:130px;">
                 <input type="number" id="filterYear" class="filter-input" placeholder="Année" style="width:90px;">
                 <input type="number" id="filterBpmMin" class="filter-input bpm" placeholder="BPM Min">
                 <input type="number" id="filterBpmMax" class="filter-input bpm" placeholder="BPM Max">
+            </div>
+
+            <div class="search-grid-filter" style="gap:6px; align-items:center;">
+                <span style="font-size:12px; font-weight:bold; color:var(--text-muted); text-transform:uppercase; min-width:60px;">Genres :</span>
+                <div id="genreButtonsContainer" style="display:inline-flex; flex-wrap:wrap; gap:4px;"></div>
             </div>
         </div>
     </div>
@@ -813,6 +820,9 @@ html_mixtape = """<!DOCTYPE html>
 
     <script>
         const vinylData = """ + json_data + """;
+        const genresAuto = """ + json_genres + """;
+        
+        let selectedGenres = new Set();
         
         let mixtapes = JSON.parse(localStorage.getItem('user_mixtapes')) || {
             "Mixtape Disco 1": []
@@ -1018,9 +1028,42 @@ html_mixtape = """<!DOCTYPE html>
             });
         }
 
+        function renderGenreButtons() {
+            const container = document.getElementById('genreButtonsContainer');
+            container.innerHTML = "";
+
+            // Bouton "Tous"
+            const allBtn = document.createElement('button');
+            allBtn.className = `nav-btn ${selectedGenres.size === 0 ? 'active' : ''}`;
+            allBtn.textContent = "Tous";
+            allBtn.onclick = () => {
+                selectedGenres.clear();
+                renderGenreButtons();
+                renderCollectionGrid();
+            };
+            container.appendChild(allBtn);
+
+            // Boutons pour chaque genre unique trouvé dans la collection
+            genresAuto.forEach(g => {
+                const isActive = selectedGenres.has(g.toUpperCase());
+                const btn = document.createElement('button');
+                btn.className = `nav-btn ${isActive ? 'active' : ''}`;
+                btn.textContent = g.toLowerCase();
+                btn.onclick = () => {
+                    if (selectedGenres.has(g.toUpperCase())) {
+                        selectedGenres.delete(g.toUpperCase());
+                    } else {
+                        selectedGenres.add(g.toUpperCase());
+                    }
+                    renderGenreButtons();
+                    renderCollectionGrid();
+                };
+                container.appendChild(btn);
+            });
+        }
+
         function renderCollectionGrid() {
             const textSearch = document.getElementById('filterText').value.toLowerCase().trim();
-            const genreSearch = document.getElementById('filterGenre').value.toLowerCase().trim();
             const yearSearch = document.getElementById('filterYear').value.trim();
             const bpmMin = parseInt(document.getElementById('filterBpmMin').value) || 0;
             const bpmMax = parseInt(document.getElementById('filterBpmMax').value) || 999;
@@ -1031,7 +1074,9 @@ html_mixtape = """<!DOCTYPE html>
                     item.titleA.toLowerCase().includes(textSearch) || 
                     item.titleB.toLowerCase().includes(textSearch);
 
-                const matchGenre = !genreSearch || (item.genre && item.genre.toLowerCase().includes(genreSearch));
+                const itemGenre = item.genre ? item.genre.toUpperCase() : "N/C";
+                const matchGenre = (selectedGenres.size === 0) || selectedGenres.has(itemGenre);
+                
                 const matchYear = !yearSearch || (item.year && item.year.toString().includes(yearSearch));
 
                 const bpA = parseInt(item.bpmA) || 0;
@@ -1081,12 +1126,13 @@ html_mixtape = """<!DOCTYPE html>
             }).join('');
         }
 
-        ['filterText', 'filterGenre', 'filterYear', 'filterBpmMin', 'filterBpmMax'].forEach(id => {
+        ['filterText', 'filterYear', 'filterBpmMin', 'filterBpmMax'].forEach(id => {
             document.getElementById(id).addEventListener('input', renderCollectionGrid);
         });
 
         rafraichirSelecteur();
         renderMixtapePanel();
+        renderGenreButtons();
         renderCollectionGrid();
 
         window.addEventListener('DOMContentLoaded', () => {
