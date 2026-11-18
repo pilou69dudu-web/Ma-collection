@@ -205,6 +205,19 @@ for index, row in df.iterrows():
         viny_data["bpmA"] = bpm_a or viny_data.get("bpmA", "")
         viny_data["bpmB"] = bpm_b or viny_data.get("bpmB", "")
         
+        # ⚡ MISE À JOUR AUTOMATIQUE DU GENRE ET DU TYPE DEpuis L'EXCEL DIRECTEMENT
+        genre_vinyl = str(row.get(colonne_genre, '')).strip()
+        if genre_vinyl in ['nan', '']: 
+            genre_vinyl = "N/C"
+        viny_data["genre"] = genre_vinyl
+        
+        valeur_type = str(row.get(colonne_type, 'SINGLE')).strip().upper()
+        if 'MEDLEY' in valeur_type: valeur_type = 'MEDLEY'
+        elif 'JINGLE' in valeur_type: valeur_type = 'JINGLE'
+        elif 'COMPIL' in valeur_type: valeur_type = 'COMPILS'
+        elif valeur_type in ['NAN', '']: valeur_type = 'SINGLE'
+        viny_data["type"] = valeur_type
+
         nouveau_cache[hash_ligne] = viny_data
         collection.append(viny_data)
         
