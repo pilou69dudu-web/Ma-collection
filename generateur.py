@@ -36,7 +36,7 @@ if cache_existe:
 def extraire_id_discogs(url):
     if pd.isna(url):
         return None
-    match = re.search(r"release/(\d+)", str(url))
+    match = re.search(r"(?:release|master)/(\d+)", str(url))
     return match.group(1) if match else None
 
 def telecharger_pochette(release_id, artiste, titre):
@@ -322,6 +322,13 @@ if os.path.exists(nom_fichier_wanted):
                         pochette_w = cache_donnees[hash_wanted].get('pochette', 'pochettes/placeholder.png')
                     else:
                         id_discogs_w = extraire_id_discogs(lien_w)
+                        chemin_local_w = f"pochettes/{id_discogs_w}.jpg" if id_discogs_w else None
+
+                    if chemin_local_w and os.path.exists(chemin_local_w) and os.path.getsize(chemin_local_w) > 0:
+                        pochette_w = chemin_local_w
+                    elif hash_wanted in cache_donnees and cache_donnees[hash_wanted].get('pochette') not in [None, "", "pochettes/placeholder.png"]:
+                        pochette_w = cache_donnees[hash_wanted].get('pochette')
+                    else:
                         pochette_w = telecharger_pochette(id_discogs_w, artiste_w, titre_w)
                     
                     wanted_collection.append({
