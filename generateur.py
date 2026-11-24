@@ -205,7 +205,6 @@ for index, row in df.iterrows():
         viny_data["bpmA"] = bpm_a or viny_data.get("bpmA", "")
         viny_data["bpmB"] = bpm_b or viny_data.get("bpmB", "")
         
-        # ⚡ MISE À JOUR AUTOMATIQUE DU GENRE ET DU TYPE DEpuis L'EXCEL DIRECTEMENT
         genre_vinyl = str(row.get(colonne_genre, '')).strip()
         if genre_vinyl in ['nan', '']: 
             genre_vinyl = "N/C"
@@ -318,11 +317,8 @@ if os.path.exists(nom_fichier_wanted):
                     lien_w = str(row.iloc[5]).strip() if len(row) > 5 and not pd.isna(row.iloc[5]) else "#"
                     
                     hash_wanted = hashlib.md5((artiste_w + titre_w + lien_w).encode('utf-8')).hexdigest()
-                    if hash_wanted in cache_donnees:
-                        pochette_w = cache_donnees[hash_wanted].get('pochette', 'pochettes/placeholder.png')
-                    else:
-                        id_discogs_w = extraire_id_discogs(lien_w)
-                        chemin_local_w = f"pochettes/{id_discogs_w}.jpg" if id_discogs_w else None
+                    id_discogs_w = extraire_id_discogs(lien_w)
+                    chemin_local_w = f"pochettes/{id_discogs_w}.jpg" if id_discogs_w else None
 
                     if chemin_local_w and os.path.exists(chemin_local_w) and os.path.getsize(chemin_local_w) > 0:
                         pochette_w = chemin_local_w
@@ -379,6 +375,15 @@ html_debut = """<!DOCTYPE html>
         .sale-btn { background-color: #e11d48; color: white; border: 2px solid #e11d48; padding: 11px 20px; font-size: 15px; font-weight: bold; border-radius: 6px; cursor: pointer; text-decoration: none; text-align: center; white-space: nowrap; transition: all 0.2s ease; }
         .sale-btn:hover { background-color: #be123c; border-color: #be123c; }
 
+        .pdf-dropdown { position: relative; display: inline-block; }
+        .pdf-btn { background-color: #0284c7; color: white; border: 2px solid #0284c7; padding: 11px 20px; font-size: 15px; font-weight: bold; border-radius: 6px; cursor: pointer; white-space: nowrap; transition: all 0.2s ease; }
+        .pdf-btn:hover { background-color: #0369a1; border-color: #0369a1; }
+        .pdf-menu { position: absolute; top: 100%; right: 0; background: white; border: 1px solid var(--border-color); border-radius: 6px; width: 230px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.15); display: none; z-index: 1000; margin-top: 5px; overflow: hidden; }
+        .pdf-menu.show { display: block; }
+        .pdf-option { display: block; width: 100%; text-align: left; padding: 10px 14px; font-size: 13px; font-weight: 600; color: var(--discogs-black); background: white; border: none; border-bottom: 1px solid var(--border-color); cursor: pointer; text-decoration: none; }
+        .pdf-option:last-child { border-bottom: none; }
+        .pdf-option:hover { background-color: #f3f4f6; }
+
         .navigation-filters { display: flex; flex-direction: column; gap: 12px; padding-top: 10px; border-top: 1px dashed var(--border-color); margin-top: 15px; }
         .filter-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
         .filter-label { font-size: 13px; font-weight: bold; color: var(--text-muted); text-transform: uppercase; min-width: 90px; }
@@ -422,7 +427,18 @@ html_debut = """<!DOCTYPE html>
         .scroll-to-top { position: fixed; bottom: 25px; right: 25px; background-color: var(--discogs-black); color: white; border: 2px solid var(--discogs-yellow); width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3); z-index: 1000; opacity: 0; visibility: hidden; transition: all 0.3s ease; }
         .scroll-to-top.visible { opacity: 1; visibility: visible; }
         .scroll-to-top:hover { background-color: var(--discogs-yellow); color: var(--discogs-black); transform: scale(1.1); }
-        @media (max-width: 768px) { header { flex-direction: column; gap: 10px; text-align: center; } .global-counter { position: static; margin-bottom: 5px; } .search-row-wrapper { flex-direction: column; gap: 10px; } .mixtape-btn, .wanted-btn, .sale-btn { width: 100%; } }
+
+        @media print {
+            @page { size: A4 portrait; margin: 10mm; }
+            body { background: white !important; padding-bottom: 0 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .sticky-wrapper, .scroll-to-top, .discogs-link, .global-counter { display: none !important; }
+            header { background: #111111 !important; color: white !important; padding: 12px !important; margin-bottom: 10px !important; }
+            .container { max-width: 100% !important; padding: 0 !important; margin-top: 0 !important; }
+            .vinyl-grid { grid-template-columns: repeat(4, 1fr) !important; gap: 10px !important; margin-top: 10px !important; }
+            .vinyl-card { break-inside: avoid; page-break-inside: avoid; border: 1px solid #ccc !important; box-shadow: none !important; }
+        }
+
+        @media (max-width: 768px) { header { flex-direction: column; gap: 10px; text-align: center; } .global-counter { position: static; margin-bottom: 5px; } .search-row-wrapper { flex-direction: column; gap: 10px; } .mixtape-btn, .wanted-btn, .sale-btn, .pdf-dropdown, .pdf-btn { width: 100%; } }
     </style>
 </head>
 <body>
@@ -441,6 +457,14 @@ html_debut = """<!DOCTYPE html>
                     <a href="Mixtape.html" class="mixtape-btn">🎧 Mixtapes ➔</a>
                     <a href="Vente.html" class="sale-btn">🏷️ À vendre ➔</a>
                     <a href="Wanted.html" class="wanted-btn">Wanted ➔</a>
+                    <div class="pdf-dropdown">
+                        <button id="pdfMenuBtn" class="pdf-btn">📄 Export PDF ▼</button>
+                        <div id="pdfMenuContent" class="pdf-menu">
+                            <button class="pdf-option" onclick="imprimerPageActuelle()">💿 Ma Collection (affichée)</button>
+                            <a href="Vente.html?print=1" target="_blank" class="pdf-option">🏷️ Disques à Vendre</a>
+                            <a href="Wanted.html?print=1" target="_blank" class="pdf-option">🎯 Liste Wanted</a>
+                        </div>
+                    </div>
                 </div>
                 <div class="navigation-filters">
                     <div class="filter-row" id="typeButtonsContainer">
@@ -662,6 +686,25 @@ html_fin = f"""
             buildGenreMenu();
         }});
 
+        const pdfMenuBtn = document.getElementById('pdfMenuBtn');
+        const pdfMenuContent = document.getElementById('pdfMenuContent');
+        pdfMenuBtn.addEventListener('click', (e) => {{
+            e.stopPropagation();
+            pdfMenuContent.classList.toggle('show');
+        }});
+
+        document.addEventListener('click', (e) => {{
+            if (!pdfMenuContent.contains(e.target) && !pdfMenuBtn.contains(e.target)) {{
+                pdfMenuContent.classList.remove('show');
+            }}
+        }});
+
+        function imprimerPageActuelle() {{
+            pdfMenuContent.classList.remove('show');
+            document.querySelectorAll('img[loading="lazy"]').forEach(img => img.removeAttribute('loading'));
+            setTimeout(() => window.print(), 300);
+        }}
+
         const scrollTopBtn = document.getElementById('scrollTopBtn');
         window.addEventListener('scroll', () => {{
             if (window.scrollY > 300) {{
@@ -760,7 +803,6 @@ html_mixtape = """<!DOCTYPE html>
 
         .panel-footer-actions { margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border-color); display: flex; gap: 8px; flex-wrap: wrap; }
 
-        /* Styles pour la vue plein écran mobile */
         .fullscreen-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #ffffff; z-index: 99999; padding: 20px; overflow-y: auto; }
         .fullscreen-content { max-width: 800px; margin: 0 auto; }
         .fullscreen-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid var(--purple-main); padding-bottom: 12px; margin-bottom: 20px; }
@@ -827,7 +869,6 @@ html_mixtape = """<!DOCTYPE html>
         </div>
     </div>
 
-    <!-- Modale Plein Écran pour Mobile -->
     <div id="mixtapeFullscreenModal" class="fullscreen-modal">
         <div class="fullscreen-content">
             <div class="fullscreen-header">
@@ -978,10 +1019,6 @@ html_mixtape = """<!DOCTYPE html>
             const fsContainer = document.getElementById('fsMixtapeList');
             fsContainer.innerHTML = currentList.map((track, idx) => `
                 <div class="fs-track-card" style="display: flex; align-items: center; gap: 12px;">
-                    <div style="display: flex; flex-direction: column; gap: 2px;">
-                        <button class="btn-secondary" style="padding: 4px 8px; font-size: 11px;" onclick="deplacerMorceauPleinEcran(${idx}, -1)" ${idx === 0 ? 'disabled style="opacity:0.3;"' : ''}>▲</button>
-                        <button class="btn-secondary" style="padding: 4px 8px; font-size: 11px;" onclick="deplacerMorceauPleinEcran(${idx}, 1)" ${idx === currentList.length - 1 ? 'disabled style="opacity:0.3;"' : ''}>▼</button>
-                    </div>
                     <img class="fs-track-thumb" src="${track.pochette || 'pochettes/placeholder.png'}" alt="Cover">
                     <div style="flex-grow:1; overflow:hidden;">
                         <div style="font-size:14px; font-weight:bold; text-transform:uppercase;">${idx + 1}. ${track.artist} - ${track.title}</div>
@@ -1052,7 +1089,6 @@ html_mixtape = """<!DOCTYPE html>
             const container = document.getElementById('genreButtonsContainer');
             container.innerHTML = "";
 
-            // Bouton "Tous"
             const allBtn = document.createElement('button');
             allBtn.className = `nav-btn ${selectedGenres.size === 0 ? 'active' : ''}`;
             allBtn.textContent = "Tous";
@@ -1063,7 +1099,6 @@ html_mixtape = """<!DOCTYPE html>
             };
             container.appendChild(allBtn);
 
-            // Boutons pour chaque genre unique trouvé dans la collection
             genresAuto.forEach(g => {
                 const isActive = selectedGenres.has(g.toUpperCase());
                 const btn = document.createElement('button');
@@ -1252,6 +1287,16 @@ html_vente = f"""<!DOCTYPE html>
         .scroll-to-top {{ position: fixed; bottom: 25px; right: 25px; background-color: var(--discogs-black); color: white; border: 2px solid #e11d48; width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3); z-index: 1000; opacity: 0; visibility: hidden; transition: all 0.3s ease; }}
         .scroll-to-top.visible {{ opacity: 1; visibility: visible; }}
         .scroll-to-top:hover {{ background-color: #e11d48; color: white; transform: scale(1.1); }}
+
+        @media print {{
+            @page {{ size: A4 portrait; margin: 10mm; }}
+            body {{ background: white !important; padding-bottom: 0 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }}
+            .sticky-wrapper, .scroll-to-top, .discogs-link, .global-counter {{ display: none !important; }}
+            header {{ background: #111111 !important; color: white !important; padding: 12px !important; }}
+            .container {{ max-width: 100% !important; padding: 0 !important; margin-top: 0 !important; }}
+            .vinyl-grid {{ grid-template-columns: repeat(4, 1fr) !important; gap: 10px !important; margin-top: 10px !important; }}
+            .vinyl-card {{ break-inside: avoid; page-break-inside: avoid; border: 1px solid #ccc !important; box-shadow: none !important; }}
+        }}
         
         @media (max-width: 768px) {{ header {{ flex-direction: column; gap: 10px; text-align: center; }} .global-counter {{ position: static; margin-bottom: 5px; }} .search-row-wrapper {{ flex-direction: column; gap: 10px; }} .back-btn, .mixtape-btn {{ width: 100%; }} }}
     </style>
@@ -1395,6 +1440,11 @@ html_vente = f"""<!DOCTYPE html>
         }});
 
         renderGrid();
+
+        if (new URLSearchParams(window.location.search).get('print') === '1') {{
+            document.querySelectorAll('img[loading="lazy"]').forEach(img => img.removeAttribute('loading'));
+            window.addEventListener('load', () => setTimeout(() => window.print(), 500));
+        }}
     </script>
 </body>
 </html>
@@ -1449,6 +1499,16 @@ html_wanted = f"""<!DOCTYPE html>
         .comment-box {{ font-size: 11px; font-style: italic; color: var(--text-muted); margin-bottom: 10px; background: #f3f4f6; padding: 6px; border-radius: 4px; }}
         .discogs-link {{ display: block; width: 100%; text-align: center; background-color: var(--discogs-black); color: white; text-decoration: none; padding: 6px; font-size: 11px; font-weight: 600; border-radius: 4px; }}
         .discogs-link:hover {{ background-color: var(--discogs-yellow); color: var(--discogs-black); }}
+
+        @media print {{
+            @page {{ size: A4 portrait; margin: 10mm; }}
+            body {{ background: white !important; padding-bottom: 0 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }}
+            .sticky-wrapper, .discogs-link {{ display: none !important; }}
+            header {{ background: #111111 !important; color: #f5c518 !important; padding: 12px !important; }}
+            .container {{ max-width: 100% !important; padding: 0 !important; margin-top: 0 !important; }}
+            .wanted-grid {{ grid-template-columns: repeat(4, 1fr) !important; gap: 10px !important; margin-top: 10px !important; }}
+            .wanted-card {{ break-inside: avoid; page-break-inside: avoid; border: 1px solid #ccc !important; box-shadow: none !important; }}
+        }}
         
         @media (max-width: 768px) {{ .search-row-wrapper {{ flex-direction: column; gap: 10px; }} .back-btn, .mixtape-btn {{ width: 100%; }} }}
     </style>
@@ -1531,6 +1591,11 @@ html_wanted = f"""<!DOCTYPE html>
         }});
 
         renderWantedGrid();
+
+        if (new URLSearchParams(window.location.search).get('print') === '1') {{
+            document.querySelectorAll('img[loading="lazy"]').forEach(img => img.removeAttribute('loading'));
+            window.addEventListener('load', () => setTimeout(() => window.print(), 500));
+        }}
     </script>
 </body>
 </html>

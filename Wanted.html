@@ -36,6 +36,16 @@
         .comment-box { font-size: 11px; font-style: italic; color: var(--text-muted); margin-bottom: 10px; background: #f3f4f6; padding: 6px; border-radius: 4px; }
         .discogs-link { display: block; width: 100%; text-align: center; background-color: var(--discogs-black); color: white; text-decoration: none; padding: 6px; font-size: 11px; font-weight: 600; border-radius: 4px; }
         .discogs-link:hover { background-color: var(--discogs-yellow); color: var(--discogs-black); }
+
+        @media print {
+            @page { size: A4 portrait; margin: 10mm; }
+            body { background: white !important; padding-bottom: 0 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .sticky-wrapper, .discogs-link { display: none !important; }
+            header { background: #111111 !important; color: #f5c518 !important; padding: 12px !important; }
+            .container { max-width: 100% !important; padding: 0 !important; margin-top: 0 !important; }
+            .wanted-grid { grid-template-columns: repeat(4, 1fr) !important; gap: 10px !important; margin-top: 10px !important; }
+            .wanted-card { break-inside: avoid; page-break-inside: avoid; border: 1px solid #ccc !important; box-shadow: none !important; }
+        }
         
         @media (max-width: 768px) { .search-row-wrapper { flex-direction: column; gap: 10px; } .back-btn, .mixtape-btn { width: 100%; } }
     </style>
@@ -118,6 +128,11 @@
         });
 
         renderWantedGrid();
+
+        if (new URLSearchParams(window.location.search).get('print') === '1') {
+            document.querySelectorAll('img[loading="lazy"]').forEach(img => img.removeAttribute('loading'));
+            window.addEventListener('load', () => setTimeout(() => window.print(), 500));
+        }
     </script>
 </body>
 </html>
