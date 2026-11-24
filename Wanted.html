@@ -38,13 +38,17 @@
         .discogs-link:hover { background-color: var(--discogs-yellow); color: var(--discogs-black); }
 
         @media print {
-            @page { size: A4 portrait; margin: 10mm; }
+            @page { size: A4 portrait; margin: 7mm; }
             body { background: white !important; padding-bottom: 0 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-            .sticky-wrapper, .discogs-link { display: none !important; }
-            header { background: #111111 !important; color: #f5c518 !important; padding: 12px !important; }
+            header, .sticky-wrapper, .discogs-link { display: none !important; }
             .container { max-width: 100% !important; padding: 0 !important; margin-top: 0 !important; }
-            .wanted-grid { grid-template-columns: repeat(4, 1fr) !important; gap: 10px !important; margin-top: 10px !important; }
-            .wanted-card { break-inside: avoid; page-break-inside: avoid; border: 1px solid #ccc !important; box-shadow: none !important; }
+            .container > div:first-child { display: none !important; }
+            .wanted-grid { grid-template-columns: repeat(5, 1fr) !important; gap: 6px !important; margin-top: 0 !important; }
+            .wanted-card { break-inside: avoid; page-break-inside: avoid; border: 1px solid #ccc !important; box-shadow: none !important; height: 88mm; overflow: hidden; }
+            .card-details { padding: 6px !important; }
+            .artist-name { font-size: 10px !important; margin-bottom: 2px !important; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+            .track-title { font-size: 9px !important; margin-bottom: 4px !important; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+            .comment-box { font-size: 8px !important; padding: 3px !important; margin-bottom: 0 !important; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
         }
         
         @media (max-width: 768px) { .search-row-wrapper { flex-direction: column; gap: 10px; } .back-btn, .mixtape-btn { width: 100%; } }
