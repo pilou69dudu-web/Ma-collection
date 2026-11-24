@@ -38,14 +38,14 @@
         .discogs-link:hover { background-color: var(--discogs-yellow); color: var(--discogs-black); }
 
         @media print {
-            @page { size: A4 portrait; margin: 7mm; }
+            @page { size: A4 portrait; margin: 12mm 7mm 7mm 7mm; }
             body { background: white !important; padding-bottom: 0 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
             header, .sticky-wrapper, .discogs-link { display: none !important; }
             .container { max-width: 100% !important; padding: 0 !important; margin-top: 0 !important; }
             .container > div:first-child { display: none !important; }
-            .wanted-grid { grid-template-columns: repeat(5, 1fr) !important; gap: 5px !important; margin-top: 0 !important; }
-            .wanted-card { break-inside: avoid; page-break-inside: avoid; border: 1px solid #ccc !important; box-shadow: none !important; height: 67mm; overflow: hidden; }
-            .cover-wrapper { aspect-ratio: auto !important; height: 36mm !important; }
+            .wanted-grid { grid-template-columns: repeat(5, 1fr) !important; gap: 5px !important; margin-top: 2mm !important; }
+            .wanted-card { break-inside: avoid; page-break-inside: avoid; border: 1px solid #ccc !important; box-shadow: none !important; height: 64.5mm; overflow: hidden; }
+            .cover-wrapper { aspect-ratio: auto !important; height: 34mm !important; }
             .card-details { padding: 5px !important; }
             .artist-name { font-size: 9px !important; margin-bottom: 2px !important; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
             .track-title { font-size: 8px !important; margin-bottom: 3px !important; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }

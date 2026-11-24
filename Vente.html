@@ -59,14 +59,14 @@
         .scroll-to-top:hover { background-color: #e11d48; color: white; transform: scale(1.1); }
 
         @media print {
-            @page { size: A4 portrait; margin: 7mm; }
+            @page { size: A4 portrait; margin: 12mm 7mm 7mm 7mm; }
             body { background: white !important; padding-bottom: 0 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
             header, .sticky-wrapper, .scroll-to-top, .discogs-link, .global-counter { display: none !important; }
             .container { max-width: 100% !important; padding: 0 !important; margin-top: 0 !important; }
             .container > div:first-child { display: none !important; }
-            .vinyl-grid { grid-template-columns: repeat(5, 1fr) !important; gap: 5px !important; margin-top: 0 !important; }
-            .vinyl-card { break-inside: avoid; page-break-inside: avoid; border: 1px solid #ccc !important; box-shadow: none !important; height: 67mm; overflow: hidden; }
-            .cover-wrapper { aspect-ratio: auto !important; height: 34mm !important; }
+            .vinyl-grid { grid-template-columns: repeat(5, 1fr) !important; gap: 5px !important; margin-top: 2mm !important; }
+            .vinyl-card { break-inside: avoid; page-break-inside: avoid; border: 1px solid #ccc !important; box-shadow: none !important; height: 64.5mm; overflow: hidden; }
+            .cover-wrapper { aspect-ratio: auto !important; height: 32mm !important; }
             .vinyl-details { padding: 4px !important; }
             .tag-type { font-size: 6.5px !important; margin-bottom: 1px !important; padding: 0 3px !important; }
             .vinyl-artist { font-size: 8.5px !important; margin-bottom: 1px !important; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
