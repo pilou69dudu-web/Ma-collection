@@ -434,18 +434,19 @@ html_debut = """<!DOCTYPE html>
             header, .sticky-wrapper, .scroll-to-top, .discogs-link, .global-counter { display: none !important; }
             .container { max-width: 100% !important; padding: 0 !important; margin-top: 0 !important; }
             .container > div:first-child { display: none !important; }
-            .vinyl-grid { grid-template-columns: repeat(5, 1fr) !important; gap: 6px !important; margin-top: 0 !important; }
-            .vinyl-card { break-inside: avoid; page-break-inside: avoid; border: 1px solid #ccc !important; box-shadow: none !important; height: 88mm; overflow: hidden; }
-            .vinyl-details { padding: 5px !important; }
-            .tag-type { font-size: 7px !important; margin-bottom: 2px !important; }
-            .vinyl-artist { font-size: 9.5px !important; margin-bottom: 2px !important; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-            .meta-info { font-size: 8px !important; margin-bottom: 1px !important; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-            .tracks-block { margin-top: 3px !important; padding-top: 3px !important; }
-            .track-a, .track-b { font-size: 8px !important; line-height: 1.15 !important; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-            .bpm-tag { font-size: 7.5px !important; padding: 0 3px !important; }
-            .badge-qte { width: 20px !important; height: 20px !important; font-size: 10px !important; top: 4px !important; left: 4px !important; }
-            .badge-prix { font-size: 9px !important; padding: 2px 5px !important; top: 4px !important; right: 4px !important; }
-            .badge-vinyl-new { width: 24px !important; height: 24px !important; font-size: 7px !important; bottom: 4px !important; right: 4px !important; }
+            .vinyl-grid { grid-template-columns: repeat(5, 1fr) !important; gap: 5px !important; margin-top: 0 !important; }
+            .vinyl-card { break-inside: avoid; page-break-inside: avoid; border: 1px solid #ccc !important; box-shadow: none !important; height: 67mm; overflow: hidden; }
+            .cover-wrapper { aspect-ratio: auto !important; height: 34mm !important; }
+            .vinyl-details { padding: 4px !important; }
+            .tag-type { font-size: 6.5px !important; margin-bottom: 1px !important; padding: 0 3px !important; }
+            .vinyl-artist { font-size: 8.5px !important; margin-bottom: 1px !important; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+            .meta-info { font-size: 7px !important; margin-bottom: 1px !important; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+            .tracks-block { margin-top: 2px !important; padding-top: 2px !important; }
+            .track-a, .track-b { font-size: 7.5px !important; line-height: 1.1 !important; margin-bottom: 1px !important; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+            .bpm-tag { font-size: 7px !important; padding: 0 2px !important; }
+            .badge-qte { width: 18px !important; height: 18px !important; font-size: 9px !important; top: 3px !important; left: 3px !important; }
+            .badge-prix { font-size: 8px !important; padding: 1px 4px !important; top: 3px !important; right: 3px !important; }
+            .badge-vinyl-new { width: 20px !important; height: 20px !important; font-size: 6.5px !important; bottom: 3px !important; right: 3px !important; }
         }
 
         @media (max-width: 768px) { header { flex-direction: column; gap: 10px; text-align: center; } .global-counter { position: static; margin-bottom: 5px; } .search-row-wrapper { flex-direction: column; gap: 10px; } .mixtape-btn, .wanted-btn, .sale-btn, .pdf-dropdown, .pdf-btn { width: 100%; } }
@@ -1304,16 +1305,17 @@ html_vente = f"""<!DOCTYPE html>
             header, .sticky-wrapper, .scroll-to-top, .discogs-link, .global-counter {{ display: none !important; }}
             .container {{ max-width: 100% !important; padding: 0 !important; margin-top: 0 !important; }}
             .container > div:first-child {{ display: none !important; }}
-            .vinyl-grid {{ grid-template-columns: repeat(5, 1fr) !important; gap: 6px !important; margin-top: 0 !important; }}
-            .vinyl-card {{ break-inside: avoid; page-break-inside: avoid; border: 1px solid #ccc !important; box-shadow: none !important; height: 88mm; overflow: hidden; }}
-            .vinyl-details {{ padding: 5px !important; }}
-            .tag-type {{ font-size: 7px !important; margin-bottom: 2px !important; }}
-            .vinyl-artist {{ font-size: 9.5px !important; margin-bottom: 2px !important; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }}
-            .meta-info {{ font-size: 8px !important; margin-bottom: 1px !important; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }}
-            .tracks-block {{ margin-top: 3px !important; padding-top: 3px !important; }}
-            .track-a, .track-b {{ font-size: 8px !important; line-height: 1.15 !important; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }}
-            .badge-qte {{ font-size: 9px !important; padding: 1px 5px !important; top: 4px !important; left: 4px !important; }}
-            .badge-prix {{ font-size: 9px !important; padding: 2px 5px !important; top: 4px !important; right: 4px !important; }}
+            .vinyl-grid {{ grid-template-columns: repeat(5, 1fr) !important; gap: 5px !important; margin-top: 0 !important; }}
+            .vinyl-card {{ break-inside: avoid; page-break-inside: avoid; border: 1px solid #ccc !important; box-shadow: none !important; height: 67mm; overflow: hidden; }}
+            .cover-wrapper {{ aspect-ratio: auto !important; height: 34mm !important; }}
+            .vinyl-details {{ padding: 4px !important; }}
+            .tag-type {{ font-size: 6.5px !important; margin-bottom: 1px !important; padding: 0 3px !important; }}
+            .vinyl-artist {{ font-size: 8.5px !important; margin-bottom: 1px !important; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }}
+            .meta-info {{ font-size: 7px !important; margin-bottom: 1px !important; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }}
+            .tracks-block {{ margin-top: 2px !important; padding-top: 2px !important; }}
+            .track-a, .track-b {{ font-size: 7.5px !important; line-height: 1.1 !important; margin-bottom: 1px !important; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }}
+            .badge-qte {{ font-size: 8px !important; padding: 1px 4px !important; top: 3px !important; left: 3px !important; }}
+            .badge-prix {{ font-size: 8px !important; padding: 1px 4px !important; top: 3px !important; right: 3px !important; }}
         }}
         
         @media (max-width: 768px) {{ header {{ flex-direction: column; gap: 10px; text-align: center; }} .global-counter {{ position: static; margin-bottom: 5px; }} .search-row-wrapper {{ flex-direction: column; gap: 10px; }} .back-btn, .mixtape-btn {{ width: 100%; }} }}
@@ -1524,12 +1526,13 @@ html_wanted = f"""<!DOCTYPE html>
             header, .sticky-wrapper, .discogs-link {{ display: none !important; }}
             .container {{ max-width: 100% !important; padding: 0 !important; margin-top: 0 !important; }}
             .container > div:first-child {{ display: none !important; }}
-            .wanted-grid {{ grid-template-columns: repeat(5, 1fr) !important; gap: 6px !important; margin-top: 0 !important; }}
-            .wanted-card {{ break-inside: avoid; page-break-inside: avoid; border: 1px solid #ccc !important; box-shadow: none !important; height: 88mm; overflow: hidden; }}
-            .card-details {{ padding: 6px !important; }}
-            .artist-name {{ font-size: 10px !important; margin-bottom: 2px !important; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }}
-            .track-title {{ font-size: 9px !important; margin-bottom: 4px !important; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }}
-            .comment-box {{ font-size: 8px !important; padding: 3px !important; margin-bottom: 0 !important; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }}
+            .wanted-grid {{ grid-template-columns: repeat(5, 1fr) !important; gap: 5px !important; margin-top: 0 !important; }}
+            .wanted-card {{ break-inside: avoid; page-break-inside: avoid; border: 1px solid #ccc !important; box-shadow: none !important; height: 67mm; overflow: hidden; }}
+            .cover-wrapper {{ aspect-ratio: auto !important; height: 36mm !important; }}
+            .card-details {{ padding: 5px !important; }}
+            .artist-name {{ font-size: 9px !important; margin-bottom: 2px !important; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }}
+            .track-title {{ font-size: 8px !important; margin-bottom: 3px !important; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }}
+            .comment-box {{ font-size: 7.5px !important; padding: 2px 4px !important; margin-bottom: 0 !important; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }}
         }}
         
         @media (max-width: 768px) {{ .search-row-wrapper {{ flex-direction: column; gap: 10px; }} .back-btn, .mixtape-btn {{ width: 100%; }} }}
